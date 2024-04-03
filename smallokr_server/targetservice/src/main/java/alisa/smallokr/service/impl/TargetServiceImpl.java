@@ -7,7 +7,7 @@ import alisa.smallokr.POJO.Target;
 import alisa.smallokr.mapper.TargetMapper;
 import alisa.smallokr.service.TargetService;
 
-@Service(value = "TargetService")
+//@Service(value = "TargetService")
 public class TargetServiceImpl implements TargetService {
     @Autowired
     private TargetMapper targetMapper;

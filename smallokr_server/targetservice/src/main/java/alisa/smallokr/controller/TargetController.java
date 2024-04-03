@@ -17,7 +17,7 @@ import lombok.Data;
 @RequestMapping("api/target/")
 @RestController
 public class TargetController {
-    @Autowired
+    //@Autowired
     private TargetService targetService;
 
     @GetMapping("getAll")

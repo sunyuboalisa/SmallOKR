@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 import alisa.smallokr.POJO.Target;
 
-@Mapper
+//Mapper
 public interface TargetMapper {
     @Select("select * from tb_targets where id=#{targetId}")
     Target findTargetById(long targetId);
