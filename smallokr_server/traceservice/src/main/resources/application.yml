@@ -1,13 +1,13 @@
 spring:
   application:
-    name: target-service
+    name: trace-service
   cloud:
-    nacos:
+    nacos:  
       discovery:
-        server-addr: 192.168.31.134:8848 #注册中心地址
+        server-addr: 192.168.31.134:8848
   datasource:
     url: jdbc:mysql://192.168.31.134:3306/db_target?useUnicode=true&characterEncoding=utf8
     username: root
     password: root
 server:
-  port: 8080
+  port: 8082
