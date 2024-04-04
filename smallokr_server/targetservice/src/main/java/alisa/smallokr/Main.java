@@ -11,10 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 @EnableDiscoveryClient
 @SpringBootApplication
 public class Main {
-    public static void main(String[] args) {
-        SpringApplication.run(Main.class, args);
-    }
-    @RestController
+	public static void main(String[] args) {
+		SpringApplication.run(Main.class, args);
+	}
+
+	@RestController
 	class EchoController {
 		@RequestMapping(value = "/echo/{string}", method = RequestMethod.GET)
 		public String echo(@PathVariable String string) {
