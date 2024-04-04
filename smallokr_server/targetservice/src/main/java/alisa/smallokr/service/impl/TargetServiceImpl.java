@@ -2,7 +2,6 @@ package alisa.smallokr.service.impl;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import alisa.smallokr.POJO.Target;
 import alisa.smallokr.mapper.TargetMapper;
 import alisa.smallokr.service.TargetService;

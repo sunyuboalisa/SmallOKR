@@ -1,4 +1,4 @@
-package alisa.smallokr.contoller;
+package alisa.smallokr.controller;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import alisa.smallokr.POJO.Todo;
 import alisa.smallokr.service.TodoService;
 
-@RequestMapping("api/todo/")
+@RequestMapping("api/v1/todo/")
 @RestController
 public class TodoController {
     @Autowired

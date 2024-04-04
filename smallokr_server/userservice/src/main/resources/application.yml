@@ -1,2 +1,18 @@
 server:
   port: 8084
+spring:
+  application:
+    name: user-service
+  cloud:
+    nacos:  
+      discovery:
+        server-addr: 192.168.31.134:8848
+    # sentinel:
+    #   transport:
+    #     port: 8719
+    #     dashboard: 192.168.31.134:8080
+    #   http-method-specify: true
+  datasource:
+    url: jdbc:mysql://192.168.31.134:3306/db_trace?useUnicode=true&characterEncoding=utf8
+    username: root
+    password: root

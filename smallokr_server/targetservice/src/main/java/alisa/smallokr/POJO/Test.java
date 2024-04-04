@@ -3,8 +3,8 @@ package alisa.smallokr.POJO;
 import lombok.Data;
 
 @Data
-public class Plan {
-    private long id;
+ public class Test {
+
+    private int id;
     private String name;
-    private String description;
 }

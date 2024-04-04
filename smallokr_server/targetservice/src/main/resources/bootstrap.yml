@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: target-service
+  profiels:
+    active: dev
+  cloud:
+    nacos:
+      server-addr: 192.168.31.134:8848 #注册中心地址
+      config:
+        file-extension: yaml
+        shared-configs:
+          - data-id: shared_seata.yaml
+          - data-id: shared_sentinel.yaml
+            # refresh: true

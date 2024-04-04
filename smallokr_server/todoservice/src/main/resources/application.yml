@@ -1,8 +1,31 @@
 server:
-   port: 8082
+  port: 8082
 spring:
-   datasource:
+  application:
+    name: todo-service
+  cloud:
+    nacos:
+      discovery:
+      server-addr: 192.168.31.134:8848 #注册中心地址
+    sentinel:
+      transport:
+      port: 8719
+      dashboard: 192.168.31.134:8080
+  datasource:
     url: jdbc:mysql://192.168.31.134:3306/db_todo?useUnicode=true&characterEncoding=utf8
     username: root
     password: root
-
+seata:
+  registry:
+    types: nacos
+    nacos:
+      server-addr: 192.168.31.134:8848 #注册中心地址
+      namespace: ""
+      group: DEFAULT_GROUP
+      application: seata-server
+    tx-service-group: default_tx_group
+  service:
+    vgroup-mapping:
+      default_tx_group: default
+    grouplist:
+      default: 192.168.31.134:8091
