@@ -5,59 +5,67 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import alisa.smallokr.POJO.Target;
 import alisa.smallokr.service.TargetService;
 import lombok.Data;
 
-@RequestMapping("api/target/")
+@RequestMapping("api/v1/target/")
 @RestController
 public class TargetController {
-    //@Autowired
+    // @Autowired
     private TargetService targetService;
 
+    @RequestMapping(value = "get", method = RequestMethod.GET)
+    public String get() {
+        return "Hello Nacos Discovery ";
+    }
+
     @GetMapping("getAll")
-    public ResponseEntity<List<Target>> getAllTargets(){
-        List<Target> targets= targetService.getAllTargets();
+    public ResponseEntity<List<Target>> getAllTargets() {
+        List<Target> targets = targetService.getAllTargets();
         return ResponseEntity.ok(targets);
     }
 
     @PostMapping("add")
-    public ResponseEntity<Boolean> addTarget(@RequestBody Target target){
-        boolean res=targetService.addTarget(target);
+    public ResponseEntity<Boolean> addTarget(@RequestBody Target target) {
+        boolean res = targetService.addTarget(target);
         return ResponseEntity.ok(res);
     }
 
     @PutMapping("assignGroup")
-    public ResponseEntity<Boolean> assignGroup(long groupId){
-        boolean res=targetService.assignGroup(groupId);
+    public ResponseEntity<Boolean> assignGroup(long groupId) {
+        boolean res = targetService.assignGroup(groupId);
         return ResponseEntity.ok(res);
     }
 
     @GetMapping("getAllTargetWithGroup")
-    public List<TargetWithGroup> getAllTargetWithGroup(){
-        List<Target> targets= targetService.getAllTargets();
+    public List<TargetWithGroup> getAllTargetWithGroup() {
+        List<Target> targets = targetService.getAllTargets();
 
-        List<TargetWithGroup> targetWithGroups =new ArrayList<TargetWithGroup>();
+        List<TargetWithGroup> targetWithGroups = new ArrayList<TargetWithGroup>();
         for (Target t : targets) {
-            TargetWithGroup targetWithGroup= new TargetWithGroup();
+            TargetWithGroup targetWithGroup = new TargetWithGroup();
             targetWithGroup.getData().add(t);
             targetWithGroups.add(targetWithGroup);
         }
         return targetWithGroups;
     }
- }
+}
 
- @Data
- class TargetWithGroup{
-    public TargetWithGroup(){
-        this.title="";
-        this.data=new ArrayList<Target>();
+@Data
+class TargetWithGroup {
+    public TargetWithGroup() {
+        this.title = "";
+        this.data = new ArrayList<Target>();
     }
-private String title;
-private List<Target> data;
- }
+
+    private String title;
+    private List<Target> data;
+}

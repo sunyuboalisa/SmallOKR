@@ -5,9 +5,20 @@ spring:
     nacos:  
       discovery:
         server-addr: 192.168.31.134:8848
+    # sentinel:
+    #   transport:
+    #     port: 8719
+    #     dashboard: 192.168.31.134:8080
+    #   http-method-specify: true
   datasource:
     url: jdbc:mysql://192.168.31.134:3306/db_target?useUnicode=true&characterEncoding=utf8
     username: root
     password: root
+# fegin:
+#   sentinel:
+#     enabled: true
 server:
   port: 8082
+# logging:
+#   level:
+#     root: DEBUG
