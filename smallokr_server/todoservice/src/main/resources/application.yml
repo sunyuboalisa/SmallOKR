@@ -1,5 +1,8 @@
+server:
+   port: 8082
 spring:
    datasource:
     url: jdbc:mysql://192.168.31.134:3306/db_todo?useUnicode=true&characterEncoding=utf8
     username: root
     password: root
+

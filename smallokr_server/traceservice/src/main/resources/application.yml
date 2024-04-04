@@ -1,3 +1,5 @@
+server:
+  port: 8083
 spring:
   application:
     name: trace-service
@@ -17,8 +19,7 @@ spring:
 # fegin:
 #   sentinel:
 #     enabled: true
-server:
-  port: 8082
+
 # logging:
 #   level:
 #     root: DEBUG

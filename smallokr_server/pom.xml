@@ -11,6 +11,7 @@
         <module>traceservice</module>
         <module>targetservice</module>
         <module>userservice</module>
+        <module>gateway</module>
     </modules>
     <name>smallokr</name>
     <description>Smallokr server</description>
@@ -23,10 +24,6 @@
         <spring-cloud.version>2022.0.0</spring-cloud.version>
     </properties>
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
