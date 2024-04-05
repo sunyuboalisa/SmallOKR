@@ -11,4 +11,16 @@ spring:
         shared-configs:
           - data-id: shared_seata.yaml
           - data-id: shared_sentinel.yaml
-            # refresh: true
+
+# seata:
+#   tx-service-group: test
+#   service: 
+#     vgroup-mapping: 
+#       test: default
+#   registry:
+#     type: nacos
+#     nacos:
+#       application: seata-server
+#       server-addr: 192.168.31.134:8848
+#       username: nacos
+#       password: nacos

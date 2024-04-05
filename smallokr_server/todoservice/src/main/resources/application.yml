@@ -16,16 +16,15 @@ spring:
     username: root
     password: root
 seata:
-  registry:
-    types: nacos
-    nacos:
-      server-addr: 192.168.31.134:8848 #注册中心地址
-      namespace: ""
-      group: DEFAULT_GROUP
-      application: seata-server
-    tx-service-group: default_tx_group
+  application-id: ${spring.application.name}
+  tx-service-group: smallokr
   service:
     vgroup-mapping:
-      default_tx_group: default
-    grouplist:
-      default: 192.168.31.134:8091
+      smallokr: default
+  registry:
+    type: nacos
+    nacos:
+      application: seata-server
+      server-addr: 192.168.31.134:8848
+      username: nacos
+      password: nacos
