@@ -3,10 +3,11 @@ import React from 'react';
 interface CardProps {
   title: string;
   description: string;
+  color: string;
 }
-const Card = ({title, description}: CardProps) => {
+const Card = ({title, description, color}: CardProps) => {
   return (
-    <View style={styles.container}>
+    <View style={{...styles.container, backgroundColor: color}}>
       <View style={styles.circle} />
       <View style={{justifyContent: 'center', margin: 5}}>
         <Text style={styles.titleFont}>{title}</Text>
@@ -26,7 +27,6 @@ const styles = StyleSheet.create({
     padding: 10,
     margin: 10,
   },
-  /* StyleSheet */
   circle: {
     borderWidth: 1,
     width: 80,

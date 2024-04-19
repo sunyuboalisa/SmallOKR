@@ -1,13 +1,12 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import React from 'react';
 import GalaxyGraph from './GalaxyGraph';
-import {SafeAreaView} from 'react-native-safe-area-context';
 
 const Dashboard = () => {
   return (
-    <SafeAreaView style={styles.container} >
+    <View style={styles.container} >
       <GalaxyGraph />
-    </SafeAreaView>
+    </View>
   );
 };
 

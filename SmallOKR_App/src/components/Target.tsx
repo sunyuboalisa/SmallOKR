@@ -5,6 +5,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {TargetContext} from '../state/TargetContext';
 import {Card} from './Card';
+import {getColor} from '../theme';
 
 const TargetHeaderRight = () => {
   const navigation =
@@ -22,8 +23,14 @@ const Target = function () {
     <SafeAreaView style={styles.container}>
       <FlatList
         keyExtractor={(item, index) => item.name + index}
-        renderItem={({item}) => {
-          return <Card description={item.description} title={item.name} />;
+        renderItem={({item, index}) => {
+          return (
+            <Card
+              color={getColor(index)}
+              description={item.description}
+              title={item.name}
+            />
+          );
         }}
         data={targetContext}
       />

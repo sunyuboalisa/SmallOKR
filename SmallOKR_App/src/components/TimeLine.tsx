@@ -1,22 +1,29 @@
 import {FlatList, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
+import {getColor} from '../theme';
 
 type DataType = {
   dateTime: string;
   title: string;
 };
 
+type ItemProps = {
+  dateTime: string;
+  title: string;
+  color: string;
+};
+
 interface TimeLineProps {
   data: DataType[];
 }
 
-const Item = ({dateTime, title}: DataType) => {
+const Item = ({dateTime, title, color}: ItemProps) => {
   return (
     <View style={styles.rowContainer}>
       <View style={styles.timeContainer}>
         <Text>{dateTime}</Text>
       </View>
-      <View style={styles.titleContainer}>
+      <View style={{...styles.titleContainer, backgroundColor: color}}>
         <Text>{title}</Text>
       </View>
     </View>
@@ -29,8 +36,14 @@ const TimeLine = ({data}: TimeLineProps) => {
       <FlatList
         data={data}
         keyExtractor={(item, index) => item.title + index}
-        renderItem={({item}) => {
-          return <Item dateTime={item.dateTime} title={item.title} />;
+        renderItem={({item, index}) => {
+          return (
+            <Item
+              color={getColor(index)}
+              dateTime={item.dateTime}
+              title={item.title}
+            />
+          );
         }}
       />
     </View>
@@ -58,7 +71,7 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     minHeight: 30,
-    height:60,
+    height: 60,
     width: 200,
     padding: 5,
     fontSize: 22,

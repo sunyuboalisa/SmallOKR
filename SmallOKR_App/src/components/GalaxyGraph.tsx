@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {PanResponder, GestureResponderEvent} from 'react-native';
 import Svg, {Circle, Line} from 'react-native-svg';
+import { getColor } from '../theme';
 
 interface Node {
   id: number;
@@ -64,7 +65,7 @@ const GalaxyGraph: React.FC = () => {
           cx={node.x}
           cy={node.y}
           r={20}
-          fill={selectedNodeId === node.id ? 'red' : 'blue'}
+          fill={selectedNodeId === node.id ? 'red' : getColor(node.id)}
           {...(selectedNodeId === node.id ? panResponder.panHandlers : {})}
         />
       ))}
