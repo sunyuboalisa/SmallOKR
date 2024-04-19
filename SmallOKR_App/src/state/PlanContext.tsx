@@ -1,5 +1,5 @@
 import React, {createContext, Dispatch, useReducer} from 'react';
-import {Plan, Todo} from '../model/OKRModel';
+import {Todo} from '../model/OKRModel';
 import {Action} from './Actions';
 
 interface PlanState {
@@ -36,14 +36,17 @@ const PlanReducer = function (state: PlanState, action: Action): PlanState {
   switch (action.type) {
     case 'Add':
       return {
-        plans:[...state.plans,{
-          Title: 'String',
-          Description: 'String',
-          StartTime: 'String',
-          EndTime: 'String',
-          Repeat: 1,
-        }]
-      }
+        plans: [
+          ...state.plans,
+          {
+            Title: 'String',
+            Description: 'String',
+            StartTime: 'String',
+            EndTime: 'String',
+            Repeat: 1,
+          },
+        ],
+      };
     default:
       break;
   }

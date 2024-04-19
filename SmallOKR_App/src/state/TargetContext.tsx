@@ -3,21 +3,18 @@ import {ITarget} from '../model/OKRModel';
 import {TargetAction} from './Actions';
 import AxiosHelper from '../util/AxiosHelper';
 
+const axiosHelper = new AxiosHelper('127.0.0.1:8080');
+let data = [
+  {
+    id: 12,
+    name: '111',
+    description: '222222',
+  },
+];
 
-const axiosHelper=new AxiosHelper("127.0.0.1:8080")
-let 
-  data= [
-    {
-      id:12,
-      name: '111',
-      description: '222222',
-    },
-  ]
+axiosHelper.get<TargetState>('api/target/getAllTargetWithGroup').then(x => {});
 
-axiosHelper.get<TargetState>("api/target/getAllTargetWithGroup").then((x)=>{
-});
-
-type TargetState =  ITarget[];
+type TargetState = ITarget[];
 
 const initialTargetState = data;
 export const TargetContext = createContext<TargetState>(initialTargetState);
@@ -28,7 +25,7 @@ export const TargetDispatchContext = createContext(
 const TargetReducer = (state: TargetState, action: TargetAction) => {
   switch (action.type) {
     case 'Add':
-      axiosHelper.post('api/target/add',action.newTarget)
+      axiosHelper.post('api/target/add', action.newTarget);
       const newGroup = state.map(val => {
         return val;
       });

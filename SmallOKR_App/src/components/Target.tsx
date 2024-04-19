@@ -1,28 +1,20 @@
-import {
-  Image,
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import React, {useContext, useState} from 'react';
+import {SafeAreaView, StyleSheet} from 'react-native';
+import React, {useContext} from 'react';
 import {FlatList} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {TargetContext} from '../state/TargetContext';
+import {Card} from './Card';
 
 const TargetHeaderRight = () => {
-  const navigation = useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
+  const navigation =
+    useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
 
   const onAddBtnPress = () => {
     navigation.navigate('AddTarget');
   };
-  return (
-    <Ionicons name="add" style={styles.addBtn} onPress={onAddBtnPress} />
-  );
+  return <Ionicons name="add" style={styles.addBtn} onPress={onAddBtnPress} />;
 };
-
 
 const Target = function () {
   const targetContext = useContext(TargetContext);
@@ -30,8 +22,8 @@ const Target = function () {
     <SafeAreaView style={styles.container}>
       <FlatList
         keyExtractor={(item, index) => item.name + index}
-        renderItem={({item,index}) => {
-          return (<Text/>)
+        renderItem={({item}) => {
+          return <Card description={item.description} title={item.name} />;
         }}
         data={targetContext}
       />
@@ -47,13 +39,13 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 32,
     backgroundColor: 'gold',
-    margin:1
+    margin: 1,
   },
   item: {
     backgroundColor: '#4682B4',
     padding: 15,
     marginVertical: 8,
-    borderRadius:8
+    borderRadius: 8,
   },
   title: {
     fontSize: 24,
