@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {PanResponder, GestureResponderEvent} from 'react-native';
 import Svg, {Circle, Line} from 'react-native-svg';
-import { getColor } from '../theme';
+import {getColor} from '../theme';
 
 interface Node {
   id: number;
@@ -57,18 +57,6 @@ const GalaxyGraph: React.FC = () => {
 
   return (
     <Svg>
-      {/* 渲染节点 */}
-      {nodes.map(node => (
-        <Circle
-          onPressIn={event => handlePress(event, node.id)}
-          key={node.id}
-          cx={node.x}
-          cy={node.y}
-          r={20}
-          fill={selectedNodeId === node.id ? 'red' : getColor(node.id)}
-          {...(selectedNodeId === node.id ? panResponder.panHandlers : {})}
-        />
-      ))}
       {/* 渲染节点之间的关系连线 */}
       {connections.map((connection, index) => {
         const fromNode = nodes.find(node => node.id === connection.fromNodeId);
@@ -82,13 +70,25 @@ const GalaxyGraph: React.FC = () => {
               y1={fromNode.y}
               x2={toNode.x}
               y2={toNode.y}
-              stroke="black"
+              stroke="gray"
             />
           );
         }
 
         return null;
       })}
+      {/* 渲染节点 */}
+      {nodes.map(node => (
+        <Circle
+          onPressIn={event => handlePress(event, node.id)}
+          key={node.id}
+          cx={node.x}
+          cy={node.y}
+          r={20}
+          fill={selectedNodeId === node.id ? 'red' : getColor(node.id)}
+          {...(selectedNodeId === node.id ? panResponder.panHandlers : {})}
+        />
+      ))}
     </Svg>
   );
 };

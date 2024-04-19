@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
     minHeight: 50,
     justifyContent: 'center',
     paddingHorizontal: 5,
+    marginBottom:-1,
   },
   menuContainer: {
     alignItems: 'flex-start',
