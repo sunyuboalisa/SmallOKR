@@ -3,6 +3,7 @@ import AddPlan from '../components/AddPlan';
 import {Plan, PlanHeaderRight} from '../components/Plan';
 import {RepeatPage} from '../components/RepeatPage';
 import {PlanContextProvider} from '../state/PlanContext';
+import React from 'react';
 
 const PlanStack = createNativeStackNavigator<MyReactNavigation.ParamList>();
 

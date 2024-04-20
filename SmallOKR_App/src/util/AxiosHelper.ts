@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
 
 class AxiosHelper {
   private instance: AxiosInstance;
@@ -11,26 +11,26 @@ class AxiosHelper {
 
     // 添加请求拦截器
     this.instance.interceptors.request.use(
-      (config) => {
+      config => {
         console.log(`发送请求: ${config.method?.toUpperCase()} ${config.url}`);
         return config;
       },
-      (error) => {
+      error => {
         console.error('请求拦截器发生错误:', error);
         return Promise.reject(error);
-      }
+      },
     );
 
     // 添加响应拦截器
     this.instance.interceptors.response.use(
-      (response) => {
+      response => {
         console.log('响应数据:', response.data);
         return response;
       },
-      (error) => {
+      error => {
         console.error('响应拦截器发生错误:', error);
         return Promise.reject(error);
-      }
+      },
     );
   }
 
@@ -38,16 +38,19 @@ class AxiosHelper {
     this.instance.defaults.baseURL = `http://${serverIP}`;
   }
 
-  public async get<T = any>(url: string, params?: any): Promise<T> {
+  public get<T = any>(url: string, params?: any): Promise<AxiosResponse<T>> {
     try {
-      const response: AxiosResponse<T> = await this.instance.get<T>(url, { params });
-      return response.data;
+      return this.instance.get<T>(url, {params});
     } catch (error) {
       throw error;
     }
   }
 
-  public async post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  public post<T = any>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ): Promise<AxiosResponse<T>> {
     return this.instance.post<T>(url, data, config);
   }
 

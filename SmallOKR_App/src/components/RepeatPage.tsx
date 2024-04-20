@@ -1,6 +1,14 @@
 import React from 'react';
 import {FlatList, StatusBar, StyleSheet, Text, View} from 'react-native';
 
+type ItemProps = {title: string};
+
+const Item = ({title}: ItemProps) => (
+  <View style={styles.item}>
+    <Text style={styles.title}>{title}</Text>
+  </View>
+);
+
 export const RepeatPage = () => {
   const DATA = [
     {
@@ -17,13 +25,6 @@ export const RepeatPage = () => {
     },
   ];
 
-  type ItemProps = {title: string};
-
-  const Item = ({title}: ItemProps) => (
-    <View style={styles.item}>
-      <Text style={styles.title}>{title}</Text>
-    </View>
-  );
   return (
     <FlatList
       data={DATA}

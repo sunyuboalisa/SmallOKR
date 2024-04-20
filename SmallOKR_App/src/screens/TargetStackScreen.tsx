@@ -2,6 +2,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import AddTarget from '../components/AddTarget';
 import {Target, TargetHeaderRight} from '../components/Target';
 import {TargetContextProvide} from '../state/TargetContext';
+import React from 'react';
 
 const TargetStack = createNativeStackNavigator();
 

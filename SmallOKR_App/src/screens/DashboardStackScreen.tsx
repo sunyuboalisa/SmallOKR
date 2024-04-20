@@ -1,5 +1,6 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Dashboard from '../components/Dashboard';
+import React from 'react';
 
 const DashboardStack = createNativeStackNavigator<MyReactNavigation.ParamList>();
 

@@ -8,16 +8,16 @@ import {TimeLine} from './TimeLine';
 
 const items = [
   {
-    title: 'January 2022',
-    dateTime: 'Event 1',
+    title: '8:00 AM',
+    dateTime: '数据库',
   },
   {
-    title: 'February 2022',
-    dateTime: 'Event 2',
+    title: '10:00 AM',
+    dateTime: '业务技术栈调研',
   },
   {
-    title: 'March 2022',
-    dateTime: 'Event 3',
+    title: '14:00 PM',
+    dateTime: 'Spring Boot',
   },
 ];
 
