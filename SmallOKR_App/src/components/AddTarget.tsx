@@ -6,20 +6,19 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
-import {TargetDispatchContext} from '../state/TargetContext';
+import {axiosHelper} from '../util/AxiosHelper';
 
 const AddTarget = () => {
-  const dispatchContext = useContext(TargetDispatchContext);
   const navigation = useNavigation();
   const handleOKBtnPress = () => {
-    dispatchContext({
-      type: 'Add',
-      newTarget: {name: targetName, description: description},
-      group: '',
-    });
-    navigation.goBack();
+    axiosHelper
+      .post('api/v1/target/add', {name: targetName, description: description})
+      .then(res => {
+        navigation.goBack();
+      })
+      .catch();
   };
 
   const [description, onChangeDescription] = useState('');

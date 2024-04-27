@@ -1,6 +1,6 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import AddPlan from '../components/AddPlan';
-import {Plan, PlanHeaderRight} from '../components/Plan';
+import AddTodo from '../components/AddTodo';
+import {Plan, PlanHeaderRight} from '../components/Todo';
 import {RepeatPage} from '../components/RepeatPage';
 import {PlanContextProvider} from '../state/PlanContext';
 import React from 'react';
@@ -18,7 +18,7 @@ const PlanStackScreen = () => {
             headerRight: () => <PlanHeaderRight />,
           }}
         />
-        <PlanStack.Screen name="AddPlan" component={AddPlan} />
+        <PlanStack.Screen name="AddPlan" component={AddTodo} />
         <PlanStack.Screen name="RepeatPage" component={RepeatPage} />
       </PlanStack.Navigator>
     </PlanContextProvider>

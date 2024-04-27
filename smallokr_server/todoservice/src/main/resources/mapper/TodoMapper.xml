@@ -19,7 +19,15 @@
     <select id="findTodoById" resultType="alisa.smallokr.POJO.Todo">
         select * from tb_todos where todo_id=#{todoId}
     </select>
-    <select id="findAll" resultType="alisa.smallokr.POJO.Todo">
+    <select id="findAll" resultMap="todoMap">
         select * from tb_todos
     </select>
+
+    <resultMap id="todoMap" type="alisa.smallokr.POJO.Todo">
+        <id property="id" column="todo_id" />
+        <result property="name" column="todo_name"/>
+        <result property="description" column="todo_description"/>
+        <result property="beginDate" column="todo_beginDate"/>
+        <result property="endDate" column="todo_endDate"/>
+    </resultMap>
 </mapper>

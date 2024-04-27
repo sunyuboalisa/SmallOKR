@@ -1,24 +1,29 @@
 import React, {createContext, Dispatch, useReducer} from 'react';
 import {Todo} from '../model/OKRModel';
-import {Action} from './Actions';
-
-interface PlanState {
-  plans: Todo[];
+import {TodoAction} from './Actions';
+interface UITodo {
+  dateTime: string;
+  title: string;
+}
+export interface PlanState {
+  todos: Todo[];
+  uiTodos: UITodo[];
 }
 const initialPlanStates: PlanState = {
-  plans: [
+  todos: [
     {
-      Title: 'String',
-      Description: 'String',
-      StartTime: 'String',
-      EndTime: 'String',
-      Repeat: 1,
+      name: 'String',
+      description: 'String',
+      beginDate: 'String',
+      endDate: 'String',
+      repeat: 1,
     },
   ],
+  uiTodos: [{dateTime: '2024-04-27T18:30:00', title: 'test'}],
 };
 
 export const PlanContext = createContext<PlanState>(initialPlanStates);
-export const PlanDispatchContext = createContext({} as Dispatch<Action>);
+export const PlanDispatchContext = createContext({} as Dispatch<TodoAction>);
 
 export function PlanContextProvider({children}: {children: React.ReactNode}) {
   const [planState, dispatch] = useReducer(PlanReducer, initialPlanStates);
@@ -32,21 +37,16 @@ export function PlanContextProvider({children}: {children: React.ReactNode}) {
   );
 }
 
-const PlanReducer = function (state: PlanState, action: Action): PlanState {
+const PlanReducer = function (state: PlanState, action: TodoAction): PlanState {
   switch (action.type) {
     case 'Add':
-      return {
-        plans: [
-          ...state.plans,
-          {
-            Title: 'String',
-            Description: 'String',
-            StartTime: 'String',
-            EndTime: 'String',
-            Repeat: 1,
-          },
-        ],
-      };
+      break;
+    case 'Load':
+      let temp = action.newTodos.map(x => ({
+        dateTime: x.beginDate,
+        title: x.name,
+      }));
+      return {todos: action.newTodos, uiTodos: temp};
     default:
       break;
   }

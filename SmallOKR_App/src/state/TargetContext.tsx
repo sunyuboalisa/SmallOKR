@@ -1,9 +1,7 @@
 import React, {createContext, Dispatch, useReducer} from 'react';
 import {ITarget} from '../model/OKRModel';
 import {TargetAction} from './Actions';
-import AxiosHelper from '../util/AxiosHelper';
 
-const axiosHelper = new AxiosHelper('127.0.0.1:8080');
 let data = [
   {
     id: 1,
@@ -22,10 +20,6 @@ let data = [
   },
 ];
 
-axiosHelper.get<TargetState>('api/target/getAllTargetWithGroup').then(x => {
-  data = [...data, ...x.data];
-});
-
 type TargetState = ITarget[];
 
 const initialTargetState = data;
@@ -37,10 +31,9 @@ export const TargetDispatchContext = createContext(
 const TargetReducer = (state: TargetState, action: TargetAction) => {
   switch (action.type) {
     case 'Add':
-      axiosHelper.post('api/target/add', action.newTarget).then(res => {
-        console.log(res.status);
-      });
-      break;
+      return [...state,action.newTarget];
+    case 'Load':
+        return action.targets;
     default:
       break;
   }

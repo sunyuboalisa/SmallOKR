@@ -21,27 +21,27 @@ export interface ITarget {
 }
 
 class Plan {
-  constructor(name: String) {
+  constructor(name: string) {
     this.Name = name;
     this.Todos = [];
   }
   Todos: Array<Todo>;
-  Name: String;
+  Name: string;
 }
 
 class Todo {
   constructor(title: string) {
-    this.Title = title;
-    this.Description = '';
-    this.StartTime = '';
-    this.EndTime = '';
-    this.Repeat = 1;
+    this.name = title;
+    this.description = '';
+    this.beginDate = '';
+    this.endDate = '';
+    this.repeat = 1;
   }
-  Title: String;
-  Description: String;
-  StartTime: String;
-  EndTime: String;
-  Repeat: number;
+  name: string;
+  description: string;
+  beginDate: string;
+  endDate: string;
+  repeat: number;
 }
 
 export {OKR, Plan, Todo, GroupTarget};

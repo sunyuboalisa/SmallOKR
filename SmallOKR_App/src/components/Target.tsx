@@ -1,11 +1,12 @@
 import {SafeAreaView, StyleSheet} from 'react-native';
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {FlatList} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {TargetContext} from '../state/TargetContext';
+import {TargetContext, TargetDispatchContext} from '../state/TargetContext';
 import {Card} from './Card';
 import {getColor} from '../theme';
+import {axiosHelper} from '../util/AxiosHelper';
 
 const TargetHeaderRight = () => {
   const navigation =
@@ -19,6 +20,23 @@ const TargetHeaderRight = () => {
 
 const Target = function () {
   const targetContext = useContext(TargetContext);
+  const dispatch = useContext(TargetDispatchContext);
+  useEffect(() => {
+    axiosHelper.get('api/v1/target/getAll').then(res => {
+      let data = res.data as any[];
+      const newState = data.map(value => {
+        let entry = {
+          id: value.id,
+          name: value.name,
+          description: value.description,
+        };
+        return entry;
+      });
+      console.log(newState);
+      dispatch({type: 'Load', targets: newState});
+    });
+  }, [dispatch]);
+
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
