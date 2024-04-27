@@ -13,6 +13,6 @@ spring:
     #     dashboard: 192.168.31.134:8080
     #   http-method-specify: true
   datasource:
-    url: jdbc:mysql://192.168.31.134:3306/db_trace?useUnicode=true&characterEncoding=utf8
+    url: jdbc:mysql://192.168.31.134:3306/db_user?useUnicode=true&characterEncoding=utf8
     username: root
     password: root
