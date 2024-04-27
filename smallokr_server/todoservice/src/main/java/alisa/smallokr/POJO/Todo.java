@@ -1,12 +1,14 @@
 package alisa.smallokr.POJO;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
 public class Todo {
     private long id;
-    private String title;
-    private Date beginDate;
-    private Date endDate;
+    private long userId;
+    private String name;
+    private String description;
+    private LocalDateTime beginDate;
+    private LocalDateTime endDate;
 }

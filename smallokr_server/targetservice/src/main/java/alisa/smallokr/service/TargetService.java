@@ -5,7 +5,13 @@ import java.util.List;
 import alisa.smallokr.POJO.Target;
 
 public interface TargetService {
-    List<Target> getAllTargets();
     boolean addTarget(Target target);
-    boolean assignGroup(long groupId);
+
+    boolean deleteTarget(long targetId);
+
+    boolean updateTarget(Target target);
+
+    Target findTargetById(long targetId);
+
+    List<Target> findAll();
 }

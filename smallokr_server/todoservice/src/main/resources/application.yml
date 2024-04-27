@@ -28,3 +28,5 @@ seata:
       server-addr: 192.168.31.134:8848
       username: nacos
       password: nacos
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
