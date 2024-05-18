@@ -3,11 +3,12 @@ package alisa.smallokr.service.impl;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import alisa.smallokr.POJO.Target;
+
+import alisa.smallokr.entity.Target;
 import alisa.smallokr.mapper.TargetMapper;
 import alisa.smallokr.service.TargetService;
 
-@Service(value = "TargetService")
+@Service
 public class TargetServiceImpl implements TargetService {
     @Autowired
     private TargetMapper targetMapper;
@@ -20,13 +21,13 @@ public class TargetServiceImpl implements TargetService {
 
     @Override
     public boolean addTarget(Target target) {
-        boolean res = targetMapper.addTarget(target);
+        boolean res = targetMapper.saveTarget(target);
         return res;
     }
 
     @Override
-    public Target findTargetById(long targetId) {
-        var target = targetMapper.findTargetById(targetId);
+    public List<Target> findTargetByUserId(String userId) {
+        var target = targetMapper.findTargetByUser(userId);
         return target;
     }
 
@@ -37,7 +38,7 @@ public class TargetServiceImpl implements TargetService {
     }
 
     @Override
-    public boolean deleteTarget(long targetId) {
+    public boolean deleteTarget(String targetId) {
         var res=targetMapper.deleteTarget(targetId);
         return res;
     }

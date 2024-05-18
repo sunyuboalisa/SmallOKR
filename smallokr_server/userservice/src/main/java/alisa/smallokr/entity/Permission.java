@@ -1,10 +1,10 @@
-package alisa.smallokr.POJO;
+package alisa.smallokr.entity;
 
 import lombok.Data;
 
 @Data
 public class Permission {
-    private long id;
+    private long String;
     private String name;
     private String description;
     private long roleId;

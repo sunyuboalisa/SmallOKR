@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="alisa.smallokr.mapper.TodoMapper">
+    <sql id="common">
+        todo_id as id,
+        todo_name as name,
+        todo_description as description,
+        todo_begin_date as beginDate,
+        todo_end_date as endDate,
+        user_id as userId
+    </sql>
+    <select id="findTodoByID" resultType="alisa.smallokr.entity.Todo">
+        select <include refid="common"/> from tb_todo where todo_id = #{id}
+    </select>
+    <select id="findTodoByUser" resultType="alisa.smallokr.entity.Todo">
+        select <include refid="common"/> from tb_todo where user_id = #{userId} order by todo_begin_date
+    </select>
+
+    <insert id="saveTodo" parameterType="alisa.smallokr.entity.Todo">
+        insert into tb_todo(todo_id,todo_name,todo_description,todo_begin_date,todo_end_date,user_id) values (#{id},#{name},#{description},#{beginDate},#{endDate},#{userId})
+    </insert>
+</mapper>

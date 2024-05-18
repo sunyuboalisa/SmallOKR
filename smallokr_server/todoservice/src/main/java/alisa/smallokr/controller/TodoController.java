@@ -1,6 +1,8 @@
 package alisa.smallokr.controller;
 
 import java.util.List;
+import java.util.function.Function;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,42 +11,61 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import alisa.smallokr.POJO.Todo;
-import alisa.smallokr.service.TodoService;
+import com.alisa.Util.JwtUtil;
+import com.alisa.Util.Result;
+import com.alisa.Util.UUIDTool;
 
-@RequestMapping("api/v1/todo/")
+import alisa.smallokr.entity.Todo;
+import alisa.smallokr.service.TodoService;
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
+
+@RequestMapping("/api/v1/todo")
 @RestController
 public class TodoController {
     @Autowired
     private TodoService todoService;
 
-    @PostMapping("add")
-    public boolean addTodo(@RequestBody Todo todo) {
-        boolean res = todoService.addTodo(todo);
-        return res;
+    @PostMapping("/add")
+    public Result<Boolean> addTodo(@RequestBody Todo todo, HttpServletRequest request) {
+        var token = request.getHeader("Authorization").substring(7);
+        var userId = JwtUtil.extractClaim(token, new Function<Claims, String>() {
+            @Override
+            public String apply(Claims claims) {
+                return (String) claims.get("userId"); // 假设自定义声明为 userId
+            }
+        });
+
+        todo.setId(UUIDTool.getUUID());
+        todo.setUserId(userId);
+        boolean res = todoService.saveTodo(todo);
+        return new Result<>(res);
     }
 
     @DeleteMapping("delete")
-    public boolean deleteTodo(long todoId) {
+    public Result<Boolean> deleteTodo(String todoId) {
         boolean res = todoService.deleteTodo(todoId);
-        return res;
+        return new Result<>(res);
     }
 
     @PutMapping("update")
-    public boolean updateTodo(Todo todo) {
+    public Result<Boolean> updateTodo(Todo todo) {
         boolean res = todoService.updateTodo(todo);
-        return res;
+        return new Result<>(res);
     }
 
     @GetMapping("get")
-    public Todo get(long todoId) {
-        var todo = todoService.findTodoById(todoId);
-        return todo;
-    }
-
-    @GetMapping("getAll")
-    public List<Todo> getAlTodos() {
-        List<Todo> todos = todoService.getAllTodos();
-        return todos;
+    public Result<List<Todo>> get(String userId, HttpServletRequest request) {
+        var token = request.getHeader("Authorization").substring(7);
+        if (userId == null) {
+            userId = JwtUtil.extractClaim(token, new Function<Claims, String>() {
+                @Override
+                public String apply(Claims claims) {
+                    return (String) claims.get("userId"); // 假设自定义声明为 userId
+                }
+            });
+        }
+        var todo = todoService.findTodoByUser(userId);
+        return new Result<>(todo);
     }
 }

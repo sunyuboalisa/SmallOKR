@@ -1,10 +1,10 @@
 package alisa.smallokr.controller;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,10 +12,17 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import alisa.smallokr.POJO.Target;
+
+import com.alisa.Util.JwtUtil;
+import com.alisa.Util.Result;
+import com.alisa.Util.UUIDTool;
+
+import alisa.smallokr.entity.Target;
 import alisa.smallokr.service.TargetService;
-import lombok.Data;
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RequestMapping("api/v1/target/")
 @RestController
@@ -24,56 +31,48 @@ public class TargetController {
     private TargetService targetService;
 
     @PostMapping("add")
-    public ResponseEntity<Boolean> addTarget(@RequestBody Target target) {
+    public Result<Boolean> addTarget(@RequestBody Target target, HttpServletRequest request) {
+        var token = request.getHeader("Authorization").substring(7);
+        var userId = JwtUtil.extractClaim(token, new Function<Claims, String>() {
+            @Override
+            public String apply(Claims claims) {
+                return (String) claims.get("userId"); // 假设自定义声明为 userId
+            }
+        });
+
+        target.setId(UUIDTool.getUUID());
+        target.setUserId(userId);
+        target.setCreTime(LocalDateTime.now());
         boolean res = targetService.addTarget(target);
-        return ResponseEntity.ok(res);
+
+        return new Result<>(res);
     }
 
     @DeleteMapping("delete")
-    public ResponseEntity<Boolean> deleteTarget(long targetId){
-        boolean res=targetService.deleteTarget(targetId);
-        return ResponseEntity.ok(res);
+    public Result<Boolean> deleteTarget(String targetId) {
+        boolean res = targetService.deleteTarget(targetId);
+        return new Result<>(res);
     }
 
     @PutMapping("update")
-    public ResponseEntity<Boolean> updateTarget(Target target){
-        boolean res=targetService.updateTarget(target);
-        return ResponseEntity.ok(res);
+    public Result<Boolean> updateTarget(Target target) {
+        boolean res = targetService.updateTarget(target);
+        return new Result<>(res);
     }
 
     @RequestMapping(value = "get", method = RequestMethod.GET)
-    public ResponseEntity<Target> get(long targetId) {
-        var target=targetService.findTargetById(targetId);
-        return ResponseEntity.ok(target);
-    }
-
-    @GetMapping("getAll")
-    public ResponseEntity<List<Target>> getAll() {
-        List<Target> targets = targetService.findAll();
-        return ResponseEntity.ok(targets);
-    }
-
-    @GetMapping("getAllTargetWithGroup")
-    public List<TargetWithGroup> getAllTargetWithGroup() {
-        List<Target> targets = targetService.findAll();
-
-        List<TargetWithGroup> targetWithGroups = new ArrayList<TargetWithGroup>();
-        for (Target t : targets) {
-            TargetWithGroup targetWithGroup = new TargetWithGroup();
-            targetWithGroup.getData().add(t);
-            targetWithGroups.add(targetWithGroup);
+    public Result<List<Target>> get(String userId, HttpServletRequest request) {
+        var token = request.getHeader("Authorization").substring(7);
+        if (userId == null) {
+            userId = JwtUtil.extractClaim(token, new Function<Claims, String>() {
+                @Override
+                public String apply(Claims claims) {
+                    return (String) claims.get("userId"); // 假设自定义声明为 userId
+                }
+            });
         }
-        return targetWithGroups;
-    }
-}
 
-@Data
-class TargetWithGroup {
-    public TargetWithGroup() {
-        this.title = "";
-        this.data = new ArrayList<Target>();
+        var target = targetService.findTargetByUserId(userId);
+        return new Result<>(target);
     }
-
-    private String title;
-    private List<Target> data;
 }

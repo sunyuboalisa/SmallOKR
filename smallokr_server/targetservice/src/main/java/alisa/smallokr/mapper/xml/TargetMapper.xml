@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="alisa.smallokr.mapper.TargetMapper">
+    <sql id="common">
+        target_id as id,
+        user_id as userId,
+        target_name as name,
+        target_description as description,
+        cre_time as creTime
+    </sql>
+     <select id="findAll" resultType="alisa.smallokr.entity.Target">
+        select <include refid="common"/> from tb_target order by cre_time
+    </select>
+    <select id="findTargetByID" resultType="alisa.smallokr.entity.Target">
+        select <include refid="common"/> from tb_target where target_id = #{id}
+    </select>
+    <select id="findTargetByUser" resultType="alisa.smallokr.entity.Target">
+        select <include refid="common"/> from tb_target where user_id = #{userId}
+    </select>
+
+    <insert id="saveTarget" parameterType="alisa.smallokr.entity.Target">
+        insert into tb_target(target_id,target_name,target_description,user_id,cre_time) values (#{id},#{name},#{description},#{userId},#{creTime})
+    </insert>
+</mapper>

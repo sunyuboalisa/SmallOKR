@@ -10,7 +10,7 @@ spring:
         - id: target-service
           uri: lb://target-service
           predicates:
-            - Path=/api/v1/target/**
+            - Path=/target-service/api/v1/**
         - id: todo-service
           uri: lb://todo-service
           predicates:

@@ -2,8 +2,8 @@ import {Button, StyleSheet, Text, TextInput, View} from 'react-native';
 import React, {useState} from 'react';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import AndDesign from 'react-native-vector-icons/AntDesign';
-import {axiosHelper} from '../util/AxiosHelper';
 import {DateCom} from './DateCom';
+import {TodoService} from '../service/BusiService';
 
 const Select = () => {
   const navigation =
@@ -27,15 +27,14 @@ const AddTodo = () => {
   const [todoName, onChangeTodoName] = useState('');
 
   const onOKBtnPress = () => {
-    axiosHelper
-      .post('api/v1/todo/add', {
-        name: todoName,
-        description: description,
-        beginDate: beginDate,
-        endDate: endDate,
-      })
+    TodoService.AddTodo({
+      name: todoName,
+      description: description,
+      beginDate: beginDate,
+      endDate: endDate,
+    })
       .then(res => {
-        console.log(res.data);
+        console.log('add todo', res.data);
         navigation.goBack();
       })
       .catch(reson => console.log(reson));

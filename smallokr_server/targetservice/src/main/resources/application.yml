@@ -5,3 +5,8 @@ spring:
     password: root
 server:
   port: 9081
+  servlet:
+    context-path: /target-service
+mybatis:
+  mapper-locations: classpath:alisa/smallokr/mapper/xml/*.xml
+   

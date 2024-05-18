@@ -12,6 +12,7 @@
         <module>targetservice</module>
         <module>userservice</module>
         <module>gateway</module>
+        <module>common</module>
     </modules>
     <name>smallokr</name>
     <description>Smallokr server</description>

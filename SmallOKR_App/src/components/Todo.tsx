@@ -1,16 +1,15 @@
 import {View, Text, Modal} from 'react-native';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {StyleSheet} from 'react-native';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import {
-  PlanContext,
-  PlanDispatchContext,
-} from '../state/PlanContext';
+  NavigationProp,
+  useFocusEffect,
+  useNavigation,
+} from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import {PlanContext, PlanDispatchContext} from '../state/PlanContext';
 import {TimeLine} from './TimeLine';
-import {axiosHelper} from '../util/AxiosHelper';
-import {Todo} from '../model/OKRModel';
-
+import {TodoService} from '../service/BusiService';
 
 const PlanHeaderRight = () => {
   const navigation =
@@ -27,16 +26,17 @@ const Plan = () => {
   const planContext = useContext(PlanContext);
   const dispatch = useContext(PlanDispatchContext);
 
-  useEffect(() => {
-    axiosHelper
-      .get<Todo[]>('api/v1/todo/getAll')
-      .then(x => {
-        let temp = x.data;
-        dispatch({type: 'Load', newTodos: temp});
-        console.log(temp);
-      })
-      .catch(e => console.log(e));
-  }, [dispatch]);
+  useFocusEffect(
+    React.useCallback(() => {
+      TodoService.getTodos()
+        .then(x => {
+          let temp = x.data.data;
+          dispatch({type: 'Load', newTodos: temp});
+          console.log('user todos:', temp);
+        })
+        .catch(e => console.log(e));
+    }, [dispatch]),
+  );
 
   return (
     <View style={styles.container}>

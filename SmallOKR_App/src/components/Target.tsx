@@ -1,12 +1,16 @@
 import {SafeAreaView, StyleSheet} from 'react-native';
-import React, {useContext, useEffect} from 'react';
+import React, {useContext} from 'react';
 import {FlatList} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {
+  NavigationProp,
+  useFocusEffect,
+  useNavigation,
+} from '@react-navigation/native';
 import {TargetContext, TargetDispatchContext} from '../state/TargetContext';
 import {Card} from './Card';
 import {getColor} from '../theme';
-import {axiosHelper} from '../util/AxiosHelper';
+import {TargetService} from '../service/BusiService';
 
 const TargetHeaderRight = () => {
   const navigation =
@@ -21,21 +25,25 @@ const TargetHeaderRight = () => {
 const Target = function () {
   const targetContext = useContext(TargetContext);
   const dispatch = useContext(TargetDispatchContext);
-  useEffect(() => {
-    axiosHelper.get('api/v1/target/getAll').then(res => {
-      let data = res.data as any[];
-      const newState = data.map(value => {
-        let entry = {
-          id: value.id,
-          name: value.name,
-          description: value.description,
-        };
-        return entry;
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // 在页面重新聚焦时执行数据刷新操作
+      TargetService.getTargets().then(res => {
+        console.log('user targets:', res.data.data);
+        let data = res.data.data as any[];
+        const newState = data.map(value => {
+          let entry = {
+            id: value.id,
+            name: value.name,
+            description: value.description,
+          };
+          return entry;
+        });
+        dispatch({type: 'Load', targets: newState});
       });
-      console.log(newState);
-      dispatch({type: 'Load', targets: newState});
-    });
-  }, [dispatch]);
+    }, [dispatch]),
+  );
 
   return (
     <SafeAreaView style={styles.container}>

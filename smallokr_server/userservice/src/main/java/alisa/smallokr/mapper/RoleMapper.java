@@ -1,7 +1,7 @@
 package alisa.smallokr.mapper;
 
-import alisa.smallokr.POJO.Role;
+import alisa.smallokr.entity.Role;
 
 public interface RoleMapper {
-    Role findRoleById(long id);
+    Role findRoleById(String id);
 }

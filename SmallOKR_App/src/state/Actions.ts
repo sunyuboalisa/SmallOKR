@@ -1,4 +1,5 @@
 import {ITarget, Todo} from '../model/OKRModel';
+import {User} from '../model/User';
 
 export type TodoAction =
   | {type: 'Add'; newTodo: Todo}
@@ -8,3 +9,4 @@ export type TargetAction =
   | {type: 'Update'; newTarget: ITarget; group: string}
   | {type: 'Delete'; oldTarget: ITarget; group: string}
   | {type: 'Load'; targets: ITarget[]};
+export type UserAction = {type: 'Login'; user: User} | {type: 'Logout'};

@@ -8,13 +8,15 @@ import {
 } from 'react-native';
 import React, {useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
-import {axiosHelper} from '../util/AxiosHelper';
+import {TargetService} from '../service/BusiService';
 
 const AddTarget = () => {
   const navigation = useNavigation();
   const handleOKBtnPress = () => {
-    axiosHelper
-      .post('api/v1/target/add', {name: targetName, description: description})
+    TargetService.addTarget({
+      name: targetName,
+      description: description
+    })
       .then(res => {
         navigation.goBack();
       })

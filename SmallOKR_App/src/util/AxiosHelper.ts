@@ -1,11 +1,12 @@
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
 
 class AxiosHelper {
+  private token: string;
   private instance: AxiosInstance;
 
   constructor(serverIP: string) {
     this.instance = axios.create();
-
+    this.token = '';
     // 设置默认的服务器 IP
     this.setServerIP(serverIP);
 
@@ -13,6 +14,9 @@ class AxiosHelper {
     this.instance.interceptors.request.use(
       config => {
         console.log(`发送请求: ${config.method?.toUpperCase()} ${config.url}`);
+        if (this.token !== '') {
+          config.headers.Authorization = 'Bearer ' + this.token;
+        }
         return config;
       },
       error => {
@@ -34,8 +38,12 @@ class AxiosHelper {
     );
   }
 
-  public setServerIP(serverIP: string): void {
-    this.instance.defaults.baseURL = `http://${serverIP}`;
+  public setServerIP(domain: string): void {
+    this.instance.defaults.baseURL = `http://${domain}`;
+  }
+
+  public setToken(token: string) {
+    this.token = token;
   }
 
   public get<T = any>(url: string, params?: any): Promise<AxiosResponse<T>> {
@@ -57,4 +65,4 @@ class AxiosHelper {
   // 其他 HTTP 方法的封装方法类似，如 put、delete 等
 }
 
-export const axiosHelper = new AxiosHelper('127.0.0.1:8080');
+export const axiosHelper = new AxiosHelper('localhost:8080');

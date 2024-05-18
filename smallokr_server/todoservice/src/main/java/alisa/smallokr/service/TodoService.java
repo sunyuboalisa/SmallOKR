@@ -2,16 +2,14 @@ package alisa.smallokr.service;
 
 import java.util.List;
 
-import alisa.smallokr.POJO.Todo;
+import alisa.smallokr.entity.Todo;
 
 public interface TodoService {
-    boolean addTodo(Todo todo);
+    boolean saveTodo(Todo todo);
 
-    boolean deleteTodo(long todoId);
+    boolean deleteTodo(String todoId);
 
     boolean updateTodo(Todo todo);
 
-    Todo findTodoById(long todoId);
-
-    List<Todo> getAllTodos();
+    List<Todo> findTodoByUser(String userId);
 }

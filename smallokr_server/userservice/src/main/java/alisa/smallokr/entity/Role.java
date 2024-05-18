@@ -1,10 +1,10 @@
-package alisa.smallokr.POJO;
+package alisa.smallokr.entity;
 
 import lombok.Data;
 
 @Data
 public class Role {
-    private long id;
+    private long String;
     private String name;
     private String description;
 }

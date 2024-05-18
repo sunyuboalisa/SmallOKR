@@ -1,10 +1,10 @@
-package alisa.smallokr.POJO;
+package alisa.smallokr.entity;
 
 import lombok.Data;
 
 @Data
 public class User {
-    private long id;
+    private String id;
     private String username;
     private String password;
 }

@@ -2,16 +2,16 @@ package alisa.smallokr.service;
 
 import java.util.List;
 
-import alisa.smallokr.POJO.Result;
+import alisa.smallokr.entity.Result;
 
 public interface ResultService {
     boolean addResult(Result target);
 
-    boolean deleteResult(long resultId);
+    boolean deleteResult(String resultId);
 
     boolean updateResult(Result result);
 
-    Result findResultById(long resultId);
+    Result findResultById(String resultId);
 
-    List<Result> findAll();
+    List<Result> findAll(String targetId);
 }

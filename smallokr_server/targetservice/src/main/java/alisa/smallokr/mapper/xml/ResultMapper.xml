@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="alisa.smallokr.mapper.ResultMapper">
+    <sql id="common">
+        result_id as id,
+        result_name as name,
+        result_value as value,
+        target_id as targetId,
+        cre_time as creTime
+    </sql>
+    <select id="findResultByTargetID" resultType="alisa.smallokr.entity.Result">
+        select <include refid="common"/> from tb_result where target_id = #{targetId} order by cre_time
+    </select>
+    <insert id="saveResult" parameterType="alisa.smallokr.entity.Result">
+        insert into tb_result(result_id,result_name,result_value,target_id,cre_time) values (#{id},#{name},#{value},#{targetId},#{creTime})
+    </insert>
+</mapper>
