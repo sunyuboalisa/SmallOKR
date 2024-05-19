@@ -6,13 +6,11 @@ import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alisa.Util.JwtUtil;
@@ -30,7 +28,7 @@ public class TargetController {
     @Autowired
     private TargetService targetService;
 
-    @PostMapping("add")
+    @PostMapping("save")
     public Result<Boolean> addTarget(@RequestBody Target target, HttpServletRequest request) {
         var token = request.getHeader("Authorization").substring(7);
         var userId = JwtUtil.extractClaim(token, new Function<Claims, String>() {
@@ -40,9 +38,12 @@ public class TargetController {
             }
         });
 
-        target.setId(UUIDTool.getUUID());
+        if (target.getId() != null && !target.getId().equals("")) {
+        } else {
+            target.setId(UUIDTool.getUUID());
+            target.setCreTime(LocalDateTime.now());
+        }
         target.setUserId(userId);
-        target.setCreTime(LocalDateTime.now());
         boolean res = targetService.addTarget(target);
 
         return new Result<>(res);

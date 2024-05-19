@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,23 +25,29 @@ public class ResultController {
     @Autowired
     private ResultService resultService;
 
-    @PostMapping("add")
-    public com.alisa.Util.Result<Boolean> addResult(@RequestBody Result result) {
-        result.setId(UUIDTool.getUUID());
-        result.setCreTime(LocalDateTime.now());
-        boolean res = resultService.addResult(result);
+    @PostMapping("save")
+    public com.alisa.Util.Result<Boolean> addResult(@RequestBody List<Result> results) {
+        boolean res = true;
+
+        if (results.size() > 0) {
+            results.forEach(x -> {
+                if (x.getId() != null && !x.getId().equals("")) {
+                } else {
+                    x.setId(UUIDTool.getUUID());
+                }
+            });
+            long count = resultService.saveOrUpdateResult(results);
+            if (results.size() != count) {
+                res = false;
+            }
+        }
+
         return new com.alisa.Util.Result<Boolean>(res);
     }
 
     @DeleteMapping("delete")
     public com.alisa.Util.Result<Boolean> deleteResult(@RequestParam String resultId) {
         boolean res = resultService.deleteResult(resultId);
-        return new com.alisa.Util.Result<Boolean>(res);
-    }
-
-    @PutMapping("update")
-    public com.alisa.Util.Result<Boolean> updateResult(Result result) {
-        boolean res = resultService.updateResult(result);
         return new com.alisa.Util.Result<Boolean>(res);
     }
 

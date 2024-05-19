@@ -11,13 +11,16 @@ import {TargetContext, TargetDispatchContext} from '../state/TargetContext';
 import {Card} from './Card';
 import {getColor} from '../theme';
 import {TargetService} from '../service/BusiService';
+import {ITarget} from '../model/OKRModel';
 
 const TargetHeaderRight = () => {
   const navigation =
     useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
 
   const onAddBtnPress = () => {
-    navigation.navigate('AddTarget');
+    navigation.navigate('AddTarget', {
+      target: {description: '', name: '', id: ''},
+    });
   };
   return <Ionicons name="add" style={styles.addBtn} onPress={onAddBtnPress} />;
 };
@@ -25,23 +28,30 @@ const TargetHeaderRight = () => {
 const Target = function () {
   const targetContext = useContext(TargetContext);
   const dispatch = useContext(TargetDispatchContext);
+  const navigation =
+    useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
 
+  const handlePress = (target: ITarget) => {
+    console.log('选择目标', target);
+    navigation.navigate('AddTarget', {target: target});
+  };
   useFocusEffect(
     React.useCallback(() => {
-      // 在页面重新聚焦时执行数据刷新操作
-      TargetService.getTargets().then(res => {
-        console.log('user targets:', res.data.data);
-        let data = res.data.data as any[];
-        const newState = data.map(value => {
-          let entry = {
-            id: value.id,
-            name: value.name,
-            description: value.description,
-          };
-          return entry;
-        });
-        dispatch({type: 'Load', targets: newState});
-      });
+      TargetService.getTargets()
+        .then(res => {
+          console.log('user targets:', res.data.data);
+          let data = res.data.data;
+          const newState = data.map(value => {
+            let entry = {
+              id: value.id,
+              name: value.name,
+              description: value.description,
+            };
+            return entry;
+          });
+          dispatch({type: 'Load', targets: newState});
+        })
+        .catch(e => console.log('targets error：', e));
     }, [dispatch]),
   );
 
@@ -55,10 +65,11 @@ const Target = function () {
               color={getColor(index)}
               description={item.description}
               title={item.name}
+              handlePress={() => handlePress(item)}
             />
           );
         }}
-        data={targetContext}
+        data={targetContext.targets}
       />
     </SafeAreaView>
   );

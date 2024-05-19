@@ -23,9 +23,9 @@ const DateCom = ({date, onConfirm}: DateComProps) => {
         modal
         open={open}
         date={date}
-        onConfirm={date => {
+        onConfirm={e => {
           setOpen(false);
-          onConfirm(date);
+          onConfirm(e);
         }}
         onCancel={() => {
           setOpen(false);

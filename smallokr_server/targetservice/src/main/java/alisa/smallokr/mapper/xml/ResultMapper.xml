@@ -15,4 +15,18 @@
     <insert id="saveResult" parameterType="alisa.smallokr.entity.Result">
         insert into tb_result(result_id,result_name,result_value,target_id,cre_time) values (#{id},#{name},#{value},#{targetId},#{creTime})
     </insert>
+    <insert id="saveOrUpdateResult" parameterType="java.util.List">
+       INSERT INTO tb_result (result_id, result_name, result_value, target_id, cre_time)
+        VALUES 
+        <foreach collection="list" item="result" separator=",">
+            (#{result.id}, #{result.name}, #{result.value}, #{result.targetId}, #{result.creTime})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        result_name = VALUES(result_name),
+        result_value = VALUES(result_value),
+        target_id = VALUES(target_id),
+        cre_time = VALUES(cre_time);
+    </insert>
+
+
 </mapper>

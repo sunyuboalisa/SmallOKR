@@ -5,7 +5,9 @@ import java.util.List;
 import alisa.smallokr.entity.Result;
 
 public interface ResultService {
-    boolean addResult(Result target);
+    boolean addResult(Result result);
+
+    long saveOrUpdateResult(List<Result> results);
 
     boolean deleteResult(String resultId);
 

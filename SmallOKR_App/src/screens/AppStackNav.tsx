@@ -2,15 +2,16 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {AppTabNav} from './AppTabNav';
 import LoginScreen from './LoginScreen';
 import React, {useContext, useEffect} from 'react';
-import {useNavigation} from '@react-navigation/native';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {UserContext} from '../state/UserContext';
 import {UserService} from '../service/BusiService';
 
 // 创建堆栈导航器
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<MyReactNavigation.ParamList>();
 export const AppStackNav = () => {
   const userContext = useContext(UserContext);
-  const navigation = useNavigation();
+  const navigation =
+    useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
   useEffect(() => {
     UserService.getToken().then(() => {
       if (userContext?.userInfo) {

@@ -1,19 +1,22 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 interface CardProps {
   title: string;
   description: string;
   color: string;
+  handlePress: () => void;
 }
-const Card = ({title, description, color}: CardProps) => {
+const Card = ({title, description, color, handlePress}: CardProps) => {
   return (
-    <View style={{...styles.container, backgroundColor: color}}>
+    <TouchableOpacity
+      style={{...styles.container, backgroundColor: color}}
+      onPress={handlePress}>
       <View style={styles.circle} />
       <View style={{justifyContent: 'center', margin: 5}}>
         <Text style={styles.titleFont}>{title}</Text>
         <Text style={styles.descriptionFont}>{description}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

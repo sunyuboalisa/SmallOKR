@@ -1,13 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {axiosHelper} from '../util/AxiosHelper';
 import {User} from '../model/User';
+import { ITarget } from '../model/OKRModel';
 
-export interface TargetFilter {
+
+interface ResultFilter {
+  targetId: string;
   name: string;
-  description: string;
+  value: string;
 }
-
-interface ResultFilter {}
 
 const UserService = {
   login: (param: {username: String; password: String}) => {
@@ -41,17 +42,17 @@ const TargetService = {
   getTargets: () => {
     return axiosHelper.get('target-service/api/v1/target/get');
   },
-  addTarget: (target: TargetFilter) => {
-    return axiosHelper.post('target-service/api/v1/target/add', target);
+  addTarget: (target: ITarget) => {
+    return axiosHelper.post('target-service/api/v1/target/save', target);
   },
   deleteTarget: (targetId: String) => {
     return axiosHelper.post('target-service/api/v1/target/delete', targetId);
   },
-  getResults: (targetId: String) => {
-    return axiosHelper.get('target-service/api/v1/result/getAll', targetId);
+  getResults: (param: any) => {
+    return axiosHelper.get('target-service/api/v1/result/getAll', param);
   },
-  addResult: (result: ResultFilter) => {
-    return axiosHelper.post('target-service/api/v1/result/add', result);
+  addResult: (results: ResultFilter[]) => {
+    return axiosHelper.post('target-service/api/v1/result/save', results);
   },
   deleteResult: (targetId: String) => {
     return axiosHelper.post('target-service/api/v1/result/delete', targetId);

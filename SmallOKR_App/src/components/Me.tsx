@@ -22,7 +22,7 @@ const MenuItem = ({title, handlePress}: MenuItemProps) => {
 
 const Me = () => {
   const dispatch = useContext(UserDispatchContext);
-  const handleLogout = e => {
+  const handleLogout = () => {
     dispatch({type: 'Logout'});
   };
   return (

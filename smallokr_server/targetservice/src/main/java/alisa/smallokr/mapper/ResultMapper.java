@@ -8,6 +8,8 @@ import alisa.smallokr.entity.Result;
 public interface ResultMapper {
         boolean saveResult(Result result);
 
+        long saveOrUpdateResult(List<Result> result);
+
         boolean deleteResult(String resultId);
 
         boolean updateResult(Result result);

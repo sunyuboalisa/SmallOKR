@@ -1,14 +1,14 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import AddTarget from '../components/AddTarget';
 import {Target, TargetHeaderRight} from '../components/Target';
-import {TargetContextProvide} from '../state/TargetContext';
 import React from 'react';
+import {TargetContextProvider} from '../state/TargetContext';
 
 const TargetStack = createNativeStackNavigator();
 
 const TargetStackScreen = () => {
   return (
-    <TargetContextProvide>
+    <TargetContextProvider>
       <TargetStack.Navigator>
         <TargetStack.Screen
           name="Target"
@@ -17,9 +17,13 @@ const TargetStackScreen = () => {
             headerRight: () => <TargetHeaderRight />,
           }}
         />
-        <TargetStack.Screen name="AddTarget" component={AddTarget} />
+        <TargetStack.Screen
+          name="AddTarget"
+          component={AddTarget}
+          initialParams={{targetId:''}}
+        />
       </TargetStack.Navigator>
-    </TargetContextProvide>
+    </TargetContextProvider>
   );
 };
 

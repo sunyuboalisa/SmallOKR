@@ -7,7 +7,7 @@ import {
   useNavigation,
 } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {PlanContext, PlanDispatchContext} from '../state/PlanContext';
+import {TodoContext, TodoDispatchContext} from '../state/TodoContext';
 import {TimeLine} from './TimeLine';
 import {TodoService} from '../service/BusiService';
 
@@ -16,15 +16,15 @@ const PlanHeaderRight = () => {
     useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
 
   const onAddBtnPress = () => {
-    navigation.navigate('AddPlan');
+    navigation.navigate('AddTodo');
   };
   return <Ionicons name="add" onPress={onAddBtnPress} />;
 };
 
 const Plan = () => {
   const [isVisible, setVisible] = useState(false);
-  const planContext = useContext(PlanContext);
-  const dispatch = useContext(PlanDispatchContext);
+  const planContext = useContext(TodoContext);
+  const dispatch = useContext(TodoDispatchContext);
 
   useFocusEffect(
     React.useCallback(() => {

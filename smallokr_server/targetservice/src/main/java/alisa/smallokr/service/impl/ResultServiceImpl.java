@@ -19,6 +19,11 @@ public class ResultServiceImpl implements ResultService {
     }
 
     @Override
+    public long saveOrUpdateResult(List<Result> results) {
+        return resultMapper.saveOrUpdateResult(results);
+    }
+
+    @Override
     public boolean deleteResult(String resultId) {
         return resultMapper.deleteResult(resultId);
     }
@@ -39,6 +44,5 @@ public class ResultServiceImpl implements ResultService {
     public List<Result> findAll(String targetId) {
         return resultMapper.findResultByTargetID(targetId);
     }
-
 
 }

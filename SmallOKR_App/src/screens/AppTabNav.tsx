@@ -2,7 +2,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import DashboardStackScreen from './DashboardStackScreen';
 import TargetStackScreen from './TargetStackScreen';
-import PlanStackScreen from './PlanStackScreen';
+import TodoStackScreen from './TodoStackScreen';
 import MeStackScreen from './MeStackScreen';
 import React from 'react';
 
@@ -18,7 +18,7 @@ export const AppTabNav = () => {
             iconName = 'home';
           } else if (route.name === 'Target') {
             iconName = 'man';
-          } else if (route.name === 'Plan') {
+          } else if (route.name === 'Todo') {
             iconName = 'chatbox';
           } else {
             iconName = 'settings';
@@ -31,7 +31,7 @@ export const AppTabNav = () => {
       })}>
       <Tab.Screen name="Dashboard" component={DashboardStackScreen} />
       <Tab.Screen name="Target" component={TargetStackScreen} />
-      <Tab.Screen name="Plan" component={PlanStackScreen} />
+      <Tab.Screen name="Todo" component={TodoStackScreen} />
       <Tab.Screen name="Me" component={MeStackScreen} />
     </Tab.Navigator>
   );

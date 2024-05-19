@@ -1,46 +1,39 @@
 import React, {createContext, Dispatch, useReducer} from 'react';
-import {ITarget} from '../model/OKRModel';
+import {IResult, ITarget} from '../model/OKRModel';
 import {TargetAction} from './Actions';
 
-let data = [
-  {
-    id: 1,
-    name: 'Spring 全家桶',
-    description: 'Spring Boot，Spring Cloud',
-  },
-  {
-    id: 2,
-    name: '数据库',
-    description: 'MySQL',
-  },
-  {
-    id: 3,
-    name: '中间件',
-    description: 'Redis、Kafka、ElasticSearch',
-  },
-];
+interface TargetState {
+  targets: ITarget[];
+  results: IResult[];
+}
 
-type TargetState = ITarget[];
-
-const initialTargetState = data;
-export const TargetContext = createContext<TargetState>(initialTargetState);
-export const TargetDispatchContext = createContext(
-  {} as Dispatch<TargetAction>,
-);
-
-const TargetReducer = (state: TargetState, action: TargetAction) => {
-  switch (action.type) {
-    case 'Add':
-      return [...state,action.newTarget];
-    case 'Load':
-        return action.targets;
-    default:
-      break;
-  }
-
-  return state;
+const initialTargetState: TargetState = {
+  targets: [],
+  results: [],
 };
-export function TargetContextProvide(props: {children: React.ReactNode}) {
+const initialDispatch: Dispatch<TargetAction> = (action: TargetAction) => {
+  console.log(action);
+};
+
+const TargetContext = createContext(initialTargetState);
+const TargetDispatchContext = createContext(initialDispatch);
+
+const TargetContextProvider = (props: {children: React.ReactNode}) => {
+  const TargetReducer = (state: TargetState, action: TargetAction) => {
+    switch (action.type) {
+      case 'Add':
+        return {...state, targets: [...state.targets, action.newTarget]};
+      case 'Load':
+        return {...state, targets: action.targets};
+      case 'AddResult':
+        return {...state, results: [...state.results, action.newResult]};
+      case 'LoadResult':
+        return {...state, results: action.results};
+    }
+
+    return state;
+  };
+
   const [state, dispatch] = useReducer(TargetReducer, initialTargetState);
 
   return (
@@ -50,4 +43,6 @@ export function TargetContextProvide(props: {children: React.ReactNode}) {
       </TargetDispatchContext.Provider>
     </TargetContext.Provider>
   );
-}
+};
+
+export {TargetContext, TargetDispatchContext, TargetContextProvider};

@@ -15,9 +15,17 @@ class GroupTarget {
 }
 
 export interface ITarget {
-  id:number
+  id: string;
   name: string;
   description: string;
+}
+
+export interface IResult {
+  id: string;
+  targetId: string;
+  name: string;
+  value: string;
+  creTime: Date;
 }
 
 class Plan {
