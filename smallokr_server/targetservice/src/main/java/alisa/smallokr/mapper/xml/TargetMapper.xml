@@ -26,4 +26,10 @@
         target_name = VALUES(target_name),
         target_description = VALUES(target_description)
     </insert>
+
+    <!-- deleteTarget --> 
+
+    <delete id="deleteTarget">
+        delete from tb_target where target_id=#{targetId}
+    </delete>
 </mapper>

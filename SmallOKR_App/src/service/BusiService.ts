@@ -46,7 +46,7 @@ const TargetService = {
     return axiosHelper.post('target-service/api/v1/target/save', target);
   },
   deleteTarget: (targetId: String) => {
-    return axiosHelper.post('target-service/api/v1/target/delete', targetId);
+    return axiosHelper.delete('target-service/api/v1/target/delete', targetId);
   },
   getResults: (param: any) => {
     return axiosHelper.get('target-service/api/v1/result/getAll', param);

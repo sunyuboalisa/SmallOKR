@@ -1,22 +1,34 @@
-import {Animated, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 interface CardProps {
   title: string;
   description: string;
   color: string;
   handlePress: () => void;
+  handleLongPress: () => void;
 }
-const Card = ({title, description, color, handlePress}: CardProps) => {
+const Card = ({
+  title,
+  description,
+  color,
+  handlePress,
+  handleLongPress,
+}: CardProps) => {
   return (
     <TouchableOpacity
-      onPress={handlePress}>
-      <Animated.View style={{...styles.container, backgroundColor: color}}>
-        <View style={styles.circle} />
-        <View style={{justifyContent: 'center', margin: 5}}>
-          <Text style={styles.titleFont}>{title}</Text>
-          <Text style={styles.descriptionFont}>{description}</Text>
-        </View>
-      </Animated.View>
+      onPress={() => {
+        handlePress();
+      }}
+      onLongPress={() => {
+        handleLongPress();
+      }}
+      delayLongPress={500}
+      style={{...styles.container, backgroundColor: color}}>
+      <View style={styles.circle} />
+      <View style={{justifyContent: 'center', margin: 5}}>
+        <Text style={styles.titleFont}>{title}</Text>
+        <Text style={styles.descriptionFont}>{description}</Text>
+      </View>
     </TouchableOpacity>
   );
 };

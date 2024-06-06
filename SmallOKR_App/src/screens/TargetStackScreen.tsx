@@ -12,16 +12,16 @@ const TargetStackScreen = () => {
       <TargetStack.Navigator>
         <TargetStack.Screen
           name="TargetStack"
-          component={Target}
           options={{
             headerRight: () => <TargetHeaderRight />,
             title: 'Target',
           }}
+          component={Target}
         />
         <TargetStack.Screen
           name="AddTarget"
-          component={AddTarget}
           initialParams={{targetId: ''}}
+          component={AddTarget}
         />
       </TargetStack.Navigator>
     </TargetContextProvider>

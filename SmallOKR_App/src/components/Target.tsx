@@ -1,5 +1,5 @@
-import {SafeAreaView, StyleSheet} from 'react-native';
-import React, {useContext} from 'react';
+import {Modal, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useContext, useState} from 'react';
 import {FlatList} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {
@@ -25,16 +25,38 @@ const TargetHeaderRight = () => {
   return <Ionicons name="add" style={styles.addBtn} onPress={onAddBtnPress} />;
 };
 
-const Target = function () {
+const Target = () => {
+  const [modalVisible, setModalVisible] = useState(false);
   const targetContext = useContext(TargetContext);
   const dispatch = useContext(TargetDispatchContext);
   const navigation =
     useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
-
+  const [selectedTarget, setSelectedTarget] = useState<ITarget>();
+  const closeModal = () => {
+    setModalVisible(false);
+  };
   const handlePress = (target: ITarget) => {
-    console.log('选择目标', target);
+    console.log('Press:', target);
     navigation.navigate('AddTarget', {target: target});
   };
+  const handleLongPress = (target: ITarget) => {
+    console.log('LongPress');
+    setSelectedTarget(target);
+    setModalVisible(true);
+  };
+  const handleDelete = () => {
+    console.log('删除目标：', selectedTarget);
+    if (selectedTarget) {
+      TargetService.deleteTarget(selectedTarget.id)
+        .then(res => {
+          console.log(res);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+  };
+
   useFocusEffect(
     React.useCallback(() => {
       TargetService.getTargets()
@@ -58,7 +80,7 @@ const Target = function () {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <FlatList
         keyExtractor={(item, index) => item.name + index}
         renderItem={({item, index}) => {
@@ -68,12 +90,31 @@ const Target = function () {
               description={item.description}
               title={item.name}
               handlePress={() => handlePress(item)}
+              handleLongPress={() => handleLongPress(item)}
             />
           );
         }}
         data={targetContext.targets}
       />
-    </SafeAreaView>
+      <Modal
+        transparent={true}
+        visible={modalVisible}
+        animationType="slide"
+        onRequestClose={closeModal}>
+        <View style={styles.modalMask}>
+          <View style={styles.modalContent}>
+            <TouchableOpacity
+              onPress={() => handleDelete()}
+              style={styles.modalBtn}>
+              <Text style={styles.modalSize}>删除</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={closeModal} style={styles.modalBtn}>
+              <Text style={styles.modalSize}>取消</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </View>
   );
 };
 
@@ -100,6 +141,26 @@ const styles = StyleSheet.create({
     fontSize: 25,
     color: '#00cc00',
     textAlign: 'center',
+  },
+  modalMask: {
+    flex: 1,
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0,0.6)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    flexDirection: 'column',
+    marginBottom: 100,
+  },
+  modalSize: {
+    fontSize: 24,
+  },
+  modalBtn: {
+    minWidth: 300,
+    marginBottom: 10,
+    borderRadius: 5,
+    backgroundColor: 'gray',
+    alignItems: 'center',
   },
 });
 

@@ -59,9 +59,21 @@ class AxiosHelper {
     data?: any,
     config?: AxiosRequestConfig,
   ): Promise<AxiosResponse<T>> {
-    return this.instance.post<T>(url, data, config);
+    return this.instance.post<T>(url, data, {
+      ...config,
+      headers: {'Content-Type': 'application/json'},
+    });
   }
 
+  public delete<T = any>(
+    url: string,
+    targetId?: any,
+  ): Promise<AxiosResponse<T>> {
+    return this.instance.delete<T>(url, {
+      headers: {'Content-Type': 'application/json'},
+      params: {targetId: targetId},
+    });
+  }
   // 其他 HTTP 方法的封装方法类似，如 put、delete 等
 }
 
