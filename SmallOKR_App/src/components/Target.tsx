@@ -41,14 +41,16 @@ const Target = function () {
         .then(res => {
           console.log('user targets:', res.data.data);
           let data = res.data.data;
-          const newState = data.map(value => {
-            let entry = {
-              id: value.id,
-              name: value.name,
-              description: value.description,
-            };
-            return entry;
-          });
+          const newState = data.map(
+            (value: {id: any; name: any; description: any}) => {
+              let entry = {
+                id: value.id,
+                name: value.name,
+                description: value.description,
+              };
+              return entry;
+            },
+          );
           dispatch({type: 'Load', targets: newState});
         })
         .catch(e => console.log('targets error：', e));

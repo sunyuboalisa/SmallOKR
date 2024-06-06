@@ -43,7 +43,7 @@ export const LoginScreen = ({}) => {
       <TextInput
         autoCapitalize="none"
         style={styles.input}
-        placeholder="密码"
+        placeholder="1 密码192.168.31.82"
         onChangeText={text => setPassword(text)}
         value={password}
         secureTextEntry={true}

@@ -104,6 +104,9 @@ const AddTarget = () => {
 };
 
 const styles = StyleSheet.create({
+  page: {
+    backgroundColor: 'white',
+  },
   input: {
     height: 40,
     margin: 12,

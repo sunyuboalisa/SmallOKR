@@ -8,7 +8,7 @@ const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
  */
 const config = {
   server: {
-    port: 9081, // 指定你想要的端口号
+    port: 8081, // 指定你想要的端口号
   },
 };
 

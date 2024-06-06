@@ -65,4 +65,4 @@ class AxiosHelper {
   // 其他 HTTP 方法的封装方法类似，如 put、delete 等
 }
 
-export const axiosHelper = new AxiosHelper('localhost:8080');
+export const axiosHelper = new AxiosHelper('192.168.31.134:8080');

@@ -12,6 +12,7 @@ export const AppStackNav = () => {
   const userContext = useContext(UserContext);
   const navigation =
     useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
+
   useEffect(() => {
     UserService.getToken().then(() => {
       if (userContext?.userInfo) {

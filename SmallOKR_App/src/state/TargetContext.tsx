@@ -1,7 +1,7 @@
 import React, {createContext, Dispatch, useReducer} from 'react';
 import {IResult, ITarget} from '../model/OKRModel';
 import {TargetAction} from './Actions';
-
+ 
 interface TargetState {
   targets: ITarget[];
   results: IResult[];
@@ -11,7 +11,7 @@ const initialTargetState: TargetState = {
   targets: [],
   results: [],
 };
-const initialDispatch: Dispatch<TargetAction> = (action: TargetAction) => {
+const initialDispatch:Dispatch<TargetAction> = (action: TargetAction) => {
   console.log(action);
 };
 
