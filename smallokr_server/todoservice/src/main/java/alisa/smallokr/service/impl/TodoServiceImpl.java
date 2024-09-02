@@ -8,7 +8,7 @@ import alisa.smallokr.entity.Todo;
 import alisa.smallokr.mapper.TodoMapper;
 import alisa.smallokr.service.TodoService;
 
-@Service()
+@Service
 public class TodoServiceImpl implements TodoService {
     @Autowired
     private TodoMapper todoMapper;

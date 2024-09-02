@@ -1,12 +1,8 @@
 import {Modal, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {FlatList} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {
-  NavigationProp,
-  useFocusEffect,
-  useNavigation,
-} from '@react-navigation/native';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {TargetContext, TargetDispatchContext} from '../state/TargetContext';
 import {Card} from './Card';
 import {getColor} from '../theme';
@@ -27,6 +23,7 @@ const TargetHeaderRight = () => {
 
 const Target = () => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [reloadData, setReloadData] = useState(true);
   const targetContext = useContext(TargetContext);
   const dispatch = useContext(TargetDispatchContext);
   const navigation =
@@ -36,11 +33,9 @@ const Target = () => {
     setModalVisible(false);
   };
   const handlePress = (target: ITarget) => {
-    console.log('Press:', target);
     navigation.navigate('AddTarget', {target: target});
   };
   const handleLongPress = (target: ITarget) => {
-    console.log('LongPress');
     setSelectedTarget(target);
     setModalVisible(true);
   };
@@ -50,34 +45,49 @@ const Target = () => {
       TargetService.deleteTarget(selectedTarget.id)
         .then(res => {
           console.log(res);
+          setReloadData(true);
         })
         .catch(err => {
           console.log(err);
         });
     }
+    TargetService.getTargets()
+      .then(res => {
+        let data = res.data.data;
+        const newState = data.map(
+          (value: {id: any; name: any; description: any}) => {
+            let entry = {
+              id: value.id,
+              name: value.name,
+              description: value.description,
+            };
+            return entry;
+          },
+        );
+        dispatch({type: 'Load', targets: newState});
+      })
+      .catch(e => console.log('targets error：', e));
+    setModalVisible(false);
   };
 
-  useFocusEffect(
-    React.useCallback(() => {
-      TargetService.getTargets()
-        .then(res => {
-          console.log('user targets:', res.data.data);
-          let data = res.data.data;
-          const newState = data.map(
-            (value: {id: any; name: any; description: any}) => {
-              let entry = {
-                id: value.id,
-                name: value.name,
-                description: value.description,
-              };
-              return entry;
-            },
-          );
-          dispatch({type: 'Load', targets: newState});
-        })
-        .catch(e => console.log('targets error：', e));
-    }, [dispatch]),
-  );
+  useEffect(() => {
+    TargetService.getTargets()
+      .then(res => {
+        let data = res.data.data;
+        const newState = data.map(
+          (value: {id: any; name: any; description: any}) => {
+            let entry = {
+              id: value.id,
+              name: value.name,
+              description: value.description,
+            };
+            return entry;
+          },
+        );
+        dispatch({type: 'Load', targets: newState});
+      })
+      .catch(e => console.log('targets error：', e));
+  }, [dispatch, targetContext.reload]);
 
   return (
     <View style={styles.container}>

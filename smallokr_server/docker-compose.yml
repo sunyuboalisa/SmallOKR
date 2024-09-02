@@ -1,0 +1,37 @@
+version: '3'
+services:
+  gateway:
+    image: azul/zulu-openjdk-alpine:17
+    command: java -jar /app/gateway.jar
+    volumes:
+      - ./gateway-1.0-SNAPSHOT.jar:/app/gateway.jar
+    networks:
+      - my_network
+
+  targetservice:
+    image: azul/zulu-openjdk-alpine:17
+    command: java -jar /app/target.jar
+    volumes:
+      - ./targetservice-1.0-SNAPSHOT.jar:/app/target.jar
+    networks:
+      - my_network
+
+  todoservice:
+    image: azul/zulu-openjdk-alpine:17
+    command: java -jar /app/todo.jar
+    volumes:
+      - ./todoservice-1.0-SNAPSHOT.jar:/app/todo.jar
+    networks:
+      - my_network
+
+  userservice:
+    image: azul/zulu-openjdk-alpine:17
+    command: java -jar /app/user.jar
+    volumes:
+      - ./userservice-1.0-SNAPSHOT.jar:/app/user.jar
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    external: true

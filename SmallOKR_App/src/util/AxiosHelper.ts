@@ -13,7 +13,7 @@ class AxiosHelper {
     // 添加请求拦截器
     this.instance.interceptors.request.use(
       config => {
-        console.log(`发送请求: ${config.method?.toUpperCase()} ${config.url}`);
+        console.log(`发送请求: ${config.method?.toUpperCase()} ${config.url}`,config.baseURL);
         if (this.token !== '') {
           config.headers.Authorization = 'Bearer ' + this.token;
         }
@@ -25,7 +25,7 @@ class AxiosHelper {
       },
     );
 
-    // 添加响应拦截器
+    //添加响应拦截器
     this.instance.interceptors.response.use(
       response => {
         console.log('响应数据:', response.data);
@@ -77,4 +77,4 @@ class AxiosHelper {
   // 其他 HTTP 方法的封装方法类似，如 put、delete 等
 }
 
-export const axiosHelper = new AxiosHelper('192.168.31.134:8080');
+export const axiosHelper = new AxiosHelper('47.94.97.3:8080');

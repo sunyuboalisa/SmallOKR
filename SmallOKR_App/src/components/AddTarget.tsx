@@ -16,40 +16,10 @@ const AddTarget = () => {
   const route = useRoute();
   const {target} = route.params;
   const navigation = useNavigation();
-  const handleOKBtnPress = () => {
-    TargetService.addTarget({
-      name: targetName,
-      description: description,
-      id: target.id,
-    })
-      .then(() => {
-        navigation.goBack();
-      })
-      .catch();
-    console.log('ok:', targetContext.results);
-    TargetService.addResult(targetContext.results)
-      .then(() => {
-        // navigation.goBack();
-      })
-      .catch();
-  };
-
   const [description, onChangeDescription] = useState(target.description);
   const [targetName, onChangeTargetName] = useState(target.name);
-
   const targetContext = useContext(TargetContext);
   const dispatch = useContext(TargetDispatchContext);
-
-  useEffect(() => {
-    TargetService.getResults({
-      targetId: target.id,
-    })
-      .then(res => {
-        console.log('user results: ', res.data.data);
-        dispatch({type: 'LoadResult', results: res.data.data});
-      })
-      .catch(err => console.log(err));
-  }, [target, dispatch]);
 
   const onAddBtnPress = () => {
     console.log('current target: ', target);
@@ -64,6 +34,46 @@ const AddTarget = () => {
       },
     });
   };
+
+  const handleOKBtnPress = () => {
+    TargetService.addTarget({
+      name: targetName,
+      description: description,
+      id: target.id,
+    })
+      .then(() => {
+        dispatch({type: 'Reload', reload: true});
+        navigation.goBack();
+      })
+      .catch();
+    TargetService.getTargets()
+      .then(res => {
+        let data = res.data.data;
+        const newState = data.map(
+          (value: {id: any; name: any; description: any}) => {
+            let entry = {
+              id: value.id,
+              name: value.name,
+              description: value.description,
+            };
+            return entry;
+          },
+        );
+        dispatch({type: 'Load', targets: newState});
+      })
+      .catch(e => console.log('targets error：', e));
+  };
+
+  useEffect(() => {
+    TargetService.getResults({
+      targetId: target.id,
+    })
+      .then(res => {
+        console.log('user results: ', res.data.data);
+        dispatch({type: 'LoadResult', results: res.data.data});
+      })
+      .catch(err => console.log(err));
+  }, [target, dispatch]);
 
   return (
     <View>

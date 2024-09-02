@@ -1,11 +1,11 @@
-import {ITarget} from '../model/OKRModel';
+import {ITarget, Todo} from '../model/OKRModel';
 
 export type StackParamList = {
   DashBoard: undefined;
-  Target: undefined;
+  Target: {reload: boolean};
   Todo: undefined;
   Me: undefined;
-  AddTodo: undefined;
+  AddTodo: {todo: Todo};
   RepeatPage: undefined;
   AddTarget: {target: ITarget};
   MainApp: undefined;

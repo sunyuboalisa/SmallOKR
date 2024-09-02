@@ -1,5 +1,6 @@
 package alisa.smallokr.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Function;
 
@@ -36,7 +37,10 @@ public class TodoController {
             }
         });
 
-        todo.setId(UUIDTool.getUUID());
+        if (todo.getId() != null && !todo.getId().equals("")) {
+        } else {
+            todo.setId(UUIDTool.getUUID());
+        }
         todo.setUserId(userId);
         boolean res = todoService.saveTodo(todo);
         return new Result<>(res);

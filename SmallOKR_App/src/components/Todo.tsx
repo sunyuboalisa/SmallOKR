@@ -1,11 +1,7 @@
 import {View, Text, Modal} from 'react-native';
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {StyleSheet} from 'react-native';
-import {
-  NavigationProp,
-  useFocusEffect,
-  useNavigation,
-} from '@react-navigation/native';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {TodoContext, TodoDispatchContext} from '../state/TodoContext';
 import {TimeLine} from './TimeLine';
@@ -16,31 +12,51 @@ const PlanHeaderRight = () => {
     useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
 
   const onAddBtnPress = () => {
-    navigation.navigate('AddTodo');
+    navigation.navigate('AddTodo', {
+      todo: {
+        name: 'string',
+        description: 'string',
+        beginDate: 'string',
+        endDate: 'string',
+        repeat: 1,
+        id: '',
+      },
+    });
   };
   return <Ionicons name="add" onPress={onAddBtnPress} />;
 };
 
 const Plan = () => {
+  const navigation =
+    useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
   const [isVisible, setVisible] = useState(false);
   const planContext = useContext(TodoContext);
   const dispatch = useContext(TodoDispatchContext);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      TodoService.getTodos()
-        .then(x => {
-          let temp = x.data.data;
-          dispatch({type: 'Load', newTodos: temp});
-          console.log('user todos:', temp);
-        })
-        .catch(e => console.log(e));
-    }, [dispatch]),
-  );
+  const handleItemPress = (data: any) => {
+    navigation.navigate('AddTodo', {
+      todo: data,
+    });
+  };
+
+  const fetchData = async () => {
+    try {
+      const res = await TodoService.getTodos();
+      const todos = res.data.data;
+      dispatch({type: 'Load', newTodos: todos});
+      console.log('user todos:', todos);
+    } catch (error) {
+      console.log('error in fetch user todos:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [planContext.reload]);
 
   return (
     <View style={styles.container}>
-      <TimeLine data={planContext.uiTodos} />
+      <TimeLine data={planContext.uiTodos} handleItemPress={handleItemPress} />
       <Modal animationType="slide" visible={isVisible} transparent={false}>
         <Text style={styles.closeText} onPress={() => setVisible(!isVisible)}>
           Close

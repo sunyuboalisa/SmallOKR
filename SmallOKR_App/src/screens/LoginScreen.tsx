@@ -5,6 +5,7 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import {UserDispatchContext} from '../state/UserContext';
 import {UserService} from '../service/BusiService';
@@ -17,18 +18,20 @@ export const LoginScreen = ({}) => {
   const [error, setError] = useState('');
 
   const handleLogin = () => {
-    UserService.login({username: username, password: password}).then(res => {
-      if (res.data.code === '200') {
-        dispatch({
-          type: 'Login',
-          user: {username: username, password: password},
-        });
-        console.log('登录:', res.data.data);
-        axiosHelper.setToken(res.data.data);
-      } else {
-        setError('用户名或密码错误');
-      }
-    });
+    UserService.login({username: username, password: password})
+      .then(res => {
+        if (res.data.code === '200') {
+          dispatch({
+            type: 'Login',
+            user: {username: username, password: password},
+          });
+          console.log('登录:', res.data.data);
+          axiosHelper.setToken(res.data.data);
+        } else {
+          setError('用户名或密码错误');
+        }
+      })
+      .catch(err => Alert.alert(err));
   };
 
   return (
@@ -43,7 +46,7 @@ export const LoginScreen = ({}) => {
       <TextInput
         autoCapitalize="none"
         style={styles.input}
-        placeholder="1 密码192.168.31.82"
+        placeholder="密码"
         onChangeText={text => setPassword(text)}
         value={password}
         secureTextEntry={true}

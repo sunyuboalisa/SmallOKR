@@ -1,8 +1,9 @@
-import {FlatList, StyleSheet, Text, View} from 'react-native';
+import {FlatList, Pressable, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {getColor} from '../theme';
 
 type DataType = {
+  id: string;
   dateTime: string;
   title: string;
 };
@@ -11,26 +12,28 @@ type ItemProps = {
   dateTime: string;
   title: string;
   color: string;
+  handlePress: () => void;
 };
 
 interface TimeLineProps {
   data: DataType[];
+  handleItemPress: (data:DataType) => void;
 }
 
-const Item = ({dateTime, title, color}: ItemProps) => {
+const Item = ({dateTime, title, color, handlePress}: ItemProps) => {
   return (
-    <View style={styles.rowContainer}>
+    <Pressable style={styles.rowContainer} onPress={() => handlePress()}>
       <View style={styles.timeContainer}>
         <Text>{dateTime}</Text>
       </View>
       <View style={{...styles.titleContainer, backgroundColor: color}}>
         <Text>{title}</Text>
       </View>
-    </View>
+    </Pressable>
   );
 };
 
-const TimeLine = ({data}: TimeLineProps) => {
+const TimeLine = ({data, handleItemPress}: TimeLineProps) => {
   return (
     <View style={styles.container}>
       <FlatList
@@ -42,6 +45,7 @@ const TimeLine = ({data}: TimeLineProps) => {
               color={getColor(index)}
               dateTime={item.dateTime}
               title={item.title}
+              handlePress={() => handleItemPress(item)}
             />
           );
         }}

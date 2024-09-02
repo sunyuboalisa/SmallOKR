@@ -39,12 +39,14 @@ class Plan {
 
 class Todo {
   constructor(title: string) {
+    this.id = '';
     this.name = title;
     this.description = '';
     this.beginDate = '';
     this.endDate = '';
     this.repeat = 1;
   }
+  id: string;
   name: string;
   description: string;
   beginDate: string;

@@ -16,6 +16,7 @@ const TargetStackScreen = () => {
             headerRight: () => <TargetHeaderRight />,
             title: 'Target',
           }}
+          initialParams={{reload: false}}
           component={Target}
         />
         <TargetStack.Screen

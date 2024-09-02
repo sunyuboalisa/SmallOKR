@@ -5,7 +5,7 @@ spring:
     active: dev
   cloud:
     nacos:
-      server-addr: 192.168.31.134:8848 #注册中心地址
+      server-addr: 47.94.97.3:8848 #注册中心地址
       config:
         file-extension: yaml
         shared-configs:

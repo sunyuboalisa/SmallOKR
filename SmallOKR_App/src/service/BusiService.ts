@@ -1,8 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {axiosHelper} from '../util/AxiosHelper';
 import {User} from '../model/User';
-import { ITarget } from '../model/OKRModel';
-
+import {ITarget} from '../model/OKRModel';
 
 interface ResultFilter {
   targetId: string;
@@ -18,22 +17,22 @@ const UserService = {
     return axiosHelper.post('');
   },
   getToken: async () => {
-    try {
-      let userInfo = await AsyncStorage.getItem('userInfo');
-      if (userInfo !== null) {
-        // let data = JSON.parse(userInfo);
-      }
-      console.log('从本地获取用户信息：', userInfo);
-    } catch (error) {
-      console.log('从本地获取用户信息时出错：', error);
-    }
+    //   try {
+    //     let userInfo = await AsyncStorage.getItem('userInfo');
+    //     if (userInfo !== null) {
+    //       // let data = JSON.parse(userInfo);
+    //     }
+    //     console.log('从本地获取用户信息：', userInfo);
+    //   } catch (error) {
+    //     console.log('从本地获取用户信息时出错：', error);
+    //   }
   },
   storeToken: async (user: User) => {
     try {
-      await AsyncStorage.setItem('userInfo', JSON.stringify(user));
-      console.log('保存用户信息到本地时：', user);
+      //await AsyncStorage.setItem('userInfo', JSON.stringify(user));
+      //console.log('保存用户信息到本地时：', user);
     } catch (error) {
-      console.log('保存用户信息到本地时出错：', error);
+      //console.log('保存用户信息到本地时出错：', error);
     }
   },
 };
@@ -48,7 +47,7 @@ const TargetService = {
   deleteTarget: (targetId: String) => {
     return axiosHelper.delete('target-service/api/v1/target/delete', targetId);
   },
-  getResults: (param: any) => {
+  getResults: (param?: any) => {
     return axiosHelper.get('target-service/api/v1/result/getAll', param);
   },
   addResult: (results: ResultFilter[]) => {

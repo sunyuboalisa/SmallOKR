@@ -1,9 +1,14 @@
 import {Button, StyleSheet, Text, TextInput, View} from 'react-native';
-import React, {useState} from 'react';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
+import React, {useContext, useState} from 'react';
+import {
+  NavigationProp,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import AndDesign from 'react-native-vector-icons/AntDesign';
 import {DateCom} from './DateCom';
 import {TodoService} from '../service/BusiService';
+import {TodoDispatchContext} from '../state/TodoContext';
 
 const Select = () => {
   const navigation =
@@ -20,11 +25,14 @@ const Select = () => {
 };
 
 const AddTodo = () => {
+  const route = useRoute();
+  const {todo} = route.params;
   const navigation = useNavigation();
+  const dispatch = useContext(TodoDispatchContext);
   const [beginDate, seBeginDate] = useState<Date>(new Date());
   const [endDate, seEndDate] = useState<Date>(new Date());
   const [description, onChangeDescription] = useState('');
-  const [todoName, onChangeTodoName] = useState('');
+  const [todoName, onChangeTodoName] = useState(todo.title);
 
   const onOKBtnPress = () => {
     TodoService.AddTodo({
@@ -34,7 +42,8 @@ const AddTodo = () => {
       endDate: endDate,
     })
       .then(res => {
-        console.log('add todo', res.data);
+        console.log('add todo', beginDate);
+        dispatch({type: 'Reload', reload: true});
         navigation.goBack();
       })
       .catch(reson => console.log(reson));

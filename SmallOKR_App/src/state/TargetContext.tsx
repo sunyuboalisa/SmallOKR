@@ -1,17 +1,19 @@
 import React, {createContext, Dispatch, useReducer} from 'react';
 import {IResult, ITarget} from '../model/OKRModel';
 import {TargetAction} from './Actions';
- 
+
 interface TargetState {
   targets: ITarget[];
   results: IResult[];
+  reload: boolean;
 }
 
 const initialTargetState: TargetState = {
   targets: [],
   results: [],
+  reload: false,
 };
-const initialDispatch:Dispatch<TargetAction> = (action: TargetAction) => {
+const initialDispatch: Dispatch<TargetAction> = (action: TargetAction) => {
   console.log(action);
 };
 
@@ -29,6 +31,8 @@ const TargetContextProvider = (props: {children: React.ReactNode}) => {
         return {...state, results: [...state.results, action.newResult]};
       case 'LoadResult':
         return {...state, results: action.results};
+      case 'Reload':
+        return {...state, reload: action.reload};
     }
 
     return state;
