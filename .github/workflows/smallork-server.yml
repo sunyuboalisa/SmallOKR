@@ -15,27 +15,15 @@ jobs:
       - name: Build Spring Cloud project
         working-directory: ./smallokr_server
         run: ./mvnw clean package
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Build Docker images with Docker Compose
-        working-directory: ./smallokr_server
-        run: docker compose build
-      - name: List Docker images
-        working-directory: ./smallokr_server
-        run: docker images
-      - name: Log in to Alibaba Cloud Registry
-        run: echo ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }} | docker login ${{ secrets.ALIYUN_REGISTRY }} -u ${{ secrets.ALIYUN_ACCESS_KEY_ID }} --password-stdin
-      - name: Tag and Push Docker image
-        working-directory: ./smallokr_server
+      - name: Upload JAR and Docker Compose
         run: |
-            docker tag gateway:latest ${{ secrets.ALIYUN_REGISTRY }}/gateway:latest
-            docker push ${{ secrets.ALIYUN_REGISTRY }}/smallokr_gateway:latest
-            
-            docker tag targetservice:latest ${{ secrets.ALIYUN_REGISTRY }}/targetservice:latest
-            docker push ${{ secrets.ALIYUN_REGISTRY }}/smallokr_targetservice:latest
-            
-            docker tag todoservice:latest ${{ secrets.ALIYUN_REGISTRY }}/todoservice:latest
-            docker push ${{ secrets.ALIYUN_REGISTRY }}/smallokr_todoservice:latest
-            
-            docker tag userservice:latest ${{ secrets.ALIYUN_REGISTRY }}/userservice:latest
-            docker push ${{ secrets.ALIYUN_REGISTRY }}/smallokr_userservice:latest
+          scp -i ${{ secrets.SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no ./smallokr_server/target/package/*.jar root@47.94.97.3:/root/smallokr/
+          scp -i ${{ secrets.SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no ./smallokr_server/docker-compose.yml root@47.94.97.3:/root/smallokr/
+  
+      - name: Deploy on Alibaba Cloud Server
+        run: |
+          ssh -i ${{ secrets.SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no root@47.94.97.3 << 'EOF'
+            cd /root/smallokr/
+            docker-compose down
+            docker-compose up --build -d
+          EOF
