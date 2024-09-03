@@ -25,8 +25,6 @@ jobs:
 
       - name: Tag and Push Docker image
         working-directory: ./smallokr_server
-      - name: Tag and Push Docker images
-        working-directory: ./smallokr_server
         run: |
             docker tag smallokr_gateway:latest ${{ secrets.ALIYUN_REGISTRY }}/smallokr_gateway:latest
             docker push ${{ secrets.ALIYUN_REGISTRY }}/smallokr_gateway:latest
