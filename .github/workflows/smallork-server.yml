@@ -26,7 +26,7 @@ jobs:
   
       - name: Deploy on Alibaba Cloud Server
         run: |
-          ssh -i ${{ secrets.SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no root@47.94.97.3 << 'EOF'
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no root@47.94.97.3 << 'EOF'
             cd /root/smallokr/
             docker-compose down
             docker-compose up --build -d
