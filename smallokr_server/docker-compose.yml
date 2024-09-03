@@ -4,7 +4,7 @@ services:
     image: azul/zulu-openjdk-alpine:17
     command: java -jar /app/gateway.jar
     volumes:
-      - ./gateway-1.0-SNAPSHOT.jar:/app/gateway.jar
+      - ./target/package/gateway-1.0-SNAPSHOT.jar:/app/gateway.jar
     networks:
       - my_network
 
@@ -12,7 +12,7 @@ services:
     image: azul/zulu-openjdk-alpine:17
     command: java -jar /app/target.jar
     volumes:
-      - ./targetservice-1.0-SNAPSHOT.jar:/app/target.jar
+      - ./target/package/targetservice-1.0-SNAPSHOT.jar:/app/target.jar
     networks:
       - my_network
 
@@ -20,7 +20,7 @@ services:
     image: azul/zulu-openjdk-alpine:17
     command: java -jar /app/todo.jar
     volumes:
-      - ./todoservice-1.0-SNAPSHOT.jar:/app/todo.jar
+      - ./target/package/todoservice-1.0-SNAPSHOT.jar:/app/todo.jar
     networks:
       - my_network
 
@@ -28,7 +28,7 @@ services:
     image: azul/zulu-openjdk-alpine:17
     command: java -jar /app/user.jar
     volumes:
-      - ./userservice-1.0-SNAPSHOT.jar:/app/user.jar
+      - ./target/package/userservice-1.0-SNAPSHOT.jar:/app/user.jar
     networks:
       - my_network
 
