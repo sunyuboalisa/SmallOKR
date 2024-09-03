@@ -20,9 +20,10 @@ jobs:
       - name: Build Docker images with Docker Compose
         working-directory: ./smallokr_server
         run: docker compose build
+      - name: List Docker images
+        run: docker images
       - name: Log in to Alibaba Cloud Registry
         run: echo ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }} | docker login ${{ secrets.ALIYUN_REGISTRY }} -u ${{ secrets.ALIYUN_ACCESS_KEY_ID }} --password-stdin
-
       - name: Tag and Push Docker image
         working-directory: ./smallokr_server
         run: |
