@@ -25,9 +25,9 @@ jobs:
           sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./docker-compose.yml root@47.94.97.3:/root/smallokr/
   
       - name: Deploy on Alibaba Cloud Server
-        run: | 
+        run: |
             sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no root@47.94.97.3 << 'EOF'
             cd /root/smallokr/
             docker compose down
             docker compose up -d
-          EOF
+            EOF
