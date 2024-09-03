@@ -1,0 +1,16 @@
+name: SmallOKR Server CI/CD
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on: [push]
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+      - name: Build Spring Cloud project
+        working-directory: ./smallokr_server
+        run: ./mvnw clean package
