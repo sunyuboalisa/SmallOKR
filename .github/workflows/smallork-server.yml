@@ -7,17 +7,17 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin' 
           java-version: '17'
+      
       - name: Build Spring Cloud project
         working-directory: ./smallokr_server
         run: ./mvnw clean package
-      - name: 测试
-        working-directory: ./smallokr_server/target/package
-        run: ls
+        
       - name: Upload JAR and Docker Compose
         working-directory: ./smallokr_server
         run: |
