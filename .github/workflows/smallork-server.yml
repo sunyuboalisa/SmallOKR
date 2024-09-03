@@ -15,3 +15,14 @@ jobs:
       - name: Build Spring Cloud project
         working-directory: ./smallokr_server
         run: ./mvnw clean package
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Set up Docker Compose
+        uses: docker/setup-buildx-action@v2
+        with:
+          version: '2.5.0' # 使用需要的 Docker Compose 版本
+
+      - name: Build Docker images with Docker Compose
+        working-directory: ./smallokr_server
+        run: docker-compose build
