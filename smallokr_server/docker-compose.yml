@@ -4,6 +4,8 @@ services:
     command: java -jar /app/gateway.jar
     volumes:
       - ./gateway-1.0-SNAPSHOT.jar:/app/gateway.jar
+    ports:
+      - "8080:8080"
     networks:
       - my_network
 
