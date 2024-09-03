@@ -16,6 +16,7 @@ jobs:
         working-directory: ./smallokr_server
         run: ./mvnw clean package
       - name: Upload JAR and Docker Compose
+        working-directory: ./smallokr_server
         run: |
           scp -i ${{ secrets.SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no ./smallokr_server/target/package/*.jar root@47.94.97.3:/root/smallokr/
           scp -i ${{ secrets.SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no ./smallokr_server/docker-compose.yml root@47.94.97.3:/root/smallokr/
