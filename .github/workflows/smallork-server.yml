@@ -17,9 +17,7 @@ jobs:
         run: ./mvnw clean package
       - name: 测试
         working-directory: ./smallokr_server
-        run: ls
-      - name: 测试2
-        run: ls
+        run: cd ./target/package | ls
       - name: Upload JAR and Docker Compose
         working-directory: ./smallokr_server
         run: |
