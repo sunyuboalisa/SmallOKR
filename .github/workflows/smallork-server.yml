@@ -26,14 +26,14 @@ jobs:
       - name: Tag and Push Docker image
         working-directory: ./smallokr_server
         run: |
-            docker tag smallokr_gateway:latest ${{ secrets.ALIYUN_REGISTRY }}/smallokr_gateway:latest
+            docker tag gateway:latest ${{ secrets.ALIYUN_REGISTRY }}/gateway:latest
             docker push ${{ secrets.ALIYUN_REGISTRY }}/smallokr_gateway:latest
             
-            docker tag smallokr_targetservice:latest ${{ secrets.ALIYUN_REGISTRY }}/smallokr_targetservice:latest
+            docker tag targetservice:latest ${{ secrets.ALIYUN_REGISTRY }}/targetservice:latest
             docker push ${{ secrets.ALIYUN_REGISTRY }}/smallokr_targetservice:latest
             
-            docker tag smallokr_todoservice:latest ${{ secrets.ALIYUN_REGISTRY }}/smallokr_todoservice:latest
+            docker tag todoservice:latest ${{ secrets.ALIYUN_REGISTRY }}/todoservice:latest
             docker push ${{ secrets.ALIYUN_REGISTRY }}/smallokr_todoservice:latest
             
-            docker tag smallokr_userservice:latest ${{ secrets.ALIYUN_REGISTRY }}/smallokr_userservice:latest
+            docker tag userservice:latest ${{ secrets.ALIYUN_REGISTRY }}/userservice:latest
             docker push ${{ secrets.ALIYUN_REGISTRY }}/smallokr_userservice:latest
