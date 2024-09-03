@@ -20,12 +20,13 @@ jobs:
         
       - name: Upload JAR and Docker Compose
         working-directory: ./smallokr_server
-        run: 
+        run: | 
           sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./target/package/*.jar root@47.94.97.3:/root/smallokr/
           sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./docker-compose.yml root@47.94.97.3:/root/smallokr/
   
       - name: Deploy on Alibaba Cloud Server
-        run: sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no root@47.94.97.3 << 'EOF'
+        run: | 
+            sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no root@47.94.97.3 << 'EOF'
             cd /root/smallokr/
             docker compose down
             docker compose up -d
