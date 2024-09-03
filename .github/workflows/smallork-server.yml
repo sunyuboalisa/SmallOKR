@@ -21,6 +21,7 @@ jobs:
         working-directory: ./smallokr_server
         run: docker compose build
       - name: Log in to Alibaba Cloud Registry
+        if: ${{ secrets.ALIYUN_REGISTRY }}
         run: echo ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }} | docker login ${{ secrets.ALIYUN_REGISTRY }} -u ${{ secrets.ALIYUN_ACCESS_KEY_ID }} --password-stdin
 
       - name: Tag and Push Docker image
