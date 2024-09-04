@@ -1,0 +1,37 @@
+name: SmallOKR Server CI/CD
+run-name: ${{ github.actor }} build smallokr project
+on: [push]
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu' 
+          java-version: '17'
+      
+      - name: Build Spring Cloud project
+        working-directory: ./smallokr_server
+        run: ./mvnw clean package
+        
+      - name: Upload JAR and Docker Compose
+        working-directory: ./smallokr_server
+        run: | 
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./target/package/gateway-1.0-SNAPSHOT.jar root@47.94.97.3:/root/smallokr/
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./target/package/targetservice-1.0-SNAPSHOT.jar root@47.94.97.3:/root/smallokr/
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./target/package/todoservice-1.0-SNAPSHOT.jar root@47.94.97.3:/root/smallokr/
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./target/package/traceservice-1.0-SNAPSHOT.jar root@47.94.97.3:/root/smallokr/
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./target/package/userservice-1.0-SNAPSHOT.jar root@47.94.97.3:/root/smallokr/
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./docker-compose.yml root@47.94.97.3:/root/smallokr/
+  
+      - name: Deploy on Alibaba Cloud Server
+        run: |
+            sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no root@47.94.97.3 << 'EOF'
+            cd /root/smallokr/
+            docker compose down
+            docker compose up -d
+            EOF

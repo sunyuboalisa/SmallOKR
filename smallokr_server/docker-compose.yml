@@ -1,15 +1,14 @@
-version: '3'
 services:
   gateway:
-    image: azul/zulu-openjdk-alpine:17
+    image: openjdk:17-jdk-slim
     command: java -jar /app/gateway.jar
     volumes:
-      - ./target/package/gateway-1.0-SNAPSHOT.jar:/app/gateway.jar
+      - ./gateway-1.0-SNAPSHOT.jar:/app/gateway.jar
     networks:
       - my_network
 
   targetservice:
-    image: azul/zulu-openjdk-alpine:17
+    image: openjdk:17-jdk-slim
     command: java -jar /app/target.jar
     volumes:
       - ./target/package/targetservice-1.0-SNAPSHOT.jar:/app/target.jar
@@ -17,7 +16,7 @@ services:
       - my_network
 
   todoservice:
-    image: azul/zulu-openjdk-alpine:17
+    image: openjdk:17-jdk-slim
     command: java -jar /app/todo.jar
     volumes:
       - ./target/package/todoservice-1.0-SNAPSHOT.jar:/app/todo.jar
@@ -25,7 +24,7 @@ services:
       - my_network
 
   userservice:
-    image: azul/zulu-openjdk-alpine:17
+    image: openjdk:17-jdk-slim
     command: java -jar /app/user.jar
     volumes:
       - ./target/package/userservice-1.0-SNAPSHOT.jar:/app/user.jar
