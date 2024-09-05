@@ -1,6 +1,7 @@
 import {
   Button,
   FlatList,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -76,63 +77,110 @@ const AddTarget = () => {
   }, [target, dispatch]);
 
   return (
-    <View>
-      <Text>名字：</Text>
-      <TextInput
-        style={styles.input}
-        onChangeText={onChangeTargetName}
-        value={targetName}
-        placeholder="Please input the target name"
-      />
-      <Text>描述：</Text>
-      <TextInput
-        style={styles.input}
-        onChangeText={onChangeDescription}
-        value={description}
-        placeholder="Please input the target description"
-      />
-      <Ionicons name="add" onPress={onAddBtnPress} />
+    <View style={styles.page}>
+      <View style={styles.inputContainer}>
+        <Text>名字：</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={onChangeTargetName}
+          value={targetName}
+          placeholder="目标名字"
+        />
+      </View>
+      <View style={styles.inputContainer}>
+        <Text>描述：</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={onChangeDescription}
+          value={description}
+          placeholder="目标描述"
+        />
+      </View>
+      <Ionicons style={{fontSize:24}} name="add" onPress={onAddBtnPress} />
       <FlatList
+        style={{flex:1}}
         data={targetContext.results}
         keyExtractor={(item, index) => item.name + index}
         renderItem={({item}) => (
           <View style={styles.row}>
             <View style={styles.cell}>
               <Text>阶段：</Text>
-              <TextInput style={styles.input}>{item.name}</TextInput>
+              <TextInput style={styles.cellInput}>{item.name}</TextInput>
             </View>
+            <Text>|</Text>
             <View style={styles.cell}>
-              <Text>阶段成果：</Text>
-              <TextInput style={styles.input}>{item.value}</TextInput>
+              <Text>成果：</Text>
+              <TextInput style={styles.cellInput}>{item.value}</TextInput>
             </View>
           </View>
         )}
       />
-      <Button title="OK" onPress={handleOKBtnPress} />
+      <View style={{flex:1,alignItems:'center'}}>
+        <Pressable style={styles.okBtn} onPress={handleOKBtnPress}>
+          <Text style={styles.btnText}>确定</Text>
+        </Pressable>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   page: {
-    backgroundColor: 'white',
+    flex:1,
+    flexDirection: 'column',
+    backgroundColor:'white',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+  },
+  inputContainer: {
+    margin:5,
+    flexDirection: 'row',
+    alignItems:'center'
   },
   input: {
     height: 40,
-    margin: 12,
+    paddingRight:10,
+    marginRight:10,
+    width:'80%',
+    margin: 10,
     borderWidth: 1,
     padding: 10,
+    borderColor:'gray',
   },
-  container: {
-    flexDirection: 'column',
-  },
-  cell: {
+  row: {
+    flex:1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  row: {
+  cell: {
+    flex:1,
     flexDirection: 'row',
+    alignItems: 'center',
+    margin:10
+  },
+  cellInput: {
+    flex:1,
+    height: 40,
+    borderWidth: 1,
+    padding: 10,
+    marginLeft:5,
+    borderColor:'gray',
+  },
+  okBtn:{
+    alignItems:'center',
+    width: '80%',
+    height:50,
+    marginTop:30,
+    backgroundColor: '#007eff',
+    marginHorizontal: 5,
+    borderRadius:25,
+    justifyContent:'center'
+  },
+  btnText: {
+    fontSize: 24,
+    textAlign: 'center',
+    color:'white'
   },
 });
 
