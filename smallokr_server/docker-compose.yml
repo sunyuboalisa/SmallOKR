@@ -11,7 +11,7 @@ services:
     image: openjdk:17-jdk-slim
     command: java -jar /app/target.jar
     volumes:
-      - ./target/package/targetservice-1.0-SNAPSHOT.jar:/app/target.jar
+      - ./targetservice-1.0-SNAPSHOT.jar:/app/target.jar
     networks:
       - my_network
 
@@ -19,7 +19,7 @@ services:
     image: openjdk:17-jdk-slim
     command: java -jar /app/todo.jar
     volumes:
-      - ./target/package/todoservice-1.0-SNAPSHOT.jar:/app/todo.jar
+      - ./todoservice-1.0-SNAPSHOT.jar:/app/todo.jar
     networks:
       - my_network
 
@@ -27,7 +27,7 @@ services:
     image: openjdk:17-jdk-slim
     command: java -jar /app/user.jar
     volumes:
-      - ./target/package/userservice-1.0-SNAPSHOT.jar:/app/user.jar
+      - ./userservice-1.0-SNAPSHOT.jar:/app/user.jar
     networks:
       - my_network
 
