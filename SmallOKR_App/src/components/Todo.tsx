@@ -1,11 +1,11 @@
-import { View, Text, Modal, TouchableOpacity } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import {View, Text, Modal, TouchableOpacity} from 'react-native';
+import React, {useContext, useEffect, useState} from 'react';
+import {StyleSheet} from 'react-native';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { TodoContext, TodoDispatchContext } from '../state/TodoContext';
-import { TimeLine } from './TimeLine';
-import { TodoService } from '../service/BusiService';
+import {TodoContext, TodoDispatchContext} from '../state/TodoContext';
+import {TimeLine} from './TimeLine';
+import {TodoService} from '../service/BusiService';
 
 const PlanHeaderRight = () => {
   const navigation =
@@ -25,7 +25,7 @@ const PlanHeaderRight = () => {
   return <Ionicons name="add" onPress={onAddBtnPress} />;
 };
 
-const Plan = () => {
+const Todo = () => {
   const navigation =
     useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
   const [modalVisible, setModalVisible] = useState(false);
@@ -52,16 +52,19 @@ const Plan = () => {
     try {
       console.log('删除todo：', selectedTodo);
       const res = await TodoService.deleteTodo(selectedTodo.id);
+      console.log(res.data);
+      closeModal();
+      fetchData();
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const fetchData = async () => {
     try {
       const res = await TodoService.getTodos();
       const todos = res.data.data;
-      dispatch({ type: 'Load', newTodos: todos });
+      dispatch({type: 'Load', newTodos: todos});
       console.log('user todos:', todos);
     } catch (error) {
       console.log('error in fetch user todos:', error);
@@ -74,8 +77,16 @@ const Plan = () => {
 
   return (
     <View style={styles.container}>
-      <TimeLine data={planContext.uiTodos} handleItemPress={handleItemPress} handleItemLongPress={handleItemLongPress} />
-      <Modal animationType="slide" visible={modalVisible} transparent={true} onRequestClose={closeModal}>
+      <TimeLine
+        data={planContext.uiTodos}
+        handleItemPress={handleItemPress}
+        handleItemLongPress={handleItemLongPress}
+      />
+      <Modal
+        animationType="slide"
+        visible={modalVisible}
+        transparent={true}
+        onRequestClose={closeModal}>
         <View style={styles.modalMask}>
           <View style={styles.modalContent}>
             <TouchableOpacity
@@ -125,4 +136,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export { PlanHeaderRight, Plan };
+export {PlanHeaderRight, Todo};

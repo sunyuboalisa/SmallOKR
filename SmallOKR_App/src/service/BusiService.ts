@@ -66,7 +66,7 @@ const TodoService = {
     return axiosHelper.post('/api/v1/todo/add', todo);
   },
   deleteTodo: (todoId: String) => {
-    return axiosHelper.post('/api/v1/todo/delete', todoId);
+    return axiosHelper.delete('/api/v1/todo/delete', todoId);
   },
 };
 

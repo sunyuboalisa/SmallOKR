@@ -1,6 +1,6 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import AddTodo from '../components/AddTodo';
-import {Plan as Todo, PlanHeaderRight} from '../components/Todo';
+import {Todo, PlanHeaderRight} from '../components/Todo';
 import {RepeatPage} from '../components/RepeatPage';
 import React from 'react';
 import {TodoContextProvider} from '../state/TodoContext';

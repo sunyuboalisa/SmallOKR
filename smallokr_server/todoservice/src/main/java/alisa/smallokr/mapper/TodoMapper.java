@@ -7,7 +7,7 @@ import alisa.smallokr.entity.Todo;
 @Mapper
 public interface TodoMapper {
     boolean saveTodo(Todo todo);
-    boolean deleteTodo(String todoId);
+    boolean deleteTodo(String id);
     Todo findTodoById(String id);
     List<Todo> findTodoByUser(String id);
 }
