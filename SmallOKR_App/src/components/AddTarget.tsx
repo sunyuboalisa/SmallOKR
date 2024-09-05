@@ -36,7 +36,7 @@ const AddTarget = () => {
     });
   };
 
-  const handleOKBtnPress = () => {
+  const handleOKBtnPress =async () => {
     TargetService.addTarget({
       name: targetName,
       description: description,
@@ -47,6 +47,11 @@ const AddTarget = () => {
         navigation.goBack();
       })
       .catch();
+      try {
+        const addResultRes=await TargetService.addResult(targetContext.results);
+      } catch (error) {
+        console.log(error);
+      }
     TargetService.getTargets()
       .then(res => {
         let data = res.data.data;
@@ -65,15 +70,18 @@ const AddTarget = () => {
       .catch(e => console.log('targets error：', e));
   };
 
+  const featchData=async ()=>{
+    try {
+      const res=await TargetService.getResults({targetId:target.id});
+      console.log('user results: ', res.data.data);
+      dispatch({type: 'LoadResult', results: res.data.data});
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
-    TargetService.getResults({
-      targetId: target.id,
-    })
-      .then(res => {
-        console.log('user results: ', res.data.data);
-        dispatch({type: 'LoadResult', results: res.data.data});
-      })
-      .catch(err => console.log(err));
+    featchData();
   }, [target, dispatch]);
 
   return (

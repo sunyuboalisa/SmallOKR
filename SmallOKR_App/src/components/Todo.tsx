@@ -1,16 +1,15 @@
-import {View, Text, Modal} from 'react-native';
-import React, {useContext, useEffect, useState} from 'react';
-import {StyleSheet} from 'react-native';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
+import { View, Text, Modal, TouchableOpacity } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {TodoContext, TodoDispatchContext} from '../state/TodoContext';
-import {TimeLine} from './TimeLine';
-import {TodoService} from '../service/BusiService';
+import { TodoContext, TodoDispatchContext } from '../state/TodoContext';
+import { TimeLine } from './TimeLine';
+import { TodoService } from '../service/BusiService';
 
 const PlanHeaderRight = () => {
   const navigation =
     useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
-
   const onAddBtnPress = () => {
     navigation.navigate('AddTodo', {
       todo: {
@@ -29,9 +28,14 @@ const PlanHeaderRight = () => {
 const Plan = () => {
   const navigation =
     useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
-  const [isVisible, setVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const planContext = useContext(TodoContext);
   const dispatch = useContext(TodoDispatchContext);
+  const [selectedTodo, setSelectedTodo] = useState();
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
 
   const handleItemPress = (data: any) => {
     navigation.navigate('AddTodo', {
@@ -39,11 +43,25 @@ const Plan = () => {
     });
   };
 
+  const handleItemLongPress = (data: any) => {
+    setSelectedTodo(data);
+    setModalVisible(true);
+  };
+
+  const handleDelete = async () => {
+    try {
+      console.log('删除todo：', selectedTodo);
+      const res = await TodoService.deleteTodo(selectedTodo.id);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const fetchData = async () => {
     try {
       const res = await TodoService.getTodos();
       const todos = res.data.data;
-      dispatch({type: 'Load', newTodos: todos});
+      dispatch({ type: 'Load', newTodos: todos });
       console.log('user todos:', todos);
     } catch (error) {
       console.log('error in fetch user todos:', error);
@@ -56,11 +74,20 @@ const Plan = () => {
 
   return (
     <View style={styles.container}>
-      <TimeLine data={planContext.uiTodos} handleItemPress={handleItemPress} />
-      <Modal animationType="slide" visible={isVisible} transparent={false}>
-        <Text style={styles.closeText} onPress={() => setVisible(!isVisible)}>
-          Close
-        </Text>
+      <TimeLine data={planContext.uiTodos} handleItemPress={handleItemPress} handleItemLongPress={handleItemLongPress} />
+      <Modal animationType="slide" visible={modalVisible} transparent={true} onRequestClose={closeModal}>
+        <View style={styles.modalMask}>
+          <View style={styles.modalContent}>
+            <TouchableOpacity
+              onPress={() => handleDelete()}
+              style={styles.modalBtn}>
+              <Text style={styles.modalSize}>删除</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={closeModal} style={styles.modalBtn}>
+              <Text style={styles.modalSize}>取消</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </Modal>
     </View>
   );
@@ -76,6 +103,26 @@ const styles = StyleSheet.create({
     color: '#00479e',
     textAlign: 'center',
   },
+  modalMask: {
+    flex: 1,
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0,0.6)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    flexDirection: 'column',
+    marginBottom: 100,
+  },
+  modalSize: {
+    fontSize: 24,
+  },
+  modalBtn: {
+    minWidth: 300,
+    marginBottom: 10,
+    borderRadius: 5,
+    backgroundColor: 'gray',
+    alignItems: 'center',
+  },
 });
 
-export {PlanHeaderRight, Plan};
+export { PlanHeaderRight, Plan };
