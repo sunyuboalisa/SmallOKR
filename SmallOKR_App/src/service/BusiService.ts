@@ -45,7 +45,9 @@ const TargetService = {
     return axiosHelper.post('target-service/api/v1/target/save', target);
   },
   deleteTarget: (targetId: String) => {
-    return axiosHelper.delete('target-service/api/v1/target/delete', targetId);
+    return axiosHelper.delete('target-service/api/v1/target/delete', {
+      targetId: targetId,
+    });
   },
   getResults: (param?: any) => {
     return axiosHelper.get('target-service/api/v1/result/getAll', param);
@@ -66,7 +68,7 @@ const TodoService = {
     return axiosHelper.post('/api/v1/todo/add', todo);
   },
   deleteTodo: (todoId: String) => {
-    return axiosHelper.delete('/api/v1/todo/delete', todoId);
+    return axiosHelper.delete('/api/v1/todo/delete', {todoId: todoId});
   },
 };
 

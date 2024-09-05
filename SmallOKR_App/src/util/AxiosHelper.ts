@@ -67,14 +67,13 @@ class AxiosHelper {
 
   public delete<T = any>(
     url: string,
-    targetId?: any,
+    params?: any,
   ): Promise<AxiosResponse<T>> {
     return this.instance.delete<T>(url, {
       headers: {'Content-Type': 'application/json'},
-      params: {targetId: targetId},
+      params:params,
     });
   }
-  // 其他 HTTP 方法的封装方法类似，如 put、delete 等
 }
 
 export const axiosHelper = new AxiosHelper('47.94.97.3:8080');
