@@ -20,7 +20,7 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public boolean deleteTodo(String todoId) {
-        return todoMapper.deleteTodo(null);
+        return todoMapper.deleteTodo(todoId);
     }
 
     @Override
