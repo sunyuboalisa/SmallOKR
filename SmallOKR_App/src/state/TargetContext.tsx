@@ -1,6 +1,6 @@
-import React, {createContext, Dispatch, useReducer} from 'react';
-import {IResult, ITarget} from '../model/OKRModel';
-import {TargetAction} from './Actions';
+import React, { createContext, Dispatch, useReducer } from 'react';
+import { IResult, ITarget } from '../model/OKRModel';
+import { TargetAction } from './Actions';
 
 interface TargetState {
   targets: ITarget[];
@@ -20,19 +20,27 @@ const initialDispatch: Dispatch<TargetAction> = (action: TargetAction) => {
 const TargetContext = createContext(initialTargetState);
 const TargetDispatchContext = createContext(initialDispatch);
 
-const TargetContextProvider = (props: {children: React.ReactNode}) => {
+const TargetContextProvider = (props: { children: React.ReactNode }) => {
   const TargetReducer = (state: TargetState, action: TargetAction) => {
     switch (action.type) {
       case 'Add':
-        return {...state, targets: [...state.targets, action.newTarget]};
+        return { ...state, targets: [...state.targets, action.newTarget] };
       case 'Load':
-        return {...state, targets: action.targets};
+        return { ...state, targets: action.targets };
       case 'AddResult':
-        return {...state, results: [...state.results, action.newResult]};
+        return { ...state, results: [...state.results, action.newResult] };
+      case 'ChangeResult':
+        const newResults = state.results.map(item => {
+          if (item.id == action.newResult.id) {
+            return action.newResult;
+          }
+          return item;
+        })
+        return { ...state, results: newResults };
       case 'LoadResult':
-        return {...state, results: action.results};
+        return { ...state, results: action.results };
       case 'Reload':
-        return {...state, reload: action.reload};
+        return { ...state, reload: action.reload };
     }
 
     return state;
@@ -49,4 +57,4 @@ const TargetContextProvider = (props: {children: React.ReactNode}) => {
   );
 };
 
-export {TargetContext, TargetDispatchContext, TargetContextProvider};
+export { TargetContext, TargetDispatchContext, TargetContextProvider };
