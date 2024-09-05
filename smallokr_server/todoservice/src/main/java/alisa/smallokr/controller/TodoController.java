@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.alisa.Util.JwtUtil;
 import com.alisa.Util.Result;
@@ -46,7 +47,7 @@ public class TodoController {
     }
 
     @DeleteMapping("delete")
-    public Result<Boolean> deleteTodo(String todoId) {
+    public Result<Boolean> deleteTodo(@RequestParam String todoId) {
         boolean res = todoService.deleteTodo(todoId);
         return new Result<>(res);
     }
