@@ -1,14 +1,14 @@
-import { Button, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import React, { useContext, useState } from 'react';
+import {Pressable, StyleSheet, Text, TextInput, View} from 'react-native';
+import React, {useContext, useState} from 'react';
 import {
   NavigationProp,
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
 import AndDesign from 'react-native-vector-icons/AntDesign';
-import { DateCom } from './DateCom';
-import { TodoService } from '../service/BusiService';
-import { TodoDispatchContext } from '../state/TodoContext';
+import {DateCom} from './DateCom';
+import {TodoService} from '../service/BusiService';
+import {TodoDispatchContext} from '../state/TodoContext';
 
 const Select = () => {
   const navigation =
@@ -26,7 +26,7 @@ const Select = () => {
 
 const AddTodo = () => {
   const route = useRoute();
-  const { todo } = route.params;
+  const {todo} = route.params;
   const navigation = useNavigation();
   const dispatch = useContext(TodoDispatchContext);
   const [beginDate, seBeginDate] = useState<Date>(new Date());
@@ -34,19 +34,25 @@ const AddTodo = () => {
   const [description, onChangeDescription] = useState('');
   const [todoName, onChangeTodoName] = useState(todo.title);
 
+  const addTodo = async () => {
+    try {
+      const newTodo = {
+        id:todo.id,
+        name: todoName,
+        description: description,
+        beginDate: beginDate,
+        endDate: endDate,
+      };
+      console.log('add todo', newTodo);
+      const addTodoRes = await TodoService.AddOrSaveTodo(newTodo);
+      dispatch({type: 'Reload', reload: true});
+      navigation.goBack();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const onOKBtnPress = () => {
-    TodoService.AddTodo({
-      name: todoName,
-      description: description,
-      beginDate: beginDate,
-      endDate: endDate,
-    })
-      .then(res => {
-        console.log('add todo', beginDate);
-        dispatch({ type: 'Reload', reload: true });
-        navigation.goBack();
-      })
-      .catch(reson => console.log(reson));
+    addTodo();
   };
 
   return (
@@ -80,7 +86,7 @@ const AddTodo = () => {
       <View style={styles.inputContainer}>
         <Select />
       </View>
-      <View style={{ flex: 1, alignItems: 'center' }}>
+      <View style={{flex: 1, alignItems: 'center'}}>
         <Pressable style={styles.okBtn} onPress={onOKBtnPress}>
           <Text style={styles.btnText}>确定</Text>
         </Pressable>
@@ -94,7 +100,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginVertical: 8,
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   input: {
     flex: 1,
@@ -119,12 +125,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#007eff',
     marginHorizontal: 5,
     borderRadius: 25,
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   btnText: {
     fontSize: 24,
     textAlign: 'center',
-    color: 'white'
+    color: 'white',
   },
 });
 

@@ -19,5 +19,13 @@
 
     <insert id="saveTodo" parameterType="alisa.smallokr.entity.Todo">
         insert into tb_todo(todo_id,todo_name,todo_description,todo_begin_date,todo_end_date,user_id) values (#{id},#{name},#{description},#{beginDate},#{endDate},#{userId})
+        ON DUPLICATE KEY UPDATE
+        todo_name=VALUES(todo_name),
+        todo_description=VALUES(todo_description),
+        todo_begin_date=VALUES(todo_begin_date),
+        todo_end_date=VALUES(todo_end_date)
     </insert>
+    <delete id="deleteTodo">
+        delete FROM tb_todo where todo_id=#{id}
+    </delete>
 </mapper>
