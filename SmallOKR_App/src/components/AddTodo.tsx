@@ -1,14 +1,14 @@
-import {Button, StyleSheet, Text, TextInput, View} from 'react-native';
-import React, {useContext, useState} from 'react';
+import { Button, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useContext, useState } from 'react';
 import {
   NavigationProp,
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
 import AndDesign from 'react-native-vector-icons/AntDesign';
-import {DateCom} from './DateCom';
-import {TodoService} from '../service/BusiService';
-import {TodoDispatchContext} from '../state/TodoContext';
+import { DateCom } from './DateCom';
+import { TodoService } from '../service/BusiService';
+import { TodoDispatchContext } from '../state/TodoContext';
 
 const Select = () => {
   const navigation =
@@ -18,7 +18,7 @@ const Select = () => {
   };
   return (
     <View style={styles.repeatContainer}>
-      <Text style={styles.rightIcon}>Repeat</Text>
+      <Text style={styles.rightIcon}>重复：</Text>
       <AndDesign style={styles.rightIcon} name="right" onPress={onPress} />
     </View>
   );
@@ -26,7 +26,7 @@ const Select = () => {
 
 const AddTodo = () => {
   const route = useRoute();
-  const {todo} = route.params;
+  const { todo } = route.params;
   const navigation = useNavigation();
   const dispatch = useContext(TodoDispatchContext);
   const [beginDate, seBeginDate] = useState<Date>(new Date());
@@ -43,7 +43,7 @@ const AddTodo = () => {
     })
       .then(res => {
         console.log('add todo', beginDate);
-        dispatch({type: 'Reload', reload: true});
+        dispatch({ type: 'Reload', reload: true });
         navigation.goBack();
       })
       .catch(reson => console.log(reson));
@@ -51,30 +51,53 @@ const AddTodo = () => {
 
   return (
     <View>
-      <Text>name</Text>
-      <TextInput
-        style={styles.input}
-        onChangeText={onChangeTodoName}
-        value={todoName}
-        placeholder="Please input the todo name"
-      />
-      <Text>Description</Text>
-      <TextInput
-        style={styles.input}
-        onChangeText={onChangeDescription}
-        value={description}
-        placeholder="Please input the todo description"
-      />
-      <Select />
-      <DateCom date={beginDate} onConfirm={d => seBeginDate(d)} />
-      <DateCom date={endDate} onConfirm={d => seEndDate(d)} />
-      <Button title="OK" onPress={onOKBtnPress} />
+      <View style={styles.inputContainer}>
+        <Text>名字：</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={onChangeTodoName}
+          value={todoName}
+          placeholder="待办名字"
+        />
+      </View>
+      <View style={styles.inputContainer}>
+        <Text>描述：</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={onChangeDescription}
+          value={description}
+          placeholder="待办描述"
+        />
+      </View>
+      <View style={styles.inputContainer}>
+        <Text>开始时间：</Text>
+        <DateCom date={beginDate} onConfirm={d => seBeginDate(d)} />
+      </View>
+      <View style={styles.inputContainer}>
+        <Text>结束时间：</Text>
+        <DateCom date={endDate} onConfirm={d => seEndDate(d)} />
+      </View>
+      <View style={styles.inputContainer}>
+        <Select />
+      </View>
+      <View style={{ flex: 1, alignItems: 'center' }}>
+        <Pressable style={styles.okBtn} onPress={onOKBtnPress}>
+          <Text style={styles.btnText}>确定</Text>
+        </Pressable>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  inputContainer: {
+    paddingHorizontal: 20,
+    marginVertical: 8,
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
   input: {
+    flex: 1,
     height: 40,
     margin: 12,
     borderWidth: 1,
@@ -82,9 +105,26 @@ const styles = StyleSheet.create({
   },
   repeatContainer: {
     flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   rightIcon: {
-    fontSize: 22,
+    textAlign: 'center',
+  },
+  okBtn: {
+    alignItems: 'center',
+    width: '80%',
+    height: 50,
+    marginTop: 50,
+    backgroundColor: '#007eff',
+    marginHorizontal: 5,
+    borderRadius: 25,
+    justifyContent: 'center'
+  },
+  btnText: {
+    fontSize: 24,
+    textAlign: 'center',
+    color: 'white'
   },
 });
 
