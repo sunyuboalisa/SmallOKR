@@ -70,6 +70,9 @@ const TodoService = {
   deleteTodo: (todoId: String) => {
     return axiosHelper.delete('/api/v1/todo/delete', {todoId: todoId});
   },
+  getRepeatDicEntrys:()=>{
+    return axiosHelper.get('/api/v1/todo/dic/get',{dicName:"repeat_dic"});
+  }
 };
 
 export {UserService, TargetService, TodoService};

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="alisa.smallokr.mapper.DicMapper">
+    <sql id="common">
+        dicEntry.dic_entry_id as id,
+        dicEntry.dic_entry_name as entryName,
+        dicEntry.dic_entry_value as entryValue
+    </sql>
+    <select id="getDicEntrys" resultType="alisa.smallokr.entity.DicEntry">
+        SELECT <include refid="common"/> 
+        FROM tb_dic_entry dicEntry
+        JOIN tb_dic dic ON dicEntry.dic_id = dic.dic_id
+        WHERE dic.dic_name = #{dicName}
+    </select>
+</mapper>

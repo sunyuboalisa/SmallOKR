@@ -8,7 +8,8 @@
         todo_description as description,
         todo_begin_date as beginDate,
         todo_end_date as endDate,
-        user_id as userId
+        user_id as userId,
+        todo_status_id as status
     </sql>
     <select id="findTodoByID" resultType="alisa.smallokr.entity.Todo">
         select <include refid="common"/> from tb_todo where todo_id = #{id}
@@ -16,14 +17,23 @@
     <select id="findTodoByUser" resultType="alisa.smallokr.entity.Todo">
         select <include refid="common"/> from tb_todo where user_id = #{userId} order by todo_begin_date
     </select>
+     <select id="getTodoByUserAndDate" resultType="alisa.smallokr.entity.Todo">
+        select <include refid="common"/> 
+        FROM tb_todo AS todo, tb_todo_repeat AS todoRepeat
+        WHERE todo.todo_id = todoRepeat.todo_id
+        and todo.todo_end_date &lt;= #{date}
+        and todoRepeat.repeat_value = #{repeat}
+        order by todo_begin_date
+    </select>
 
     <insert id="saveTodo" parameterType="alisa.smallokr.entity.Todo">
-        insert into tb_todo(todo_id,todo_name,todo_description,todo_begin_date,todo_end_date,user_id) values (#{id},#{name},#{description},#{beginDate},#{endDate},#{userId})
+        insert into tb_todo(todo_id,todo_name,todo_description,todo_begin_date,todo_end_date,user_id,todo_status) values (#{id},#{name},#{description},#{beginDate},#{endDate},#{userId},#{#status})
         ON DUPLICATE KEY UPDATE
         todo_name=VALUES(todo_name),
         todo_description=VALUES(todo_description),
         todo_begin_date=VALUES(todo_begin_date),
-        todo_end_date=VALUES(todo_end_date)
+        todo_end_date=VALUES(todo_end_date),
+        todo_status=VALUES(todo_status)
     </insert>
     <delete id="deleteTodo">
         delete FROM tb_todo where todo_id=#{id}

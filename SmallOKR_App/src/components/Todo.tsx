@@ -65,7 +65,6 @@ const Todo = () => {
       const res = await TodoService.getTodos();
       const todos = res.data.data;
       dispatch({type: 'Load', newTodos: todos});
-      console.log('user todos:', todos);
     } catch (error) {
       console.log('error in fetch user todos:', error);
     }

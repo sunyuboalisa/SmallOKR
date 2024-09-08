@@ -28,7 +28,7 @@ const Me = () => {
   return (
     <View>
       <View style={styles.container}>
-        <Image style={styles.circle} />
+        <Image style={styles.circle} source={require('../../assets/imgs/temp.jpg')}/>
       </View>
       <View style={styles.menuContainer}>
         <MenuItem title="设置" />
