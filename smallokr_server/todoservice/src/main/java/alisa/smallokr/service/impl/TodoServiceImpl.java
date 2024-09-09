@@ -10,6 +10,7 @@ import alisa.smallokr.entity.TodoRepeat;
 import alisa.smallokr.mapper.TodoMapper;
 import alisa.smallokr.mapper.TodoRepeatMapper;
 import alisa.smallokr.service.TodoService;
+import alisa.smallokr.vo.TodoVo;
 
 @Service
 public class TodoServiceImpl implements TodoService {
@@ -34,7 +35,7 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public List<Todo> findTodoByUser(String userId) {
+    public List<TodoVo> findTodoByUser(String userId) {
         return todoMapper.findTodoByUser(userId);
     }
 
@@ -54,7 +55,7 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public List<Todo> getTodoByUserAndWeekDay(String userId, LocalDateTime date, String weekDay) {
+    public List<TodoVo> getTodoByUserAndWeekDay(String userId, LocalDateTime date, String weekDay) {
         return todoMapper.getTodoByUserAndWeekDay(userId, date,weekDay);
     }
 

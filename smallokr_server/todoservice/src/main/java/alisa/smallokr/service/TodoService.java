@@ -2,9 +2,9 @@ package alisa.smallokr.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 import alisa.smallokr.entity.Todo;
 import alisa.smallokr.entity.TodoRepeat;
+import alisa.smallokr.vo.TodoVo;
 
 public interface TodoService {
     boolean saveTodo(Todo todo);
@@ -13,9 +13,9 @@ public interface TodoService {
 
     boolean updateTodo(Todo todo);
 
-    List<Todo> findTodoByUser(String userId);
+    List<TodoVo> findTodoByUser(String userId);
 
-    List<Todo> getTodoByUserAndWeekDay(String userId, LocalDateTime date, String weekDay);
+    List<TodoVo> getTodoByUserAndWeekDay(String userId, LocalDateTime date, String weekDay);
 
     List<TodoRepeat> getRepeats(String todoId);
 

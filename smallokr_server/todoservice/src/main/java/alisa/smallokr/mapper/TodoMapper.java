@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
 import alisa.smallokr.entity.Todo;
+import alisa.smallokr.vo.TodoVo;
 
 @Mapper
 public interface TodoMapper {
@@ -15,7 +15,7 @@ public interface TodoMapper {
 
     Todo findTodoById(String id);
 
-    List<Todo> findTodoByUser(String id);
+    List<TodoVo> findTodoByUser(String id);
 
-    List<Todo> getTodoByUserAndWeekDay(@Param("userId") String userId,@Param("date") LocalDateTime date,@Param("weekDay") String weekDay);
+    List<TodoVo> getTodoByUserAndWeekDay(@Param("userId") String userId,@Param("date") LocalDateTime date,@Param("weekDay") String weekDay);
 }

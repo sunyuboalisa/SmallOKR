@@ -24,6 +24,7 @@ import com.alisa.Util.UUIDTool;
 import alisa.smallokr.entity.Todo;
 import alisa.smallokr.entity.TodoRepeat;
 import alisa.smallokr.service.TodoService;
+import alisa.smallokr.vo.TodoVo;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -65,7 +66,7 @@ public class TodoController {
     }
 
     @GetMapping("get")
-    public Result<List<Todo>> get(String userId, HttpServletRequest request) {
+    public Result<List<TodoVo>> get(String userId, HttpServletRequest request) {
         var token = request.getHeader("Authorization").substring(7);
         if (userId == null) {
             userId = JwtUtil.extractClaim(token, new Function<Claims, String>() {
@@ -80,7 +81,7 @@ public class TodoController {
     }
 
     @GetMapping("getTodoByWeekDay")
-    public Result<List<Todo>> getTodoByWeekDay(String userId, LocalDateTime date, HttpServletRequest request) {
+    public Result<List<TodoVo>> getTodoByWeekDay(String userId, LocalDateTime date, HttpServletRequest request) {
         var token = request.getHeader("Authorization").substring(7);
         if (userId == null) {
             userId = JwtUtil.extractClaim(token, new Function<Claims, String>() {
