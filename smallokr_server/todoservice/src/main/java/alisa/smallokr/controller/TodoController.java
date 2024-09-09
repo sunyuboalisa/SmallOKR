@@ -1,6 +1,11 @@
 package alisa.smallokr.controller;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,10 +79,40 @@ public class TodoController {
         return new Result<>(todo);
     }
 
+    @GetMapping("getTodoByWeekDay")
+    public Result<List<Todo>> getTodoByWeekDay(String userId, LocalDateTime date, HttpServletRequest request) {
+        var token = request.getHeader("Authorization").substring(7);
+        if (userId == null) {
+            userId = JwtUtil.extractClaim(token, new Function<Claims, String>() {
+                @Override
+                public String apply(Claims claims) {
+                    return (String) claims.get("userId"); // 假设自定义声明为 userId
+                }
+            });
+        }
+
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+
+        // 创建英文到中文的映射
+        Map<DayOfWeek, String> dayOfWeekMap = new HashMap<>();
+        dayOfWeekMap.put(DayOfWeek.MONDAY, "星期一");
+        dayOfWeekMap.put(DayOfWeek.TUESDAY, "星期二");
+        dayOfWeekMap.put(DayOfWeek.WEDNESDAY, "星期三");
+        dayOfWeekMap.put(DayOfWeek.THURSDAY, "星期四");
+        dayOfWeekMap.put(DayOfWeek.FRIDAY, "星期五");
+        dayOfWeekMap.put(DayOfWeek.SATURDAY, "星期六");
+        dayOfWeekMap.put(DayOfWeek.SUNDAY, "星期天");
+        String chineseDay = dayOfWeekMap.get(dayOfWeek);
+
+        var todo = todoService.getTodoByUserAndWeekDay(userId, date, chineseDay);
+        return new Result<>(todo);
+    }
+
     @GetMapping("getRepeat")
     public Result<List<TodoRepeat>> getRepeat(String todoId) {
         var todoRepeats = todoService.getRepeats(todoId);
         return new Result<>(todoRepeats);
+
     }
 
     @PostMapping("addRepeat")

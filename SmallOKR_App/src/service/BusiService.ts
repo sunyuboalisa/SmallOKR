@@ -64,6 +64,9 @@ const TodoService = {
   getTodos: () => {
     return axiosHelper.get('/api/v1/todo/get');
   },
+  getTodosByDate: (date: Date) => {
+    return axiosHelper.get('/api/v1/todo/getTodoByWeekDay', {date: date});
+  },
   AddOrSaveTodo: (todo: any) => {
     return axiosHelper.post('/api/v1/todo/add', todo);
   },

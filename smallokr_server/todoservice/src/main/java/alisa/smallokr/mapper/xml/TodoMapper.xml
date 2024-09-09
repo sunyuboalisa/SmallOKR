@@ -3,27 +3,28 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="alisa.smallokr.mapper.TodoMapper">
     <sql id="common">
-        todo_id as id,
-        todo_name as name,
-        todo_description as description,
-        todo_begin_date as beginDate,
-        todo_end_date as endDate,
-        user_id as userId,
-        todo_status_id as status
+        todo.todo_id as id,
+        todo.todo_name as name,
+        todo.todo_description as description,
+        todo.todo_begin_date as beginDate,
+        todo.todo_end_date as endDate,
+        todo.user_id as userId,
+        todo.todo_status_id as status
     </sql>
     <select id="findTodoByID" resultType="alisa.smallokr.entity.Todo">
-        select <include refid="common"/> from tb_todo where todo_id = #{id}
+        select <include refid="common"/> from tb_todo as todo where todo_id = #{id}
     </select>
     <select id="findTodoByUser" resultType="alisa.smallokr.entity.Todo">
-        select <include refid="common"/> from tb_todo where user_id = #{userId} order by todo_begin_date
+        select <include refid="common"/> from tb_todo as todo where user_id = #{userId} order by todo_begin_date
     </select>
-     <select id="getTodoByUserAndDate" resultType="alisa.smallokr.entity.Todo">
+     <select id="getTodoByUserAndWeekDay" resultType="alisa.smallokr.entity.Todo">
         select <include refid="common"/> 
         FROM tb_todo AS todo, tb_todo_repeat AS todoRepeat
         WHERE todo.todo_id = todoRepeat.todo_id
-        and todo.todo_end_date &lt;= #{date}
-        and todoRepeat.repeat_value = #{repeat}
-        order by todo_begin_date
+        and todo.user_id = #{userId}
+        and todo.todo_end_date &lt; #{date}
+        in (SELECT dic_entry_id FROM tb_dic_entry WHERE dic_entry_value=#{weekDay})
+        order by todo.todo_begin_date
     </select>
 
     <insert id="saveTodo" parameterType="alisa.smallokr.entity.Todo">

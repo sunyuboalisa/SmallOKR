@@ -1,5 +1,7 @@
 package alisa.smallokr.service.impl;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,6 +51,11 @@ public class TodoServiceImpl implements TodoService {
     @Override
     public boolean deleteRepeat(String todoRepeatId) {
         return todoRepeatMapper.deleteRepeat(todoRepeatId);
+    }
+
+    @Override
+    public List<Todo> getTodoByUserAndWeekDay(String userId, LocalDateTime date, String weekDay) {
+        return todoMapper.getTodoByUserAndWeekDay(userId, date,weekDay);
     }
 
 }

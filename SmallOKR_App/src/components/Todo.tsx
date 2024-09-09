@@ -62,7 +62,7 @@ const Todo = () => {
 
   const fetchData = async () => {
     try {
-      const res = await TodoService.getTodos();
+      const res = await TodoService.getTodosByDate(new Date());
       const todos = res.data.data;
       dispatch({type: 'Load', newTodos: todos});
     } catch (error) {
