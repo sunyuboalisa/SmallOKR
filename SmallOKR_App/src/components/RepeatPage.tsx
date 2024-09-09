@@ -26,7 +26,8 @@ const Item = ({title, selected, handlePress}: ItemProps) => {
 };
 
 type ItemModel = {
-  id: string;
+  todoRepeatId: string;
+  repeatId: string;
   title: string;
   selected: boolean;
 };
