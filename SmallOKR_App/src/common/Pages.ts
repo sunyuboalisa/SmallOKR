@@ -6,7 +6,7 @@ export type StackParamList = {
   Todo: undefined;
   Me: undefined;
   AddTodo: {todo: Todo};
-  RepeatPage: undefined;
+  RepeatPage: {todoId: string};
   AddTarget: {target: ITarget};
   MainApp: undefined;
   Login: undefined;

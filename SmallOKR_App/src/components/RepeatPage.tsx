@@ -1,34 +1,98 @@
-import React from 'react';
-import {FlatList, StatusBar, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {FlatList, Pressable, StatusBar, StyleSheet, Text} from 'react-native';
+import {TodoService} from '../service/BusiService';
+import {useRoute} from '@react-navigation/native';
 
-type ItemProps = {title: string};
+type ItemProps = {
+  title: string;
+  selected: boolean;
+  handlePress: () => void;
+};
 
-const Item = ({title}: ItemProps) => (
-  <View style={styles.item}>
-    <Text style={styles.title}>{title}</Text>
-  </View>
-);
+const Item = ({title, selected, handlePress}: ItemProps) => {
+  const [selectedInner, setSelectedInner] = useState(selected);
+
+  return (
+    <Pressable
+      style={styles.item}
+      onPress={() => {
+        setSelectedInner(!selectedInner);
+        handlePress();
+      }}>
+      <Text style={styles.title}>{title}</Text>
+      {selectedInner && <Text style={styles.title}>选择</Text>}
+    </Pressable>
+  );
+};
+
+type ItemModel = {
+  id: string;
+  title: string;
+  selected: boolean;
+};
 
 export const RepeatPage = () => {
-  const DATA = [
-    {
-      id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-      title: 'Monday',
-    },
-    {
-      id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-      title: 'Second Item',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Friday',
-    },
-  ];
+  const route = useRoute();
+  const {todoId} = route.params;
+  const [data, setData] = useState<ItemModel[]>([]);
+  const fetchData = async () => {
+    try {
+      const res = await TodoService.getRepeatDicEntrys();
+      const todoRepeatRes = await TodoService.getRepeat(todoId);
+      const todoRepeats = todoRepeatRes.data.data;
+      const data = res.data.data.map(item => {
+        let entry = {
+          id: item.id,
+          title: item.entryValue,
+          selected: todoRepeats.some(i => i.id == item.id),
+        };
+        return entry;
+      });
+      setData(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const addRepeat = async (todoRepeat: {todoId: string; repeatId: string}) => {
+    await TodoService.addRepeat(todoRepeat);
+  };
+  const deleteRepeat = async (todoRepeat: {
+    todoId: string;
+    repeatId: string;
+  }) => {
+    await TodoService.deleteRepeat(todoRepeat);
+  };
+  const handleItemPress = (item: ItemModel) => {
+    const newData = data.map(entry => {
+      if (entry.id == item.id) {
+        if (entry.selected) {
+          deleteRepeat({todoId: todoId, repeatId: entry.id});
+        } else {
+          addRepeat({todoId: todoId, repeatId: entry.id});
+        }
+        entry.selected = !entry.selected;
+      }
+
+      return entry;
+    });
+
+    setData(newData);
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <FlatList
-      data={DATA}
-      renderItem={({item}) => <Item title={item.title} />}
+      data={data}
+      renderItem={({item}) => (
+        <Item
+          title={item.title}
+          selected={item.selected}
+          handlePress={() => handleItemPress(item)}
+        />
+      )}
     />
   );
 };
@@ -39,6 +103,8 @@ const styles = StyleSheet.create({
     marginTop: StatusBar.currentHeight || 0,
   },
   item: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     backgroundColor: '#f9c2ff',
     padding: 20,
     marginVertical: 8,

@@ -10,16 +10,14 @@ import {DateCom} from './DateCom';
 import {TodoService} from '../service/BusiService';
 import {TodoDispatchContext} from '../state/TodoContext';
 
-const Select = () => {
-  const navigation =
-    useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
-  const onPress = () => {
-    navigation.navigate('RepeatPage');
-  };
+type SelectProps = {
+  handlePress: () => void;
+};
+const Select = ({handlePress}: SelectProps) => {
   return (
     <View style={styles.repeatContainer}>
       <Text style={styles.rightIcon}>重复：</Text>
-      <AndDesign style={styles.rightIcon} name="right" onPress={onPress} />
+      <AndDesign style={styles.rightIcon} name="right" onPress={handlePress} />
     </View>
   );
 };
@@ -27,7 +25,8 @@ const Select = () => {
 const AddTodo = () => {
   const route = useRoute();
   const {todo} = route.params;
-  const navigation = useNavigation();
+  const navigation =
+    useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
   const dispatch = useContext(TodoDispatchContext);
   const [beginDate, seBeginDate] = useState<Date>(new Date());
   const [endDate, seEndDate] = useState<Date>(new Date());
@@ -37,7 +36,7 @@ const AddTodo = () => {
   const addTodo = async () => {
     try {
       const newTodo = {
-        id:todo.id,
+        id: todo.id,
         name: todoName,
         description: description,
         beginDate: beginDate,
@@ -53,6 +52,10 @@ const AddTodo = () => {
   };
   const onOKBtnPress = () => {
     addTodo();
+  };
+
+  const onPress = () => {
+    navigation.navigate('RepeatPage', {todoId: todo.id as string});
   };
 
   return (
@@ -84,7 +87,7 @@ const AddTodo = () => {
         <DateCom date={endDate} onConfirm={d => seEndDate(d)} />
       </View>
       <View style={styles.inputContainer}>
-        <Select />
+        <Select handlePress={onPress} />
       </View>
       <View style={{flex: 1, alignItems: 'center'}}>
         <Pressable style={styles.okBtn} onPress={onOKBtnPress}>

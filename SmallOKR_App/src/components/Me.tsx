@@ -31,7 +31,7 @@ const Me = () => {
         <Image style={styles.circle} source={require('../../assets/imgs/temp.jpg')}/>
       </View>
       <View style={styles.menuContainer}>
-        <MenuItem title="设置" />
+        {/* <MenuItem title="设置" /> */}
         <MenuItem title="个人信息" />
         <MenuItem title="退出登录" handlePress={handleLogout} />
       </View>

@@ -17,6 +17,7 @@ import com.alisa.Util.Result;
 import com.alisa.Util.UUIDTool;
 
 import alisa.smallokr.entity.Todo;
+import alisa.smallokr.entity.TodoRepeat;
 import alisa.smallokr.service.TodoService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
@@ -71,5 +72,23 @@ public class TodoController {
         }
         var todo = todoService.findTodoByUser(userId);
         return new Result<>(todo);
+    }
+
+    @GetMapping("getRepeat")
+    public Result<List<TodoRepeat>> getRepeat(String todoId) {
+        var todoRepeats = todoService.getRepeats(todoId);
+        return new Result<>(todoRepeats);
+    }
+
+    @PostMapping("addRepeat")
+    public Result<Boolean> addRepeat(TodoRepeat todoRepeat) {
+        var result = todoService.addRepeat(todoRepeat);
+        return new Result<>(result);
+    }
+
+    @DeleteMapping("deleteRepeat")
+    public Result<Boolean> deleteRepeat(String todoRepeatId) {
+        var result = todoService.deleteRepeat(todoRepeatId);
+        return new Result<Boolean>(result);
     }
 }
