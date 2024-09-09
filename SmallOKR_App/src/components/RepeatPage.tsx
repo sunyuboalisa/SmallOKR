@@ -38,24 +38,39 @@ export const RepeatPage = () => {
   const [data, setData] = useState<ItemModel[]>([]);
   const fetchData = async () => {
     try {
-      const res = await TodoService.getRepeatDicEntrys();
+      const repeatDicRes = await TodoService.getRepeatDicEntrys();
       const todoRepeatRes = await TodoService.getRepeat(todoId);
+
       const todoRepeats = todoRepeatRes.data.data;
-      const data = res.data.data.map(item => {
+      const data = repeatDicRes.data.data.map(item => {
         let entry = {
-          id: item.id,
+          todoRepeatId: '',
+          repeatId: item.id,
           title: item.entryValue,
-          selected: todoRepeats.some(i => i.id == item.id),
+          selected: false,
         };
+
+        todoRepeats.forEach(element => {
+          if (element.repeatId == item.id) {
+            entry.todoRepeatId = element.todoRepeatId;
+            entry.selected = true;
+          }
+        });
+
         return entry;
       });
+      console.log(data);
       setData(data);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const addRepeat = async (todoRepeat: {todoId: string; repeatId: string}) => {
+  const addRepeat = async (todoRepeat: {
+    todoRepeatId?: string;
+    todoId: string;
+    repeatId: string;
+  }) => {
     await TodoService.addRepeat(todoRepeat);
   };
   const deleteRepeat = async (todoRepeat: {
@@ -66,11 +81,11 @@ export const RepeatPage = () => {
   };
   const handleItemPress = (item: ItemModel) => {
     const newData = data.map(entry => {
-      if (entry.id == item.id) {
+      if (entry.repeatId == item.repeatId) {
         if (entry.selected) {
-          deleteRepeat({todoId: todoId, repeatId: entry.id});
+          deleteRepeat({todoId: todoId, repeatId: entry.repeatId});
         } else {
-          addRepeat({todoId: todoId, repeatId: entry.id});
+          addRepeat({todoId: todoId, repeatId: entry.repeatId});
         }
         entry.selected = !entry.selected;
       }

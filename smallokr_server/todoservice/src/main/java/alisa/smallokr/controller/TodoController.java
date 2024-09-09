@@ -81,8 +81,8 @@ public class TodoController {
     }
 
     @PostMapping("addRepeat")
-    public Result<Boolean> addRepeat(TodoRepeat todoRepeat) {
-        todoRepeat.setRepeatId(UUIDTool.getUUID());
+    public Result<Boolean> addRepeat(@RequestBody TodoRepeat todoRepeat) {
+        todoRepeat.setTodoRepeatId(UUIDTool.getUUID());
         var result = todoService.addRepeat(todoRepeat);
         return new Result<>(result);
     }

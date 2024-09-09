@@ -13,7 +13,12 @@ class AxiosHelper {
     // 添加请求拦截器
     this.instance.interceptors.request.use(
       config => {
-        console.log(`发送请求: ${config.method?.toUpperCase()} ${config.url}`,config.baseURL);
+        console.log(
+          `发送${config.method?.toUpperCase()}请求:  ${config.baseURL}/${
+            config.url
+          }`,
+        );
+        console.log('请求体：', config.data);
         if (this.token !== '') {
           config.headers.Authorization = 'Bearer ' + this.token;
         }
@@ -48,6 +53,7 @@ class AxiosHelper {
 
   public get<T = any>(url: string, params?: any): Promise<AxiosResponse<T>> {
     try {
+   
       return this.instance.get<T>(url, {params});
     } catch (error) {
       throw error;
@@ -65,13 +71,10 @@ class AxiosHelper {
     });
   }
 
-  public delete<T = any>(
-    url: string,
-    params?: any,
-  ): Promise<AxiosResponse<T>> {
+  public delete<T = any>(url: string, params?: any): Promise<AxiosResponse<T>> {
     return this.instance.delete<T>(url, {
       headers: {'Content-Type': 'application/json'},
-      params:params,
+      params: params,
     });
   }
 }

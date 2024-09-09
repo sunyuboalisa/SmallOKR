@@ -74,10 +74,10 @@ const TodoService = {
     return axiosHelper.get('/api/v1/todo/dic/get', {dicName: 'repeat_dic'});
   },
   addRepeat: (todoRepeat: {todoId: string; repeatId: string}) => {
-    return axiosHelper.get('/api/v1/todo/addRepeat', todoRepeat);
+    return axiosHelper.post('/api/v1/todo/addRepeat', todoRepeat);
   },
   deleteRepeat: (todoRepeat: {todoId: string; repeatId: string}) => {
-    return axiosHelper.get('/api/v1/todo/deleteRepeat', todoRepeat);
+    return axiosHelper.delete('/api/v1/todo/deleteRepeat', todoRepeat);
   },
   getRepeat: (todoId: string) => {
     return axiosHelper.get('/api/v1/todo/getRepeat', {todoId: todoId});
