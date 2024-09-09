@@ -19,11 +19,10 @@
     </select>
      <select id="getTodoByUserAndWeekDay" resultType="alisa.smallokr.entity.Todo">
         select <include refid="common"/> 
-        FROM tb_todo AS todo, tb_todo_repeat AS todoRepeat
-        WHERE todo.todo_id = todoRepeat.todo_id
-        and todo.user_id = #{userId}
-        and todo.todo_end_date &lt; #{date}
-        in (SELECT dic_entry_id FROM tb_dic_entry WHERE dic_entry_value=#{weekDay})
+        FROM tb_todo AS todo
+        JOIN tb_todo_repeat AS todoRepeat ON todoRepeat.todo_id = todo.todo_id
+        where todo.user_id = #{userId}
+        todoRepeat.repeat_id in (SELECT dic_entry_id FROM tb_dic_entry WHERE dic_entry_value=#{weekDay})
         order by todo.todo_begin_date
     </select>
 
