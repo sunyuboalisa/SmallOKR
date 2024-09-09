@@ -22,7 +22,10 @@
         FROM tb_todo AS todo
         JOIN tb_todo_repeat AS todoRepeat ON todoRepeat.todo_id = todo.todo_id
         where todo.user_id = #{userId}
-        todoRepeat.repeat_id in (SELECT dic_entry_id FROM tb_dic_entry WHERE dic_entry_value=#{weekDay})
+        and 
+        (todoRepeat.repeat_id in (SELECT dic_entry_id FROM tb_dic_entry WHERE dic_entry_value=#{weekDay})
+        or DATE(todo.todo_begin_date)=DATE(#{date})
+        )
         order by todo.todo_begin_date
     </select>
 
