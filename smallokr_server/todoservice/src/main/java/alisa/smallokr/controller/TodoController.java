@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -83,7 +84,7 @@ public class TodoController {
 
     @GetMapping("getTodoByWeekDay")
     public Result<List<TodoVo>> getTodoByWeekDay(String userId,
-            @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime date, HttpServletRequest request) {
+            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime date, HttpServletRequest request) {
         var token = request.getHeader("Authorization").substring(7);
         if (userId == null) {
             userId = JwtUtil.extractClaim(token, new Function<Claims, String>() {
