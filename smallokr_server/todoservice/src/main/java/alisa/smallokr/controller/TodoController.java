@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alisa.Util.JwtUtil;
 import com.alisa.Util.Result;
 import com.alisa.Util.UUIDTool;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import alisa.smallokr.entity.Todo;
 import alisa.smallokr.entity.TodoRepeat;
@@ -81,7 +82,8 @@ public class TodoController {
     }
 
     @GetMapping("getTodoByWeekDay")
-    public Result<List<TodoVo>> getTodoByWeekDay(String userId, LocalDateTime date, HttpServletRequest request) {
+    public Result<List<TodoVo>> getTodoByWeekDay(String userId,
+            @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime date, HttpServletRequest request) {
         var token = request.getHeader("Authorization").substring(7);
         if (userId == null) {
             userId = JwtUtil.extractClaim(token, new Function<Claims, String>() {
