@@ -9,6 +9,7 @@ import AndDesign from 'react-native-vector-icons/AntDesign';
 import {DateCom} from './DateCom';
 import {TodoService} from '../service/BusiService';
 import {TodoDispatchContext} from '../state/TodoContext';
+import dayjs from 'dayjs';
 
 type SelectProps = {
   handlePress: () => void;
@@ -39,8 +40,8 @@ const AddTodo = () => {
         id: todo.id,
         name: todoName,
         description: description,
-        beginDate: beginDate,
-        endDate: endDate,
+        beginDate: dayjs(beginDate).format('YYYY-MM-DD HH:mm:ss'),
+        endDate: dayjs(endDate).format('YYYY-MM-DD HH:mm:ss'),
         status: '',
       };
       console.log('add todo', newTodo);
