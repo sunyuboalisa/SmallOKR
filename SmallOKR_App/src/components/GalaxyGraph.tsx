@@ -95,7 +95,7 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({data}) => {
     const centerX = width / 2;
     const centerY = height / 2;
     const maxRadius = Math.min(width, height) / 2; // 设定最大半径为屏幕宽高的1/2
-    const temp = generateCoordinates(data, centerX, centerY, maxRadius);
+    const temp = generateCoordinates(data);
     setNodes(temp);
   }, [data]);
 

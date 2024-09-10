@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, {useState} from 'react';
+import {StyleSheet, Text, View} from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import AndDesign from 'react-native-vector-icons/AntDesign';
 
@@ -8,12 +8,14 @@ interface DateComProps {
   onConfirm: (date: Date) => void;
 }
 
-const DateCom = ({ date, onConfirm }: DateComProps) => {
+const DateCom = ({date, onConfirm}: DateComProps) => {
   const [open, setOpen] = useState(false);
 
   return (
     <View style={styles.repeatContainer}>
-      <Text style={{ marginRight: 10, textAlignVertical: 'center' }}>{date.toLocaleDateString()}</Text>
+      <Text style={{marginRight: 10, textAlignVertical: 'center'}}>
+        {date.toLocaleDateString()}
+      </Text>
       <AndDesign
         style={styles.rightIcon}
         name="calendar"
@@ -35,7 +37,7 @@ const DateCom = ({ date, onConfirm }: DateComProps) => {
   );
 };
 
-export { DateCom };
+export {DateCom};
 
 const styles = StyleSheet.create({
   input: {
@@ -47,7 +49,7 @@ const styles = StyleSheet.create({
   repeatContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems:'center',
+    alignItems: 'center',
   },
   rightIcon: {
     fontSize: 22,

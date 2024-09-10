@@ -1,5 +1,4 @@
 import {
-  Button,
   FlatList,
   Pressable,
   StyleSheet,
@@ -7,15 +6,15 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { TargetService } from '../service/BusiService';
+import React, {useContext, useEffect, useState} from 'react';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import {TargetService} from '../service/BusiService';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { TargetContext, TargetDispatchContext } from '../state/TargetContext';
+import {TargetContext, TargetDispatchContext} from '../state/TargetContext';
 
 const AddTarget = () => {
   const route = useRoute();
-  const { target } = route.params;
+  const {target} = route.params;
   const navigation = useNavigation();
   const [description, onChangeDescription] = useState(target.description);
   const [targetName, onChangeTargetName] = useState(target.name);
@@ -47,7 +46,7 @@ const AddTarget = () => {
       const getTargetsRes = await TargetService.getTargets();
       let data = getTargetsRes.data.data;
       const newState = data.map(
-        (value: { id: any; name: any; description: any }) => {
+        (value: {id: any; name: any; description: any}) => {
           let entry = {
             id: value.id,
             name: value.name,
@@ -56,19 +55,19 @@ const AddTarget = () => {
           return entry;
         },
       );
-      dispatch({ type: 'Load', targets: newState });
-      dispatch({ type: 'Reload', reload: true });
+      dispatch({type: 'Load', targets: newState});
+      dispatch({type: 'Reload', reload: true});
       navigation.goBack();
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const featchData = async () => {
     try {
-      const res = await TargetService.getResults({ targetId: target.id });
+      const res = await TargetService.getResults({targetId: target.id});
       console.log('user results: ', res.data.data);
-      dispatch({ type: 'LoadResult', results: res.data.data });
+      dispatch({type: 'LoadResult', results: res.data.data});
     } catch (error) {
       console.log(error);
     }
@@ -98,40 +97,50 @@ const AddTarget = () => {
           placeholder="目标描述"
         />
       </View>
-      <Ionicons style={{ fontSize: 24 }} name="add" onPress={onAddBtnPress} />
+      <Ionicons style={{fontSize: 24}} name="add" onPress={onAddBtnPress} />
       <FlatList
-        style={{ flex: 1 }}
+        style={{flex: 1}}
         data={targetContext.results}
         keyExtractor={(item, index) => item.name + index}
-        renderItem={({ item }) => (
+        renderItem={({item}) => (
           <View style={styles.row}>
             <View style={styles.cell}>
               <Text>阶段：</Text>
-              <TextInput style={styles.cellInput}
-                onEndEditing={e => dispatch({
-                  type: 'ChangeResult', newResult: {
-                    ...item,
-                    name: e.nativeEvent.text,
-                  }
-                })}>{item.name}
+              <TextInput
+                style={styles.cellInput}
+                onEndEditing={e =>
+                  dispatch({
+                    type: 'ChangeResult',
+                    newResult: {
+                      ...item,
+                      name: e.nativeEvent.text,
+                    },
+                  })
+                }>
+                {item.name}
               </TextInput>
             </View>
             <Text>|</Text>
             <View style={styles.cell}>
               <Text>成果：</Text>
-              <TextInput style={styles.cellInput}
-                onEndEditing={e => dispatch({
-                  type: 'ChangeResult', newResult: {
-                    ...item,
-                    value: e.nativeEvent.text,
-                  }
-                })}>{item.value}
+              <TextInput
+                style={styles.cellInput}
+                onEndEditing={e =>
+                  dispatch({
+                    type: 'ChangeResult',
+                    newResult: {
+                      ...item,
+                      value: e.nativeEvent.text,
+                    },
+                  })
+                }>
+                {item.value}
               </TextInput>
             </View>
           </View>
         )}
       />
-      <View style={{ flex: 1, alignItems: 'center' }}>
+      <View style={{flex: 1, alignItems: 'center'}}>
         <Pressable style={styles.okBtn} onPress={handleOKBtnPress}>
           <Text style={styles.btnText}>确定</Text>
         </Pressable>
@@ -151,7 +160,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     margin: 5,
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   input: {
     height: 40,
@@ -173,7 +182,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    margin: 10
+    margin: 10,
   },
   cellInput: {
     flex: 1,
@@ -191,12 +200,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#007eff',
     marginHorizontal: 5,
     borderRadius: 25,
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   btnText: {
     fontSize: 24,
     textAlign: 'center',
-    color: 'white'
+    color: 'white',
   },
 });
 

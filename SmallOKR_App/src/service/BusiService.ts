@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {axiosHelper} from '../util/AxiosHelper';
 import {User} from '../model/User';
 import {ITarget} from '../model/OKRModel';
@@ -15,25 +14,6 @@ const UserService = {
   },
   logout: () => {
     return axiosHelper.post('');
-  },
-  getToken: async () => {
-    //   try {
-    //     let userInfo = await AsyncStorage.getItem('userInfo');
-    //     if (userInfo !== null) {
-    //       // let data = JSON.parse(userInfo);
-    //     }
-    //     console.log('从本地获取用户信息：', userInfo);
-    //   } catch (error) {
-    //     console.log('从本地获取用户信息时出错：', error);
-    //   }
-  },
-  storeToken: async (user: User) => {
-    try {
-      //await AsyncStorage.setItem('userInfo', JSON.stringify(user));
-      //console.log('保存用户信息到本地时：', user);
-    } catch (error) {
-      //console.log('保存用户信息到本地时出错：', error);
-    }
   },
 };
 

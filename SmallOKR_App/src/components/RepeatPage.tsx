@@ -42,23 +42,27 @@ export const RepeatPage = () => {
       const todoRepeatRes = await TodoService.getRepeat(todoId);
 
       const todoRepeats = todoRepeatRes.data.data;
-      const data = repeatDicRes.data.data.map(item => {
-        let entry = {
-          todoRepeatId: '',
-          repeatId: item.id,
-          title: item.entryValue,
-          selected: false,
-        };
+      const data = repeatDicRes.data.data.map(
+        (item: {id: any; entryValue: any}) => {
+          let entry = {
+            todoRepeatId: '',
+            repeatId: item.id,
+            title: item.entryValue,
+            selected: false,
+          };
 
-        todoRepeats.forEach(element => {
-          if (element.repeatId == item.id) {
-            entry.todoRepeatId = element.todoRepeatId;
-            entry.selected = true;
-          }
-        });
+          todoRepeats.forEach(
+            (element: {repeatId: any; todoRepeatId: string}) => {
+              if (element.repeatId == item.id) {
+                entry.todoRepeatId = element.todoRepeatId;
+                entry.selected = true;
+              }
+            },
+          );
 
-        return entry;
-      });
+          return entry;
+        },
+      );
       console.log(data);
       setData(data);
     } catch (error) {

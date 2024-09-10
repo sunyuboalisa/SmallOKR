@@ -1,19 +1,16 @@
-import React, { useContext, useState } from 'react';
+import React, {useContext, useState} from 'react';
 import {
-  View,
   Text,
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  Alert,
   ImageBackground,
-  Image,
 } from 'react-native';
-import { UserDispatchContext } from '../state/UserContext';
-import { UserService } from '../service/BusiService';
-import { axiosHelper } from '../util/AxiosHelper';
+import {UserDispatchContext} from '../state/UserContext';
+import {UserService} from '../service/BusiService';
+import {axiosHelper} from '../util/AxiosHelper';
 
-export const LoginScreen = ({ }) => {
+export const LoginScreen = ({}) => {
   const dispatch = useContext(UserDispatchContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -21,11 +18,14 @@ export const LoginScreen = ({ }) => {
 
   const handleLogin = async () => {
     try {
-      const res=await UserService.login({ username: username, password: password });
+      const res = await UserService.login({
+        username: username,
+        password: password,
+      });
       if (res.data.code === '200') {
         dispatch({
           type: 'Login',
-          user: { username: username, password: password },
+          user: {username: username, password: password},
         });
         axiosHelper.setToken(res.data.data);
       } else {
@@ -89,17 +89,17 @@ const styles = StyleSheet.create({
   },
   login: {
     width: '80%',
-    height:50,
-    marginTop:30,
+    height: 50,
+    marginTop: 30,
     backgroundColor: '#007eff',
     marginHorizontal: 5,
-    borderRadius:25,
-    justifyContent:'center'
+    borderRadius: 25,
+    justifyContent: 'center',
   },
   loginText: {
     fontSize: 24,
     textAlign: 'center',
-    color:'white'
+    color: 'white',
   },
 });
 

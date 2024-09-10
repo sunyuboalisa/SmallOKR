@@ -4,7 +4,6 @@ import LoginScreen from './LoginScreen';
 import React, {useContext, useEffect} from 'react';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {UserContext} from '../state/UserContext';
-import {UserService} from '../service/BusiService';
 
 // 创建堆栈导航器
 const Stack = createStackNavigator<MyReactNavigation.ParamList>();
@@ -14,13 +13,11 @@ export const AppStackNav = () => {
     useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
 
   useEffect(() => {
-    UserService.getToken().then(() => {
-      if (userContext?.userInfo) {
-        navigation.navigate('MainApp');
-      } else {
-        navigation.navigate('Login');
-      }
-    });
+    if (userContext?.userInfo) {
+      navigation.navigate('MainApp');
+    } else {
+      navigation.navigate('Login');
+    }
   }, [navigation, userContext]);
   return (
     <Stack.Navigator screenOptions={{gestureEnabled: false}}>

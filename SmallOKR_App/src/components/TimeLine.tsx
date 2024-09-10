@@ -1,6 +1,6 @@
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import {FlatList, Pressable, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
-import { getColor } from '../theme';
+import {getColor} from '../theme';
 
 type DataType = {
   id: string;
@@ -22,26 +22,39 @@ interface TimeLineProps {
   handleItemLongPress: (data: DataType) => void;
 }
 
-const Item = ({ dateTime, title, color, handlePress, handleLongPress }: ItemProps) => {
+const Item = ({
+  dateTime,
+  title,
+  color,
+  handlePress,
+  handleLongPress,
+}: ItemProps) => {
   return (
-    <Pressable style={styles.rowContainer} onPress={() => handlePress()} onLongPress={handleLongPress}>
+    <Pressable
+      style={styles.rowContainer}
+      onPress={() => handlePress()}
+      onLongPress={handleLongPress}>
       <View style={styles.timeContainer}>
         <Text>{dateTime}</Text>
       </View>
-      <View style={{ ...styles.titleContainer, backgroundColor: color }}>
+      <View style={{...styles.titleContainer, backgroundColor: color}}>
         <Text>{title}</Text>
       </View>
     </Pressable>
   );
 };
 
-const TimeLine = ({ data, handleItemPress, handleItemLongPress }: TimeLineProps) => {
+const TimeLine = ({
+  data,
+  handleItemPress,
+  handleItemLongPress,
+}: TimeLineProps) => {
   return (
     <View style={styles.container}>
       <FlatList
         data={data}
         keyExtractor={(item, index) => item.title + index}
-        renderItem={({ item, index }) => {
+        renderItem={({item, index}) => {
           return (
             <Item
               color={getColor(index)}
@@ -57,7 +70,7 @@ const TimeLine = ({ data, handleItemPress, handleItemLongPress }: TimeLineProps)
   );
 };
 
-export { TimeLine };
+export {TimeLine};
 
 const styles = StyleSheet.create({
   container: {
@@ -91,7 +104,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     elevation: 3,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
     shadowRadius: 2,
   },

@@ -41,7 +41,7 @@ const AddTodo = () => {
         description: description,
         beginDate: beginDate,
         endDate: endDate,
-        status:''
+        status: '',
       };
       console.log('add todo', newTodo);
       const addTodoRes = await TodoService.AddOrSaveTodo(newTodo);

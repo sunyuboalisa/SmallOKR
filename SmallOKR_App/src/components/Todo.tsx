@@ -6,6 +6,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {TodoContext, TodoDispatchContext} from '../state/TodoContext';
 import {TimeLine} from './TimeLine';
 import {TodoService} from '../service/BusiService';
+import dayjs from 'dayjs';
 
 const PlanHeaderRight = () => {
   const navigation =
@@ -62,8 +63,9 @@ const Todo = () => {
 
   const fetchData = async () => {
     try {
-      const now = new Date();
-      const localDateTime = now.toISOString().slice(0, 19);
+      const now = dayjs().format('YYYY-MM-DD HH:mm:ss');
+      const localDateTime = now;
+      console.log(localDateTime);
       const res = await TodoService.getTodosByDate(localDateTime);
       const todos = res.data.data;
       dispatch({type: 'Load', newTodos: todos});

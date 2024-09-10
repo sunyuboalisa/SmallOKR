@@ -1,7 +1,6 @@
 import React, {Dispatch, createContext, useReducer} from 'react';
 import {UserAction} from './Actions';
 import {User} from '../model/User';
-import { UserService } from '../service/BusiService';
 
 export type UserState = {
   userInfo: User | null;
@@ -26,7 +25,6 @@ export function UserContextProvider({children}: {children: React.ReactNode}) {
 const UserReducer = function (state: UserState, action: UserAction): UserState {
   switch (action.type) {
     case 'Login':
-      UserService.storeToken(action.user);
       return {
         userInfo: action.user,
         status: 'online',
