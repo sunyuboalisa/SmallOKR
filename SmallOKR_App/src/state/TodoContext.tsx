@@ -6,13 +6,13 @@ interface UITodo {
   dateTime: string;
   title: string;
 }
-interface PlanState {
+interface TodoState {
   todos: Todo[];
   uiTodos: UITodo[];
   reload: boolean;
 }
 
-const initialPlanStates: PlanState = {
+const initialPlanStates: TodoState = {
   todos: [],
   uiTodos: [],
   reload: false,
@@ -25,7 +25,7 @@ const TodoContext = createContext(initialPlanStates);
 const TodoDispatchContext = createContext(initialDispatch);
 
 const TodoContextProvider = ({children}: {children: React.ReactNode}) => {
-  const TodoReducer = (state: PlanState, action: TodoAction) => {
+  const TodoReducer = (state: TodoState, action: TodoAction) => {
     switch (action.type) {
       case 'Add':
         break;
@@ -35,7 +35,7 @@ const TodoContextProvider = ({children}: {children: React.ReactNode}) => {
           dateTime: x.beginDate,
           title: x.name,
         }));
-        return {todos: action.newTodos, uiTodos: temp};
+        return {...state, todos: action.newTodos, uiTodos: temp};
       case 'Reload':
         return {...state, reload: action.reload};
       default:

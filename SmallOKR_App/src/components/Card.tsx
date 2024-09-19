@@ -25,7 +25,7 @@ const Card = ({
       delayLongPress={500}
       style={{...styles.container, backgroundColor: color}}>
       <View style={styles.circle} />
-      <View style={{justifyContent: 'center', margin: 5}}>
+      <View style={{justifyContent: 'center', margin: 5, paddingLeft: 10}}>
         <Text style={styles.titleFont}>{title}</Text>
         <Text style={styles.descriptionFont}>{description}</Text>
       </View>
@@ -38,16 +38,21 @@ export {Card};
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    borderWidth: 1,
     borderRadius: 8,
     padding: 10,
     margin: 10,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
   },
   circle: {
-    borderWidth: 1,
     width: 80,
     height: 80,
     borderRadius: 1000, // High value
+    borderWidth: 1,
+    borderColor: 'rgba(ee, ee, ee,0.3)',
   },
   titleFont: {
     fontSize: 22,

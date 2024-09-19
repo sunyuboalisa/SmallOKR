@@ -1,7 +1,11 @@
 import {View, Text, Modal, TouchableOpacity} from 'react-native';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {StyleSheet} from 'react-native';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {
+  NavigationProp,
+  useFocusEffect,
+  useNavigation,
+} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {TodoContext, TodoDispatchContext} from '../state/TodoContext';
 import {TimeLine} from './TimeLine';
@@ -23,7 +27,7 @@ const PlanHeaderRight = () => {
       },
     });
   };
-  return <Ionicons name="add" onPress={onAddBtnPress} />;
+  return <Ionicons name="add" style={{fontSize: 24}} onPress={onAddBtnPress} />;
 };
 
 const Todo = () => {
@@ -74,9 +78,11 @@ const Todo = () => {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [planContext.reload]);
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchData();
+    }, []),
+  );
 
   return (
     <View style={styles.container}>

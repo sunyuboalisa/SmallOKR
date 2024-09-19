@@ -1,4 +1,7 @@
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
+import {useContext} from 'react';
+import {Alert} from 'react-native';
+import {UserDispatchContext} from '../state/UserContext';
 
 class AxiosHelper {
   private token: string;
@@ -34,6 +37,11 @@ class AxiosHelper {
     this.instance.interceptors.response.use(
       response => {
         console.log('响应数据:', response.data);
+        if (response.status === 403) {
+          Alert.alert('用户登录过期');
+          const dispatch = useContext(UserDispatchContext);
+          dispatch({type: 'Logout'});
+        }
         return response;
       },
       error => {
@@ -53,7 +61,6 @@ class AxiosHelper {
 
   public get<T = any>(url: string, params?: any): Promise<AxiosResponse<T>> {
     try {
-   
       return this.instance.get<T>(url, {params});
     } catch (error) {
       throw error;

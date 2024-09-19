@@ -1,7 +1,6 @@
 package alisa.smallokr.controller;
 
 import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alisa.Util.JwtUtil;
 import com.alisa.Util.Result;
 import com.alisa.Util.UUIDTool;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import alisa.smallokr.entity.Todo;
 import alisa.smallokr.entity.TodoRepeat;

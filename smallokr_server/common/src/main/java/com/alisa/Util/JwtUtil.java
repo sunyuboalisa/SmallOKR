@@ -42,12 +42,14 @@ public class JwtUtil {
                 .getBody();
     }
 
-    private static Boolean isTokenExpired(String token) {
+    public static Boolean isTokenExpired(String token) {
         boolean res = false;
         try {
-            res = extractExpiration(token).before(new Date());
+            var c = JwtUtil.extractAllClaims(token);
+            res = extractExpiration(token)
+                    .before(new Date());
         } catch (Exception e) {
-            var c=e;
+            res = true;
         }
         return res;
     }
@@ -57,13 +59,13 @@ public class JwtUtil {
         return (tempusername.equals(username) && !isTokenExpired(token));
     }
 
-    public static String GenerateToken(String username,Map<String, Object> claims) {
+    public static String GenerateToken(String username, Map<String, Object> claims) {
         return createToken(claims, username);
     }
 
     private static String createToken(Map<String, Object> claims, String username) {
         // 设置过期时间为当前时间后的 3600 秒
-        LocalDateTime expirationTime = LocalDateTime.now().plusSeconds(3600);
+        LocalDateTime expirationTime = LocalDateTime.now().plusDays(30);
         Date expirationDate = Date.from(expirationTime.atZone(ZoneId.systemDefault()).toInstant());
 
         return Jwts.builder()

@@ -1,5 +1,4 @@
 import {axiosHelper} from '../util/AxiosHelper';
-import {User} from '../model/User';
 import {ITarget} from '../model/OKRModel';
 
 interface ResultFilter {

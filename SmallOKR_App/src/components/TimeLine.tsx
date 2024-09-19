@@ -37,8 +37,10 @@ const Item = ({
       <View style={styles.timeContainer}>
         <Text>{dateTime}</Text>
       </View>
-      <View style={{...styles.titleContainer, backgroundColor: color}}>
-        <Text>{title}</Text>
+      <View style={styles.titleContainer}>
+        <View style={{...styles.titleWrapper, backgroundColor: color}}>
+          <Text>{title}</Text>
+        </View>
       </View>
     </Pressable>
   );
@@ -50,7 +52,7 @@ const TimeLine = ({
   handleItemLongPress,
 }: TimeLineProps) => {
   return (
-    <View style={styles.container}>
+    <View>
       <FlatList
         data={data}
         keyExtractor={(item, index) => item.title + index}
@@ -73,39 +75,31 @@ const TimeLine = ({
 export {TimeLine};
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    flex: 1,
-  },
   rowContainer: {
     flexDirection: 'row',
-    flex: 1,
-    alignContent: 'center',
+    justifyContent: 'center',
     minHeight: 80,
   },
   timeContainer: {
     borderRightWidth: 1,
-    minHeight: 50,
     justifyContent: 'center',
+    alignItems: 'center',
     width: 80,
   },
   titleContainer: {
-    minHeight: 30,
-    height: 60,
-    width: 200,
-    padding: 5,
-    fontSize: 22,
+    flex: 1,
+    padding: 10,
+  },
+  titleWrapper: {
+    flex: 1,
+    borderRadius: 8,
+    paddingLeft: 20,
     justifyContent: 'center',
     textAlign: 'left',
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginHorizontal: 8,
-    marginBottom: 10,
-    borderRadius: 5,
     elevation: 3,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
   },
 });

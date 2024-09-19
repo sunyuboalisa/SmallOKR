@@ -23,7 +23,6 @@ const TargetHeaderRight = () => {
 
 const Target = () => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [reloadData, setReloadData] = useState(true);
   const targetContext = useContext(TargetContext);
   const dispatch = useContext(TargetDispatchContext);
   const navigation =
@@ -45,7 +44,6 @@ const Target = () => {
       TargetService.deleteTarget(selectedTarget.id)
         .then(res => {
           console.log(res);
-          setReloadData(true);
         })
         .catch(err => {
           console.log(err);
@@ -133,24 +131,11 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 16,
   },
-  header: {
-    fontSize: 32,
-    backgroundColor: 'gold',
-    margin: 1,
-  },
-  item: {
-    backgroundColor: '#4682B4',
-    padding: 15,
-    marginVertical: 8,
-    borderRadius: 8,
-  },
   title: {
     fontSize: 24,
   },
   addBtn: {
-    fontSize: 25,
-    color: '#00cc00',
-    textAlign: 'center',
+    fontSize: 24,
   },
   modalMask: {
     flex: 1,
