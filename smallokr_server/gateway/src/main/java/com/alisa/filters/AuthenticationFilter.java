@@ -8,12 +8,14 @@ import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.server.ServerWebExchange;
 
 import com.alisa.Util.JwtUtil;
 
 import reactor.core.publisher.Mono;
 
+@CrossOrigin
 @Component
 public class AuthenticationFilter implements GlobalFilter, Ordered {
     @Override

@@ -6,6 +6,16 @@ spring:
     nacos:
       server-addr: 47.94.97.3:8848
     gateway:
+      # 网关全局跨域配置
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
+        # 解决options请求被拦截的问题
+        add-to-simple-url-handler-mapping: true
       routes:
         - id: target-service
           uri: lb://target-service

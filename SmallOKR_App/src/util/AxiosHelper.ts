@@ -37,14 +37,14 @@ class AxiosHelper {
     this.instance.interceptors.response.use(
       response => {
         console.log('响应数据:', response.data);
-        if (response.status === 403) {
+        return response;
+      },
+      error => {
+        if (error.status === 401) {
           Alert.alert('用户登录过期');
           const dispatch = useContext(UserDispatchContext);
           dispatch({type: 'Logout'});
         }
-        return response;
-      },
-      error => {
         console.error('响应拦截器发生错误:', error);
         return Promise.reject(error);
       },
