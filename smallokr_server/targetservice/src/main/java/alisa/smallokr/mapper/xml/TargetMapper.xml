@@ -7,7 +7,8 @@
         user_id as userId,
         target_name as name,
         target_description as description,
-        cre_time as creTime
+        cre_time as creTime,
+        target_status as status
     </sql>
      <select id="findAll" resultType="alisa.smallokr.entity.Target">
         select <include refid="common"/> from tb_target order by cre_time
@@ -20,11 +21,12 @@
     </select>
 
     <insert id="saveTarget" parameterType="alisa.smallokr.entity.Target">
-        insert into tb_target(target_id,target_name,target_description,user_id,cre_time) 
-        values (#{id},#{name},#{description},#{userId},#{creTime})
+        insert into tb_target(target_id,target_name,target_description,user_id,cre_time,target_status) 
+        values (#{id},#{name},#{description},#{userId},#{creTime},#{status})
         ON DUPLICATE KEY UPDATE
         target_name = VALUES(target_name),
-        target_description = VALUES(target_description)
+        target_description = VALUES(target_description),
+        target_status = VALUES(target_status)
     </insert>
 
     <!-- deleteTarget --> 

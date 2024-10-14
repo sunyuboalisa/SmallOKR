@@ -26,9 +26,12 @@ const Me = () => {
     dispatch({type: 'Logout'});
   };
   return (
-    <View>
+    <View style={styles.page}>
       <View style={styles.container}>
-        <Image style={styles.circle} source={require('../../assets/imgs/temp.jpg')}/>
+        <Image
+          style={styles.circle}
+          source={require('../../assets/imgs/temp.jpg')}
+        />
       </View>
       <View style={styles.menuContainer}>
         {/* <MenuItem title="设置" /> */}
@@ -42,6 +45,9 @@ const Me = () => {
 export default Me;
 
 const styles = StyleSheet.create({
+  page: {
+    flex: 1,
+  },
   container: {
     alignItems: 'center',
     padding: 20,

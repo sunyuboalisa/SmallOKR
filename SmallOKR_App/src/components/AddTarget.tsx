@@ -1,5 +1,6 @@
 import {
   FlatList,
+  ImageBackground,
   Pressable,
   StyleSheet,
   Text,
@@ -153,7 +154,6 @@ const styles = StyleSheet.create({
   page: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: 'white',
     justifyContent: 'center',
     paddingHorizontal: 20,
   },

@@ -43,6 +43,10 @@ public class TargetController {
             target.setId(UUIDTool.getUUID());
             target.setCreTime(LocalDateTime.now());
         }
+
+        if (target.getStatus() == null) {
+            target.setStatus("0");
+        }
         target.setUserId(userId);
         boolean res = targetService.addTarget(target);
 

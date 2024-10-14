@@ -87,3 +87,4 @@ class AxiosHelper {
 }
 
 export const axiosHelper = new AxiosHelper('47.94.97.3:8080');
+// export const axiosHelper = new AxiosHelper('127.0.0.1:8080');

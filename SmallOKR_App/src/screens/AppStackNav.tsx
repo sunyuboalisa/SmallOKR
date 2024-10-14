@@ -20,7 +20,10 @@ export const AppStackNav = () => {
     }
   }, [navigation, userContext]);
   return (
-    <Stack.Navigator screenOptions={{gestureEnabled: false}}>
+    <Stack.Navigator
+      screenOptions={{
+        gestureEnabled: false,
+      }}>
       <Stack.Screen
         options={{headerShown: false}}
         name="Login"

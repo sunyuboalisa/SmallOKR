@@ -1,4 +1,11 @@
-import {Modal, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  ImageBackground,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {FlatList} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -88,7 +95,8 @@ const Target = () => {
   }, [dispatch, targetContext.reload]);
 
   return (
-    <View style={styles.container}>
+    <View
+      style={styles.container}>
       <FlatList
         keyExtractor={(item, index) => item.name + index}
         renderItem={({item, index}) => {
@@ -129,7 +137,7 @@ const Target = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginHorizontal: 16,
+    paddingHorizontal: 16,
   },
   title: {
     fontSize: 24,

@@ -12,4 +12,5 @@ public class Target {
     private String name;
     private String description;
     private LocalDateTime creTime;
+    private String status;
 }

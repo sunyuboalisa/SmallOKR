@@ -8,7 +8,7 @@ const App = () => {
     ...DefaultTheme,
     colors: {
       ...DefaultTheme.colors,
-      background: 'rgb(255, 255, 255)',
+      background: 'transparent',
       notification: 'rgb(255, 69, 58)',
     },
   };
