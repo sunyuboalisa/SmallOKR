@@ -29,19 +29,48 @@ const AddTodo = () => {
   const navigation =
     useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
   const dispatch = useContext(TodoDispatchContext);
-  const [beginDate, seBeginDate] = useState<Date>(new Date());
-  const [endDate, seEndDate] = useState<Date>(new Date());
+
+  let initailBeginDate = new Date();
+  let initailEndDate = new Date();
+  // 获取当前日期
+  const now = new Date();
+
+  if (todo.dateTime != null) {
+    const [hours, minutes] = todo.dateTime.split(':').map(Number);
+    initailBeginDate = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      hours,
+      minutes,
+    );
+  }
+
+  if (todo.endTime != null) {
+    const [hours, minutes] = todo.endTime.split(':').map(Number);
+    initailEndDate = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      hours,
+      minutes,
+    );
+  }
+
+  const [beginDate, seBeginDate] = useState<Date>(initailBeginDate);
+  const [endDate, seEndDate] = useState<Date>(initailEndDate);
   const [description, onChangeDescription] = useState('');
   const [todoName, onChangeTodoName] = useState(todo.title);
-
+  console.log(todo.dateTime);
+  console.log(dayjs(todo.dateTime, 'HH:mm').isValid());
   const addTodo = async () => {
     try {
       const newTodo = {
         id: todo.id,
         name: todoName,
         description: description,
-        beginDate: dayjs(beginDate).format('YYYY-MM-DD HH:mm:ss'),
-        endDate: dayjs(endDate).format('YYYY-MM-DD HH:mm:ss'),
+        beginDate: dayjs(beginDate).format('HH:mm'),
+        endDate: dayjs(endDate).format('HH:mm'),
         status: '',
       };
       console.log('add todo', newTodo);

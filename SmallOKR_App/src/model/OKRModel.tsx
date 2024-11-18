@@ -18,6 +18,7 @@ export interface ITarget {
   id: string;
   name: string;
   description: string;
+  status: string;
 }
 
 export interface IResult {

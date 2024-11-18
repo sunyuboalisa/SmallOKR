@@ -10,7 +10,14 @@ const TodoStack = createNativeStackNavigator<MyReactNavigation.ParamList>();
 const TodoStackScreen = () => {
   return (
     <TodoContextProvider>
-      <TodoStack.Navigator>
+      <TodoStack.Navigator
+        screenOptions={{
+          animation: 'fade',
+          headerShadowVisible: false,
+          headerStyle: {
+            backgroundColor: 'transparent',
+          },
+        }}>
         <TodoStack.Screen
           name="Todo"
           component={Todo}

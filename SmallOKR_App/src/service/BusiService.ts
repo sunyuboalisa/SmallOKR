@@ -20,7 +20,7 @@ const TargetService = {
   getTargets: () => {
     return axiosHelper.get('target-service/api/v1/target/get');
   },
-  addTarget: (target: ITarget) => {
+  saveTarget: (target: ITarget) => {
     return axiosHelper.post('target-service/api/v1/target/save', target);
   },
   deleteTarget: (targetId: String) => {
@@ -31,7 +31,7 @@ const TargetService = {
   getResults: (param?: any) => {
     return axiosHelper.get('target-service/api/v1/result/getAll', param);
   },
-  addResult: (results: ResultFilter[]) => {
+  saveResult: (results: ResultFilter[]) => {
     return axiosHelper.post('target-service/api/v1/result/save', results);
   },
   deleteResult: (targetId: String) => {

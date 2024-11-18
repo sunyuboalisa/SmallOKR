@@ -33,6 +33,7 @@ const TodoContextProvider = ({children}: {children: React.ReactNode}) => {
         let temp = action.newTodos.map(x => ({
           id: x.id,
           dateTime: x.beginDate,
+          endTime: x.endDate,
           title: x.name,
         }));
         return {...state, todos: action.newTodos, uiTodos: temp};

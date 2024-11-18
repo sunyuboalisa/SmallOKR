@@ -9,7 +9,14 @@ const TargetStack = createNativeStackNavigator();
 const TargetStackScreen = () => {
   return (
     <TargetContextProvider>
-      <TargetStack.Navigator>
+      <TargetStack.Navigator
+        screenOptions={{
+          headerShadowVisible: false,
+          headerStyle: {
+            backgroundColor: 'transparent',
+          },
+          animation:'fade'
+        }}>
         <TargetStack.Screen
           name="TargetStack"
           options={{

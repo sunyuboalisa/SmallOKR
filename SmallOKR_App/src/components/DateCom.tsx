@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import React, {useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import DatePicker from 'react-native-date-picker';
@@ -14,7 +15,7 @@ const DateCom = ({date, onConfirm}: DateComProps) => {
   return (
     <View style={styles.repeatContainer}>
       <Text style={{marginRight: 10, textAlignVertical: 'center'}}>
-        {date.toLocaleDateString()}
+        {dayjs(date).format('HH:mm')}
       </Text>
       <AndDesign
         style={styles.rightIcon}
@@ -23,6 +24,7 @@ const DateCom = ({date, onConfirm}: DateComProps) => {
       />
       <DatePicker
         modal
+        mode="time"
         open={open}
         date={date}
         onConfirm={e => {

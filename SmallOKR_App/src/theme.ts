@@ -1,8 +1,8 @@
 const colors = [
-  '#fcf1f0',
-  '#fccccb',
-  '#bdb5e1',
-  '#b0d992',
+  '#ffffd2',
+  '#fcbad3',
+  '#aa96da',
+  '#a8d8ea',
   '#f9d580',
   '#99b0e9',
 ];

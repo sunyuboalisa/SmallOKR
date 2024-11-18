@@ -14,7 +14,6 @@ import com.alisa.Util.UUIDTool;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 
 import alisa.smallokr.entity.Result;
 import alisa.smallokr.service.ResultService;
@@ -53,8 +52,8 @@ public class ResultController {
 
     @GetMapping("get")
     public com.alisa.Util.Result<Result> get(String resultId) {
-        var target = resultService.findResultById(resultId);
-        return new com.alisa.Util.Result<Result>(target);
+        var result = resultService.findResultById(resultId);
+        return new com.alisa.Util.Result<Result>(result);
     }
 
     @GetMapping("getAll")

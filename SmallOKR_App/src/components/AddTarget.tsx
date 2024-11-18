@@ -38,12 +38,15 @@ const AddTarget = () => {
 
   const handleOKBtnPress = async () => {
     try {
-      const addTargetRes = await TargetService.addTarget({
+      const addTargetRes = await TargetService.saveTarget({
         name: targetName,
         description: description,
         id: target.id,
+        status: '0'
       });
-      const addResultRes = await TargetService.addResult(targetContext.results);
+      const addResultRes = await TargetService.saveResult(
+        targetContext.results,
+      );
       const getTargetsRes = await TargetService.getTargets();
       let data = getTargetsRes.data.data;
       const newState = data.map(
