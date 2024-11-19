@@ -1,6 +1,7 @@
-import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
 import React, {useContext} from 'react';
-import {UserDispatchContext} from '../state/UserContext';
+import {UserContext, UserDispatchContext} from '../state/UserContext';
+import Avatar from './Avatar';
 
 interface MenuItemProps {
   title: string;
@@ -22,16 +23,14 @@ const MenuItem = ({title, handlePress}: MenuItemProps) => {
 
 const Me = () => {
   const dispatch = useContext(UserDispatchContext);
+  const userContext = useContext(UserContext);
   const handleLogout = () => {
     dispatch({type: 'Logout'});
   };
   return (
     <View style={styles.page}>
       <View style={styles.container}>
-        <Image
-          style={styles.circle}
-          source={require('../../assets/imgs/temp.jpg')}
-        />
+        <Avatar username={userContext?.userInfo?.username} />
       </View>
       <View style={styles.menuContainer}>
         {/* <MenuItem title="设置" /> */}

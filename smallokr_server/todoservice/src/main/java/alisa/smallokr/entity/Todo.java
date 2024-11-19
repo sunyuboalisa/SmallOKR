@@ -12,9 +12,9 @@ public class Todo {
     private String userId;
     private String name;
     private String description;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "HH:mm")
     private LocalDateTime beginDate;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "HH:mm")
     private LocalDateTime endDate;
     private String status;
 }
