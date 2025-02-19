@@ -64,7 +64,6 @@ public class JwtUtil {
     }
 
     private static String createToken(Map<String, Object> claims, String username) {
-        // 设置过期时间为当前时间后的 3600 秒
         LocalDateTime expirationTime = LocalDateTime.now().plusDays(30);
         Date expirationDate = Date.from(expirationTime.atZone(ZoneId.systemDefault()).toInstant());
 
