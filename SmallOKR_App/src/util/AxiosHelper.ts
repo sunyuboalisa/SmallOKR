@@ -1,11 +1,8 @@
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
-import {useContext} from 'react';
-import {Alert} from 'react-native';
-import {UserDispatchContext} from '../state/UserContext';
 
 class AxiosHelper {
   private token: string;
-  private instance: AxiosInstance;
+  public instance: AxiosInstance;
 
   constructor(serverIP: string) {
     this.instance = axios.create();
@@ -40,11 +37,6 @@ class AxiosHelper {
         return response;
       },
       error => {
-        if (error.status === 401) {
-          Alert.alert('用户登录过期');
-          const dispatch = useContext(UserDispatchContext);
-          dispatch({type: 'Logout'});
-        }
         console.error('响应拦截器发生错误:', error);
         return Promise.reject(error);
       },
