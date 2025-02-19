@@ -29,7 +29,7 @@
         FROM tb_todo AS todo
         WHERE todo.user_id = #{userId}
         AND DATE(todo.todo_begin_date)=DATE(#{date}))
-        order by beginDate
+        order by TIME(beginDate)
     </select>
 
     <insert id="saveTodo" parameterType="alisa.smallokr.entity.Todo">

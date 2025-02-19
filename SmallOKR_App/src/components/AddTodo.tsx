@@ -69,8 +69,8 @@ const AddTodo = () => {
         id: todo.id,
         name: todoName,
         description: description,
-        beginDate: dayjs(beginDate).format('YYYY-MM-DD HH:mm'),
-        endDate: dayjs(endDate).format('YYYY-MM-DD HH:mm'),
+        beginDate: dayjs(beginDate).format('YYYY-MM-DD HH:mm:ss'),
+        endDate: dayjs(endDate).format('YYYY-MM-DD HH:mm:ss'),
         status: '',
       };
       console.log('add todo', newTodo);

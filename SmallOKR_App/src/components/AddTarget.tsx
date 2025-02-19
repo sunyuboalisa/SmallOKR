@@ -1,6 +1,5 @@
 import {
   FlatList,
-  ImageBackground,
   Pressable,
   StyleSheet,
   Text,
@@ -42,11 +41,13 @@ const AddTarget = () => {
         name: targetName,
         description: description,
         id: target.id,
-        status: '0'
+        status: '0',
       });
       const addResultRes = await TargetService.saveResult(
         targetContext.results,
       );
+      console.log(addTargetRes.status);
+      console.log(addResultRes.status);
       const getTargetsRes = await TargetService.getTargets();
       let data = getTargetsRes.data.data;
       const newState = data.map(
@@ -105,41 +106,42 @@ const AddTarget = () => {
       <FlatList
         style={{flex: 1}}
         data={targetContext.results}
-        keyExtractor={(item, index) => item.name + index}
+        keyExtractor={(item, index) => index}
         renderItem={({item}) => (
           <View style={styles.row}>
             <View style={styles.cell}>
               <Text>阶段：</Text>
               <TextInput
                 style={styles.cellInput}
-                onEndEditing={e =>
+                onChangeText={text =>
                   dispatch({
                     type: 'ChangeResult',
                     newResult: {
                       ...item,
-                      name: e.nativeEvent.text,
+                      name: text,
                     },
                   })
-                }>
-                {item.name}
-              </TextInput>
+                }
+                value={item.name}
+                placeholder="阶段名称"
+              />
             </View>
             <Text>|</Text>
             <View style={styles.cell}>
               <Text>成果：</Text>
               <TextInput
+                value={item.value}
                 style={styles.cellInput}
-                onEndEditing={e =>
+                onChangeText={text =>
                   dispatch({
                     type: 'ChangeResult',
                     newResult: {
                       ...item,
-                      value: e.nativeEvent.text,
+                      value: text,
                     },
                   })
-                }>
-                {item.value}
-              </TextInput>
+                }
+              />
             </View>
           </View>
         )}
