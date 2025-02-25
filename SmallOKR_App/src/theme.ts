@@ -7,6 +7,7 @@ const colors = [
   '#99b0e9',
 ];
 export const getColor = (index: number) => {
+  return '#333333';
   const len = colors.length;
   if (len !== 0) {
     let inde = index % len;

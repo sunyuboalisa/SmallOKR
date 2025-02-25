@@ -14,17 +14,18 @@ export const AppTabNav = () => {
     <BackgroundImage>
       <Tab.Navigator
         screenOptions={() => ({
-          tabBarActiveTintColor: 'red',
+          tabBarActiveTintColor: 'gold',
           tabBarInactiveTintColor: 'white',
           headerShown: false,
           tabBarStyle: {
-            backgroundColor: '#b576be',
+            // backgroundColor: '#b576be',
+            backgroundColor: '#000000',
           },
         })}>
         <Tab.Screen
           name="Dashboard"
           options={{
-            title: 'Dashboard',
+            title: '面板',
             tabBarIcon: ({color, size}) => (
               <Ionicons name="home" color={color} size={size} />
             ),
@@ -34,9 +35,9 @@ export const AppTabNav = () => {
         <Tab.Screen
           name="TargetTab"
           options={{
-            title: 'Target',
+            title: '目标',
             tabBarIcon: ({color, size}) => (
-              <Ionicons name="man" color={color} size={size} />
+              <Ionicons name="boat" color={color} size={size} />
             ),
           }}
           component={TargetStackScreen}
@@ -44,7 +45,7 @@ export const AppTabNav = () => {
         <Tab.Screen
           name="TodoTab"
           options={{
-            title: 'Todo',
+            title: '待办',
             tabBarIcon: ({color, size}) => (
               <Ionicons name="chatbox" color={color} size={size} />
             ),
@@ -54,7 +55,7 @@ export const AppTabNav = () => {
         <Tab.Screen
           name="MeTab"
           options={{
-            title: 'Me',
+            title: '我',
             tabBarIcon: ({color, size}) => (
               <Ionicons name="settings" color={color} size={size} />
             ),

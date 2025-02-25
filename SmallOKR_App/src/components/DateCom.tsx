@@ -14,7 +14,12 @@ const DateCom = ({date, onConfirm}: DateComProps) => {
 
   return (
     <View style={styles.repeatContainer}>
-      <Text style={{marginRight: 10, textAlignVertical: 'center'}}>
+      <Text
+        style={{
+          marginRight: 10,
+          textAlignVertical: 'center',
+          color: '#ffffff',
+        }}>
         {dayjs(date).format('HH:mm')}
       </Text>
       <AndDesign
@@ -47,13 +52,16 @@ const styles = StyleSheet.create({
     margin: 12,
     borderWidth: 1,
     padding: 10,
+    backgroundColor: '#131313',
   },
   repeatContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#131313',
   },
   rightIcon: {
     fontSize: 22,
+    color: '#ffffff',
   },
 });

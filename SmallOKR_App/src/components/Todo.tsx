@@ -27,7 +27,13 @@ const PlanHeaderRight = () => {
       },
     });
   };
-  return <Ionicons name="add" style={{fontSize: 24}} onPress={onAddBtnPress} />;
+  return (
+    <Ionicons
+      name="add"
+      style={{fontSize: 24, color: '#ffffff'}}
+      onPress={onAddBtnPress}
+    />
+  );
 };
 
 const Todo = () => {

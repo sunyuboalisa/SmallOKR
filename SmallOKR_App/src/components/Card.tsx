@@ -1,5 +1,6 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
+import Icon from 'react-native-vector-icons/AntDesign';
 interface CardProps {
   title: string;
   description: string;
@@ -24,8 +25,10 @@ const Card = ({
       }}
       delayLongPress={500}
       style={{...styles.container, backgroundColor: color}}>
-      <View style={styles.circle} />
-      <View style={{justifyContent: 'center', margin: 5, paddingLeft: 10}}>
+      <View style={styles.circle}>
+        <Icon name="flag" color={'#ffffff'} size={28} />
+      </View>
+      <View style={{justifyContent: 'center', margin: 1, paddingLeft: 10}}>
         <Text style={styles.titleFont}>{title}</Text>
         <Text style={styles.descriptionFont}>{description}</Text>
       </View>
@@ -37,6 +40,7 @@ export {Card};
 
 const styles = StyleSheet.create({
   container: {
+    marginBottom: 1,
     flexDirection: 'row',
     borderRadius: 8,
     padding: 10,
@@ -50,15 +54,19 @@ const styles = StyleSheet.create({
   circle: {
     width: 80,
     height: 80,
-    borderRadius: 1000, // High value
+    borderRadius: 1000,
     borderWidth: 1,
     borderColor: 'rgba(ee, ee, ee,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   titleFont: {
     fontSize: 22,
     marginBottom: 5,
+    color: '#ffffff',
   },
   descriptionFont: {
     fontSize: 16,
+    color: '#ffffff',
   },
 });

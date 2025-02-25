@@ -1,5 +1,4 @@
 import {
-  ImageBackground,
   Modal,
   Pressable,
   StyleSheet,
@@ -186,6 +185,7 @@ const styles = StyleSheet.create({
   },
   addBtn: {
     fontSize: 24,
+    color: '#ffffff',
   },
   modalMask: {
     flex: 1,
@@ -209,11 +209,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   resultsContainer: {
-    flex:2,
+    flex: 2,
     alignItems: 'center',
   },
   okBtnContainer: {
-    flex:1,
+    flex: 1,
     alignItems: 'center',
   },
   okBtn: {

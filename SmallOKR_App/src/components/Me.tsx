@@ -16,7 +16,7 @@ const MenuItem = ({title, handlePress}: MenuItemProps) => {
           handlePress(e);
         }
       }}>
-      <Text>{title}</Text>
+      <Text style={styles.text}>{title}</Text>
     </Pressable>
   );
 };
@@ -52,15 +52,18 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   menuItemContainer: {
-    borderWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: 'gray',
     width: '100%',
     minHeight: 50,
     justifyContent: 'center',
     paddingHorizontal: 5,
-    marginBottom: -1,
   },
   menuContainer: {
     alignItems: 'flex-start',
+    backgroundColor: '#333333',
+    borderRadius: 15,
+    marginHorizontal: 20,
     padding: 10,
   },
   circle: {
@@ -69,5 +72,8 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 1000,
+  },
+  text: {
+    color: '#ffffff',
   },
 });

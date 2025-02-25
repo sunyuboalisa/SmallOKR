@@ -23,9 +23,14 @@ const TodoStackScreen = () => {
           component={Todo}
           options={{
             headerRight: () => <PlanHeaderRight />,
+            title: '待办',
           }}
         />
-        <TodoStack.Screen name="AddTodo" component={AddTodo} />
+        <TodoStack.Screen
+          name="AddTodo"
+          component={AddTodo}
+          options={{title: '添加待办'}}
+        />
         <TodoStack.Screen name="RepeatPage" component={RepeatPage} />
       </TodoStack.Navigator>
     </TodoContextProvider>

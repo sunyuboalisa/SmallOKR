@@ -20,7 +20,7 @@ const Item = ({title, selected, handlePress}: ItemProps) => {
         handlePress();
       }}>
       <Text style={styles.title}>{title}</Text>
-      {selectedInner && <Text style={styles.title}>选择</Text>}
+      {selectedInner && <Text style={styles.title}>✅</Text>}
     </Pressable>
   );
 };
@@ -42,7 +42,7 @@ export const RepeatPage = () => {
       const todoRepeatRes = await TodoService.getRepeat(todoId);
 
       const todoRepeats = todoRepeatRes.data.data;
-      const data = repeatDicRes.data.data.map(
+      const resData = repeatDicRes.data.data.map(
         (item: {id: any; entryValue: any}) => {
           let entry = {
             todoRepeatId: '',
@@ -53,7 +53,7 @@ export const RepeatPage = () => {
 
           todoRepeats.forEach(
             (element: {repeatId: any; todoRepeatId: string}) => {
-              if (element.repeatId == item.id) {
+              if (element.repeatId === item.id) {
                 entry.todoRepeatId = element.todoRepeatId;
                 entry.selected = true;
               }
@@ -63,8 +63,8 @@ export const RepeatPage = () => {
           return entry;
         },
       );
-      console.log(data);
-      setData(data);
+      console.log(resData);
+      setData(resData);
     } catch (error) {
       console.log(error);
     }
@@ -85,7 +85,7 @@ export const RepeatPage = () => {
   };
   const handleItemPress = (item: ItemModel) => {
     const newData = data.map(entry => {
-      if (entry.repeatId == item.repeatId) {
+      if (entry.repeatId === item.repeatId) {
         if (entry.selected) {
           deleteRepeat({todoId: todoId, repeatId: entry.repeatId});
         } else {
@@ -125,13 +125,14 @@ const styles = StyleSheet.create({
   item: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#f9c2ff',
+    backgroundColor: '#333333',
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
   },
   title: {
     fontSize: 32,
+    color: '#ffffff',
   },
 });
 

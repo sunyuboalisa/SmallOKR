@@ -11,6 +11,7 @@ const App = () => {
       ...DefaultTheme.colors,
       background: 'transparent',
       notification: 'rgb(255, 69, 58)',
+      text: '#ffffff',
     },
   };
   return (

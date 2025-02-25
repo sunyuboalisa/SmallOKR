@@ -1,19 +1,14 @@
 import React from 'react';
-import {ImageBackground, StyleSheet} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 
 const BackgroundImage = ({children}: {children: React.ReactNode}) => {
-  return (
-    <ImageBackground
-      source={require('../../assets/imgs/background.png')}
-      style={styles.background}>
-      {children}
-    </ImageBackground>
-  );
+  return <View style={styles.background}>{children}</View>;
 };
 
 const styles = StyleSheet.create({
   background: {
     flex: 1,
+    backgroundColor: '#121212',
   },
 });
 

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {PanResponder, GestureResponderEvent, Dimensions} from 'react-native';
+import {PanResponder, GestureResponderEvent, Dimensions, View} from 'react-native';
 import Svg, {Circle, Line, Text} from 'react-native-svg';
 import {getColor} from '../theme';
 
@@ -120,7 +120,7 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({data}) => {
       })}
       {/* 渲染节点 */}
       {nodes.map((node, index) => (
-        <>
+        <View key={index}>
           <Circle
             onPressIn={event => handlePress(event, node.id)}
             key={index + 'circle'}
@@ -130,7 +130,7 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({data}) => {
             fill={selectedNodeId === node.id ? 'red' : getColor(node.id)}
             {...(selectedNodeId === node.id ? panResponder.panHandlers : {})}
           />
-          <Text
+          <Text fill={'#ffffff'}
             key={index + 'text'}
             x={node.x}
             y={node.y}
@@ -140,7 +140,7 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({data}) => {
             textAnchor="middle">
             {node.title}
           </Text>
-        </>
+        </View>
       ))}
     </Svg>
   );

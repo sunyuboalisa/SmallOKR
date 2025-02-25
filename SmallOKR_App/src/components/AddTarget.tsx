@@ -85,32 +85,38 @@ const AddTarget = () => {
   return (
     <View style={styles.page}>
       <View style={styles.inputContainer}>
-        <Text>名字：</Text>
+        <Text style={styles.text}>名字：</Text>
         <TextInput
           style={styles.input}
           onChangeText={onChangeTargetName}
           value={targetName}
           placeholder="目标名字"
+          placeholderTextColor={'gray'}
         />
       </View>
       <View style={styles.inputContainer}>
-        <Text>描述：</Text>
+        <Text style={styles.text}>描述：</Text>
         <TextInput
           style={styles.input}
           onChangeText={onChangeDescription}
           value={description}
           placeholder="目标描述"
+          placeholderTextColor={'gray'}
         />
       </View>
-      <Ionicons style={{fontSize: 24}} name="add" onPress={onAddBtnPress} />
+      <Ionicons
+        style={{fontSize: 24, color: '#ffffff'}}
+        name="add"
+        onPress={onAddBtnPress}
+      />
       <FlatList
         style={{flex: 1}}
         data={targetContext.results}
-        keyExtractor={(item, index) => index}
+        keyExtractor={(item, index) => index.toString()}
         renderItem={({item}) => (
           <View style={styles.row}>
             <View style={styles.cell}>
-              <Text>阶段：</Text>
+              <Text style={styles.text}>阶段：</Text>
               <TextInput
                 style={styles.cellInput}
                 onChangeText={text =>
@@ -128,7 +134,7 @@ const AddTarget = () => {
             </View>
             <Text>|</Text>
             <View style={styles.cell}>
-              <Text>成果：</Text>
+              <Text style={styles.text}>成果：</Text>
               <TextInput
                 value={item.value}
                 style={styles.cellInput}
@@ -168,6 +174,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   input: {
+    color: '#ffffff',
     height: 40,
     paddingRight: 10,
     marginRight: 10,
@@ -175,7 +182,7 @@ const styles = StyleSheet.create({
     margin: 10,
     borderWidth: 1,
     padding: 10,
-    borderColor: 'gray',
+    backgroundColor: '#1E1E1E',
   },
   row: {
     flex: 1,
@@ -191,18 +198,19 @@ const styles = StyleSheet.create({
   },
   cellInput: {
     flex: 1,
+    color: '#ffffff',
     height: 40,
     borderWidth: 1,
     padding: 10,
     marginLeft: 5,
-    borderColor: 'gray',
+    backgroundColor: '#1E1E1E',
   },
   okBtn: {
     alignItems: 'center',
     width: '80%',
     height: 50,
     marginTop: 30,
-    backgroundColor: '#007eff',
+    backgroundColor: 'yellow',
     marginHorizontal: 5,
     borderRadius: 25,
     justifyContent: 'center',
@@ -210,7 +218,10 @@ const styles = StyleSheet.create({
   btnText: {
     fontSize: 24,
     textAlign: 'center',
-    color: 'white',
+    color: '#000000',
+  },
+  text: {
+    color: '#ffffff',
   },
 });
 

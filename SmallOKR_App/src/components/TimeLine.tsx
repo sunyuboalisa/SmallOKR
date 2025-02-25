@@ -35,11 +35,11 @@ const Item = ({
       onPress={() => handlePress()}
       onLongPress={handleLongPress}>
       <View style={styles.timeContainer}>
-        <Text>{dateTime}</Text>
+        <Text style={styles.text}>{dateTime}</Text>
       </View>
       <View style={styles.titleContainer}>
         <View style={{...styles.titleWrapper, backgroundColor: color}}>
-          <Text>{title}</Text>
+          <Text style={styles.text}>{title}</Text>
         </View>
       </View>
     </Pressable>
@@ -101,5 +101,8 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.3,
     shadowRadius: 8,
+  },
+  text: {
+    color: '#ffffff',
   },
 });

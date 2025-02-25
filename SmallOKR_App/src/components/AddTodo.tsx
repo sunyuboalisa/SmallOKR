@@ -92,29 +92,31 @@ const AddTodo = () => {
   return (
     <View>
       <View style={styles.inputContainer}>
-        <Text>名字：</Text>
+        <Text style={styles.text}>名字：</Text>
         <TextInput
           style={styles.input}
           onChangeText={onChangeTodoName}
           value={todoName}
           placeholder="待办名字"
+          placeholderTextColor={'gray'}
         />
       </View>
       <View style={styles.inputContainer}>
-        <Text>描述：</Text>
+        <Text style={styles.text}>描述：</Text>
         <TextInput
           style={styles.input}
           onChangeText={onChangeDescription}
           value={description}
           placeholder="待办描述"
+          placeholderTextColor={'gray'}
         />
       </View>
       <View style={styles.inputContainer}>
-        <Text>开始时间：</Text>
+        <Text style={styles.text}>开始时间：</Text>
         <DateCom date={beginDate} onConfirm={d => seBeginDate(d)} />
       </View>
       <View style={styles.inputContainer}>
-        <Text>结束时间：</Text>
+        <Text style={styles.text}>结束时间：</Text>
         <DateCom date={endDate} onConfirm={d => seEndDate(d)} />
       </View>
       <View style={styles.inputContainer}>
@@ -142,6 +144,8 @@ const styles = StyleSheet.create({
     margin: 12,
     borderWidth: 1,
     padding: 10,
+    color: '#ffffff',
+    backgroundColor: '#1E1E1E',
   },
   repeatContainer: {
     flexDirection: 'row',
@@ -150,13 +154,14 @@ const styles = StyleSheet.create({
   },
   rightIcon: {
     textAlign: 'center',
+    color: '#ffffff',
   },
   okBtn: {
     alignItems: 'center',
     width: '80%',
     height: 50,
     marginTop: 50,
-    backgroundColor: '#007eff',
+    backgroundColor: 'yellow',
     marginHorizontal: 5,
     borderRadius: 25,
     justifyContent: 'center',
@@ -164,7 +169,10 @@ const styles = StyleSheet.create({
   btnText: {
     fontSize: 24,
     textAlign: 'center',
-    color: 'white',
+    color: '#000000',
+  },
+  text: {
+    color: '#ffffff',
   },
 });
 

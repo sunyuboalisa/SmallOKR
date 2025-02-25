@@ -15,19 +15,20 @@ const TargetStackScreen = () => {
           headerStyle: {
             backgroundColor: 'transparent',
           },
-          animation:'fade'
+          animation: 'fade',
         }}>
         <TargetStack.Screen
           name="TargetStack"
           options={{
             headerRight: () => <TargetHeaderRight />,
-            title: 'Target',
+            title: '目标',
           }}
           initialParams={{reload: false}}
           component={Target}
         />
         <TargetStack.Screen
           name="AddTarget"
+          options={{title:'添加目标'}}
           initialParams={{targetId: ''}}
           component={AddTarget}
         />
