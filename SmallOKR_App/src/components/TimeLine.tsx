@@ -1,6 +1,6 @@
 import {FlatList, Pressable, StyleSheet, Text, View} from 'react-native';
-import React from 'react';
-import {getColor} from '../theme';
+import React, {useContext} from 'react';
+import {ThemeContext} from '../state/ThemeContext';
 
 type DataType = {
   id: string;
@@ -11,7 +11,7 @@ type DataType = {
 type ItemProps = {
   dateTime: string;
   title: string;
-  color: string;
+  color: string | undefined;
   handlePress: () => void;
   handleLongPress: () => void;
 };
@@ -29,17 +29,23 @@ const Item = ({
   handlePress,
   handleLongPress,
 }: ItemProps) => {
+  const themeContext = useContext(ThemeContext);
   return (
     <Pressable
       style={styles.rowContainer}
       onPress={() => handlePress()}
       onLongPress={handleLongPress}>
       <View style={styles.timeContainer}>
-        <Text style={styles.text}>{dateTime}</Text>
+        <Text style={{...styles.text, color: themeContext?.theme.colors.text}}>
+          {dateTime}
+        </Text>
       </View>
       <View style={styles.titleContainer}>
         <View style={{...styles.titleWrapper, backgroundColor: color}}>
-          <Text style={styles.text}>{title}</Text>
+          <Text
+            style={{...styles.text, color: themeContext?.theme.colors.text}}>
+            {title}
+          </Text>
         </View>
       </View>
     </Pressable>
@@ -51,15 +57,16 @@ const TimeLine = ({
   handleItemPress,
   handleItemLongPress,
 }: TimeLineProps) => {
+  const themeContext = useContext(ThemeContext);
   return (
     <View>
       <FlatList
         data={data}
         keyExtractor={(item, index) => item.title + index}
-        renderItem={({item, index}) => {
+        renderItem={({item}) => {
           return (
             <Item
-              color={getColor(index)}
+              color={themeContext?.theme.colors.card}
               dateTime={item.dateTime}
               title={item.title}
               handlePress={() => handleItemPress(item)}

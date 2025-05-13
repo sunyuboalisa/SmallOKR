@@ -1,5 +1,5 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import AddTodo from '../components/AddTodo';
+import AddTodo from '../components/EditTodo';
 import {Todo, PlanHeaderRight} from '../components/Todo';
 import {RepeatPage} from '../components/RepeatPage';
 import React from 'react';
@@ -27,9 +27,9 @@ const TodoStackScreen = () => {
           }}
         />
         <TodoStack.Screen
-          name="AddTodo"
+          name="EditTodo"
           component={AddTodo}
-          options={{title: '添加待办'}}
+          options={{title: '编辑待办'}}
         />
         <TodoStack.Screen name="RepeatPage" component={RepeatPage} />
       </TodoStack.Navigator>

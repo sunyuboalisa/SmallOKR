@@ -1,27 +1,20 @@
-import {
-  Modal,
-  Pressable,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Modal, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {FlatList} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {TargetContext, TargetDispatchContext} from '../state/TargetContext';
 import {Card} from './Card';
-import {getColor} from '../theme';
 import {TargetService} from '../service/BusiService';
 import {ITarget} from '../model/OKRModel';
+import {ThemeContext} from '../state/ThemeContext';
 
 const TargetHeaderRight = () => {
   const navigation =
     useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
 
   const onAddBtnPress = () => {
-    navigation.navigate('AddTarget', {
+    navigation.navigate('EditTarget', {
       target: {description: '', name: '', id: '', status: '0'},
     });
   };
@@ -30,7 +23,6 @@ const TargetHeaderRight = () => {
 
 const Target = () => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [logModalVisible, setLogModalVisible] = useState(false);
   const targetContext = useContext(TargetContext);
   const dispatch = useContext(TargetDispatchContext);
   const navigation =
@@ -40,11 +32,8 @@ const Target = () => {
     setModalVisible(false);
   };
 
-  const closeLogModal = () => {
-    setLogModalVisible(false);
-  };
   const handlePress = (target: ITarget) => {
-    navigation.navigate('AddTarget', {target: target});
+    navigation.navigate('EditTarget', {target: target});
   };
   const handleLongPress = (target: ITarget) => {
     setSelectedTarget(target);
@@ -81,7 +70,6 @@ const Target = () => {
   };
   const handleCommitDayLog = () => {
     closeModal();
-    setLogModalVisible(true);
   };
   const handleFinishTarget = async () => {
     const res = await TargetService.saveTarget({
@@ -90,9 +78,8 @@ const Target = () => {
     });
     closeModal();
   };
-  const handleOKBtnPress = async () => {
-    closeLogModal();
-  };
+
+  const themeContext = useContext(ThemeContext);
   useEffect(() => {
     TargetService.getTargets()
       .then(res => {
@@ -119,7 +106,8 @@ const Target = () => {
         renderItem={({item, index}) => {
           return (
             <Card
-              color={getColor(index)}
+              key={index}
+              color={themeContext?.theme.colors.card}
               description={item.description}
               title={item.name}
               handlePress={() => handlePress(item)}
@@ -130,46 +118,60 @@ const Target = () => {
         data={targetContext.targets}
       />
       <Modal
+        animationType="fade" // 改为淡入淡出动画
         transparent={true}
         visible={modalVisible}
-        animationType="slide"
         onRequestClose={closeModal}>
-        <View style={styles.modalMask}>
-          <View style={styles.modalContent}>
-            <TouchableOpacity
-              onPress={() => handleCommitDayLog()}
-              style={styles.modalBtn}>
-              <Text style={styles.modalSize}>提交今日进度</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => handleFinishTarget()}
-              style={styles.modalBtn}>
-              <Text style={styles.modalSize}>完成</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => handleDelete()}
-              style={styles.modalBtn}>
-              <Text style={styles.modalSize}>删除</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={closeModal} style={styles.modalBtn}>
-              <Text style={styles.modalSize}>取消</Text>
-            </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.modalMask}
+          activeOpacity={1}
+          onPress={closeModal}>
+          <View style={styles.modalOuterContainer}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHandle} />
+
+              <TouchableOpacity
+                onPress={() => {
+                  handleFinishTarget();
+                  closeModal();
+                }}
+                style={styles.modalBtn}>
+                <Ionicons
+                  name="checkmark-circle"
+                  size={22}
+                  style={styles.modalBtnIcon}
+                />
+                <Text style={styles.modalBtnText}>标记完成目标</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => {
+                  handleCommitDayLog();
+                }}
+                style={styles.modalBtn}>
+                <Ionicons
+                  name="create-outline"
+                  size={22}
+                  style={styles.modalBtnIcon}
+                />
+                <Text style={styles.modalBtnText}>编辑目标</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleDelete}
+                style={[styles.modalBtn, styles.lastModalBtn]}>
+                <Ionicons
+                  name="trash-outline"
+                  size={22}
+                  style={[styles.modalBtnIcon, styles.dangerIcon]}
+                />
+                <Text style={[styles.modalBtnText, styles.dangerText]}>
+                  删除任务
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </Modal>
-      <Modal
-        transparent={true}
-        visible={logModalVisible}
-        animationType="slide"
-        onRequestClose={closeLogModal}>
-        <View style={styles.modalMask}>
-          <View style={styles.resultsContainer}></View>
-          <View style={styles.okBtnContainer}>
-            <Pressable style={styles.okBtn} onPress={handleOKBtnPress}>
-              <Text style={styles.btnText}>确定</Text>
-            </Pressable>
-          </View>
-        </View>
+        </TouchableOpacity>
       </Modal>
     </View>
   );
@@ -189,24 +191,60 @@ const styles = StyleSheet.create({
   },
   modalMask: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0,0.6)',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalOuterContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 40, // 控制底部距离
   },
   modalContent: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    flexDirection: 'column',
-    marginBottom: 100,
+    width: '100%',
+    maxWidth: 400, // 限制最大宽度
+    backgroundColor: '#FFF',
+    borderRadius: 16, // 统一圆角
+    paddingBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 5,
   },
-  modalSize: {
-    fontSize: 24,
+  modalHandle: {
+    width: 40,
+    height: 4,
+    backgroundColor: '#E0E0E0',
+    borderRadius: 2,
+    alignSelf: 'center',
+    marginVertical: 12,
   },
   modalBtn: {
-    minWidth: 300,
-    marginBottom: 10,
-    borderRadius: 5,
-    backgroundColor: 'gray',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    flexDirection: 'row',
     alignItems: 'center',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: '#EEEEEE',
+  },
+  lastModalBtn: {
+    borderBottomWidth: 0, // 最后一项无边框
+  },
+  modalBtnText: {
+    fontSize: 16,
+    flex: 1,
+    color: '#333',
+  },
+  modalBtnIcon: {
+    marginRight: 16,
+    color: '#666',
+  },
+  dangerIcon: {
+    color: '#FF3B30',
+  },
+  dangerText: {
+    color: '#FF3B30',
   },
   resultsContainer: {
     flex: 2,

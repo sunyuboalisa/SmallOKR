@@ -1,7 +1,17 @@
 import React, {useEffect, useState} from 'react';
-import {FlatList, Pressable, StatusBar, StyleSheet, Text} from 'react-native';
+import {
+  FlatList,
+  Pressable,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+  Alert,
+} from 'react-native';
 import {TodoService} from '../service/BusiService';
 import {useRoute} from '@react-navigation/native';
+import {ThemeContext} from '../state/ThemeContext';
+import {useContext} from 'react';
 
 type ItemProps = {
   title: string;
@@ -10,17 +20,36 @@ type ItemProps = {
 };
 
 const Item = ({title, selected, handlePress}: ItemProps) => {
-  const [selectedInner, setSelectedInner] = useState(selected);
+  const themeContext = useContext(ThemeContext);
 
   return (
     <Pressable
-      style={styles.item}
-      onPress={() => {
-        setSelectedInner(!selectedInner);
-        handlePress();
-      }}>
-      <Text style={styles.title}>{title}</Text>
-      {selectedInner && <Text style={styles.title}>✅</Text>}
+      style={({pressed}) => [
+        styles.item,
+        {
+          backgroundColor: themeContext?.theme.colors.card,
+          opacity: pressed ? 0.8 : 1,
+          transform: [{scale: pressed ? 0.98 : 1}],
+        },
+        selected && {
+          backgroundColor: themeContext?.theme.colors.primary,
+        },
+      ]}
+      onPress={handlePress}
+      android_ripple={{color: themeContext?.theme.colors.ripple}}>
+      <Text
+        style={[
+          styles.title,
+          {color: themeContext?.theme.colors.text},
+          selected && styles.selectedText,
+        ]}>
+        {title}
+      </Text>
+      {selected && (
+        <View style={styles.checkmarkContainer}>
+          <Text style={styles.checkmark}>✓</Text>
+        </View>
+      )}
     </Pressable>
   );
 };
@@ -36,6 +65,8 @@ export const RepeatPage = () => {
   const route = useRoute();
   const {todoId} = route.params;
   const [data, setData] = useState<ItemModel[]>([]);
+  const themeContext = useContext(ThemeContext);
+
   const fetchData = async () => {
     try {
       const repeatDicRes = await TodoService.getRepeatDicEntrys();
@@ -63,10 +94,10 @@ export const RepeatPage = () => {
           return entry;
         },
       );
-      console.log(resData);
       setData(resData);
     } catch (error) {
-      console.log(error);
+      Alert.alert('Error', 'Failed to fetch data. Please try again later.');
+      console.error(error);
     }
   };
 
@@ -75,14 +106,26 @@ export const RepeatPage = () => {
     todoId: string;
     repeatId: string;
   }) => {
-    await TodoService.addRepeat(todoRepeat);
+    try {
+      await TodoService.addRepeat(todoRepeat);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to add repeat. Please try again.');
+      console.error(error);
+    }
   };
+
   const deleteRepeat = async (todoRepeat: {
     todoId: string;
     repeatId: string;
   }) => {
-    await TodoService.deleteRepeat(todoRepeat);
+    try {
+      await TodoService.deleteRepeat(todoRepeat);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to delete repeat. Please try again.');
+      console.error(error);
+    }
   };
+
   const handleItemPress = (item: ItemModel) => {
     const newData = data.map(entry => {
       if (entry.repeatId === item.repeatId) {
@@ -93,46 +136,83 @@ export const RepeatPage = () => {
         }
         entry.selected = !entry.selected;
       }
-
       return entry;
     });
 
     setData(newData);
   };
+
   useEffect(() => {
     fetchData();
   }, []);
 
   return (
-    <FlatList
-      data={data}
-      renderItem={({item}) => (
-        <Item
-          title={item.title}
-          selected={item.selected}
-          handlePress={() => handleItemPress(item)}
-        />
-      )}
-    />
+    <View
+      style={[
+        styles.container,
+        {backgroundColor: themeContext?.theme.colors.background},
+      ]}>
+      <FlatList
+        data={data}
+        keyExtractor={item => item.repeatId}
+        renderItem={({item}) => (
+          <Item
+            title={item.title}
+            selected={item.selected}
+            handlePress={() => handleItemPress(item)}
+          />
+        )}
+        contentContainerStyle={styles.listContent}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: StatusBar.currentHeight || 0,
+    paddingTop: StatusBar.currentHeight || 0,
+  },
+  listContent: {
+    padding: 16,
   },
   item: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#333333',
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
+    alignItems: 'center',
+    paddingVertical: 18,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
   },
   title: {
-    fontSize: 32,
-    color: '#ffffff',
+    fontSize: 16,
+    flex: 1,
+  },
+  selectedText: {
+    fontWeight: '600',
+  },
+  checkmarkContainer: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10,
+  },
+  checkmark: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  separator: {
+    height: 8,
   },
 });
 

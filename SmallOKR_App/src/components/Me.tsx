@@ -1,79 +1,75 @@
-import {Pressable, StyleSheet, Text, View} from 'react-native';
 import React, {useContext} from 'react';
+import {View, StyleSheet} from 'react-native';
 import {UserContext, UserDispatchContext} from '../state/UserContext';
 import Avatar from './Avatar';
-
-interface MenuItemProps {
-  title: string;
-  handlePress?: (e: any) => void;
-}
-const MenuItem = ({title, handlePress}: MenuItemProps) => {
-  return (
-    <Pressable
-      style={styles.menuItemContainer}
-      onPress={e => {
-        if (handlePress != null) {
-          handlePress(e);
-        }
-      }}>
-      <Text style={styles.text}>{title}</Text>
-    </Pressable>
-  );
-};
+import {ThemeContext} from '../state/ThemeContext';
+import IconMenuItem from './IconMenuItem';
 
 const Me = () => {
   const dispatch = useContext(UserDispatchContext);
   const userContext = useContext(UserContext);
-  const handleLogout = () => {
-    dispatch({type: 'Logout'});
-  };
+  const themeContext = useContext(ThemeContext);
+
+  const handleLogout = () => dispatch({type: 'Logout'});
+  const handleToggleTheme = () => themeContext?.toggleTheme();
+
   return (
-    <View style={styles.page}>
+    <View
+      style={[
+        styles.page,
+        {backgroundColor: themeContext?.theme.colors.background},
+      ]}>
       <View style={styles.container}>
         <Avatar username={userContext?.userInfo?.username} />
       </View>
-      <View style={styles.menuContainer}>
-        {/* <MenuItem title="设置" /> */}
-        <MenuItem title="个人信息" />
-        <MenuItem title="退出登录" handlePress={handleLogout} />
+
+      <View
+        style={[
+          styles.menuContainer,
+          {
+            backgroundColor: themeContext?.theme.colors.card,
+            // shadowColor: themeContext?.theme.colors.shadow,
+          },
+        ]}>
+        <IconMenuItem title="个人信息" icon="person-outline" />
+        <IconMenuItem title="行为分析报告" icon="analytics-outline" />
+        <IconMenuItem
+          title="主题切换"
+          icon="theme" // 特殊关键字会自动处理
+          onPress={handleToggleTheme}
+        />
+        <IconMenuItem
+          title="退出登录"
+          icon="log-out-outline"
+          onPress={handleLogout}
+          isLastItem
+          iconColor="#FF3B30" // 红色强调色
+        />
       </View>
     </View>
   );
 };
 
-export default Me;
-
 const styles = StyleSheet.create({
   page: {
     flex: 1,
+    paddingTop: 40,
   },
   container: {
     alignItems: 'center',
     padding: 20,
   },
-  menuItemContainer: {
-    borderBottomWidth: 1,
-    borderColor: 'gray',
-    width: '100%',
-    minHeight: 50,
-    justifyContent: 'center',
-    paddingHorizontal: 5,
-  },
   menuContainer: {
-    alignItems: 'flex-start',
-    backgroundColor: '#333333',
-    borderRadius: 15,
-    marginHorizontal: 20,
-    padding: 10,
-  },
-  circle: {
-    alignContent: 'center',
-    borderWidth: 1,
-    width: 80,
-    height: 80,
-    borderRadius: 1000,
-  },
-  text: {
-    color: '#ffffff',
+    alignSelf: 'center',
+    width: '90%',
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginTop: 20,
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
   },
 });
+
+export default Me;

@@ -1,10 +1,11 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React from 'react';
+import React, {useContext} from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
+import {ThemeContext} from '../state/ThemeContext';
 interface CardProps {
   title: string;
   description: string;
-  color: string;
+  color: string | undefined;
   handlePress: () => void;
   handleLongPress: () => void;
 }
@@ -15,6 +16,7 @@ const Card = ({
   handlePress,
   handleLongPress,
 }: CardProps) => {
+  const themeContext = useContext(ThemeContext);
   return (
     <TouchableOpacity
       onPress={() => {
@@ -26,11 +28,20 @@ const Card = ({
       delayLongPress={500}
       style={{...styles.container, backgroundColor: color}}>
       <View style={styles.circle}>
-        <Icon name="flag" color={'#ffffff'} size={28} />
+        <Icon name="flag" color={themeContext?.theme.colors.text} size={28} />
       </View>
       <View style={{justifyContent: 'center', margin: 1, paddingLeft: 10}}>
-        <Text style={styles.titleFont}>{title}</Text>
-        <Text style={styles.descriptionFont}>{description}</Text>
+        <Text
+          style={{...styles.titleFont, color: themeContext?.theme.colors.text}}>
+          {title}
+        </Text>
+        <Text
+          style={{
+            ...styles.descriptionFont,
+            color: themeContext?.theme.colors.text,
+          }}>
+          {description}
+        </Text>
       </View>
     </TouchableOpacity>
   );

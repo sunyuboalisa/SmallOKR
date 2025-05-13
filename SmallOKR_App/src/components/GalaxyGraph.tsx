@@ -1,7 +1,13 @@
-import React, {useEffect, useState} from 'react';
-import {PanResponder, GestureResponderEvent, Dimensions, View} from 'react-native';
+import React, {useContext, useEffect, useState} from 'react';
+import {
+  PanResponder,
+  GestureResponderEvent,
+  Dimensions,
+  View,
+} from 'react-native';
 import Svg, {Circle, Line, Text} from 'react-native-svg';
 import {getColor} from '../theme';
+import {ThemeContext} from '../state/ThemeContext';
 
 class PseudoRandom {
   private seed: number;
@@ -95,7 +101,7 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({data}) => {
     const temp = generateCoordinates(data);
     setNodes(temp);
   }, [data]);
-
+  const themeContext = useContext(ThemeContext);
   return (
     <Svg>
       {/* 渲染节点之间的关系连线 */}
@@ -111,7 +117,7 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({data}) => {
               y1={fromNode.y}
               x2={toNode.x}
               y2={toNode.y}
-              stroke="gray"
+              stroke={themeContext?.theme.colors.text}
             />
           );
         }
@@ -127,10 +133,15 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({data}) => {
             cx={node.x}
             cy={node.y}
             r={20}
-            fill={selectedNodeId === node.id ? 'red' : getColor(node.id)}
+            fill={
+              selectedNodeId === node.id
+                ? themeContext?.theme.colors.primary
+                : themeContext?.theme.colors.card
+            }
             {...(selectedNodeId === node.id ? panResponder.panHandlers : {})}
           />
-          <Text fill={'#ffffff'}
+          <Text
+            fill={themeContext?.theme.colors.text}
             key={index + 'text'}
             x={node.x}
             y={node.y}

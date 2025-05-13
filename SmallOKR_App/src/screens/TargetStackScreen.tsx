@@ -1,5 +1,5 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import AddTarget from '../components/AddTarget';
+import AddTarget from '../components/EditTarget';
 import {Target, TargetHeaderRight} from '../components/Target';
 import React from 'react';
 import {TargetContextProvider} from '../state/TargetContext';
@@ -27,8 +27,8 @@ const TargetStackScreen = () => {
           component={Target}
         />
         <TargetStack.Screen
-          name="AddTarget"
-          options={{title:'添加目标'}}
+          name="EditTarget"
+          options={{title:'编辑目标'}}
           initialParams={{targetId: ''}}
           component={AddTarget}
         />

@@ -5,9 +5,9 @@ export type StackParamList = {
   Target: {reload: boolean};
   Todo: undefined;
   Me: undefined;
-  AddTodo: {todo: Todo};
+  EditTodo: {todo: Todo};
   RepeatPage: {todoId: string};
-  AddTarget: {target: ITarget};
+  EditTarget: {target: ITarget};
   MainApp: undefined;
   Login: undefined;
 };

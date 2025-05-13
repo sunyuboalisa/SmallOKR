@@ -11,12 +11,14 @@ import {TodoContext, TodoDispatchContext} from '../state/TodoContext';
 import {TimeLine} from './TimeLine';
 import {TodoService} from '../service/BusiService';
 import dayjs from 'dayjs';
+import {ThemeContext} from '../state/ThemeContext';
 
 const PlanHeaderRight = () => {
+  const themeContext = useContext(ThemeContext);
   const navigation =
     useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
   const onAddBtnPress = () => {
-    navigation.navigate('AddTodo', {
+    navigation.navigate('EditTodo', {
       todo: {
         name: 'string',
         description: 'string',
@@ -30,26 +32,28 @@ const PlanHeaderRight = () => {
   return (
     <Ionicons
       name="add"
-      style={{fontSize: 24, color: '#ffffff'}}
+      style={{...styles.addBtn, color: themeContext?.theme.colors.text}}
       onPress={onAddBtnPress}
     />
   );
 };
 
 const Todo = () => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedTodo, setSelectedTodo] = useState();
+
   const navigation =
     useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
-  const [modalVisible, setModalVisible] = useState(false);
-  const planContext = useContext(TodoContext);
+  // const themeContext = useContext(ThemeContext);
+  const todoContext = useContext(TodoContext);
   const dispatch = useContext(TodoDispatchContext);
-  const [selectedTodo, setSelectedTodo] = useState();
 
   const closeModal = () => {
     setModalVisible(false);
   };
 
   const handleItemPress = (data: any) => {
-    navigation.navigate('AddTodo', {
+    navigation.navigate('EditTodo', {
       todo: data,
     });
   };
@@ -61,8 +65,8 @@ const Todo = () => {
 
   const handleDelete = async () => {
     try {
-      console.log('删除todo：', selectedTodo);
       const res = await TodoService.deleteTodo(selectedTodo.id);
+      console.log('删除todo：', selectedTodo);
       console.log(res.data);
       closeModal();
       fetchData();
@@ -75,7 +79,6 @@ const Todo = () => {
     try {
       const now = dayjs().format('YYYY-MM-DD HH:mm:ss');
       const localDateTime = now;
-      console.log(localDateTime);
       const res = await TodoService.getTodosByDate(localDateTime);
       const todos = res.data.data;
       dispatch({type: 'Load', newTodos: todos});
@@ -93,27 +96,61 @@ const Todo = () => {
   return (
     <View style={styles.container}>
       <TimeLine
-        data={planContext.uiTodos}
+        data={todoContext.uiTodos}
         handleItemPress={handleItemPress}
         handleItemLongPress={handleItemLongPress}
       />
       <Modal
-        animationType="slide"
-        visible={modalVisible}
+        animationType="fade" // 改为淡入淡出动画
         transparent={true}
+        visible={modalVisible}
         onRequestClose={closeModal}>
-        <View style={styles.modalMask}>
-          <View style={styles.modalContent}>
-            <TouchableOpacity
-              onPress={() => handleDelete()}
-              style={styles.modalBtn}>
-              <Text style={styles.modalSize}>删除</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={closeModal} style={styles.modalBtn}>
-              <Text style={styles.modalSize}>取消</Text>
-            </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.modalMask}
+          activeOpacity={1}
+          onPress={closeModal}>
+          <View style={styles.modalOuterContainer}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHandle} />
+
+              <TouchableOpacity onPress={handleDelete} style={styles.modalBtn}>
+                <Ionicons
+                  name="checkmark-circle"
+                  size={22}
+                  style={styles.modalBtnIcon}
+                />
+                <Text style={styles.modalBtnText}>标记完成待办</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => {
+                  handleItemPress(selectedTodo);
+                  closeModal();
+                }}
+                style={styles.modalBtn}>
+                <Ionicons
+                  name="create-outline"
+                  size={22}
+                  style={styles.modalBtnIcon}
+                />
+                <Text style={styles.modalBtnText}>编辑待办</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleDelete}
+                style={[styles.modalBtn, styles.lastModalBtn]}>
+                <Ionicons
+                  name="trash-outline"
+                  size={22}
+                  style={[styles.modalBtnIcon, styles.dangerIcon]}
+                />
+                <Text style={[styles.modalBtnText, styles.dangerText]}>
+                  删除待办
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        </TouchableOpacity>
       </Modal>
     </View>
   );
@@ -129,25 +166,69 @@ const styles = StyleSheet.create({
     color: '#00479e',
     textAlign: 'center',
   },
-  modalMask: {
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0,0.6)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    flexDirection: 'column',
-    marginBottom: 100,
-  },
+
   modalSize: {
     fontSize: 24,
   },
-  modalBtn: {
-    minWidth: 300,
-    marginBottom: 10,
-    borderRadius: 5,
-    backgroundColor: 'gray',
+  addBtn: {
+    fontSize: 24,
+  },
+  modalMask: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalOuterContainer: {
+    justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 40, // 控制底部距离
+  },
+  modalContent: {
+    width: '100%',
+    maxWidth: 400, // 限制最大宽度
+    backgroundColor: '#FFF',
+    borderRadius: 16, // 统一圆角
+    paddingBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  modalHandle: {
+    width: 40,
+    height: 4,
+    backgroundColor: '#E0E0E0',
+    borderRadius: 2,
+    alignSelf: 'center',
+    marginVertical: 12,
+  },
+  modalBtn: {
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: '#EEEEEE',
+  },
+  lastModalBtn: {
+    borderBottomWidth: 0, // 最后一项无边框
+  },
+  modalBtnText: {
+    fontSize: 16,
+    flex: 1,
+    color: '#333',
+  },
+  modalBtnIcon: {
+    marginRight: 16,
+    color: '#666',
+  },
+  dangerIcon: {
+    color: '#FF3B30',
+  },
+  dangerText: {
+    color: '#FF3B30',
   },
 });
 

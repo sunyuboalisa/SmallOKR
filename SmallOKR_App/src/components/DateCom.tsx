@@ -1,8 +1,9 @@
 import dayjs from 'dayjs';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import AndDesign from 'react-native-vector-icons/AntDesign';
+import {ThemeContext} from '../state/ThemeContext';
 
 interface DateComProps {
   date: Date;
@@ -11,6 +12,7 @@ interface DateComProps {
 
 const DateCom = ({date, onConfirm}: DateComProps) => {
   const [open, setOpen] = useState(false);
+  const themeContext = useContext(ThemeContext);
 
   return (
     <View style={styles.repeatContainer}>
@@ -18,12 +20,12 @@ const DateCom = ({date, onConfirm}: DateComProps) => {
         style={{
           marginRight: 10,
           textAlignVertical: 'center',
-          color: '#ffffff',
+          color: themeContext?.theme.colors.text,
         }}>
         {dayjs(date).format('HH:mm')}
       </Text>
       <AndDesign
-        style={styles.rightIcon}
+        style={{...styles.rightIcon, color: themeContext?.theme.colors.text}}
         name="calendar"
         onPress={() => setOpen(true)}
       />
@@ -52,16 +54,13 @@ const styles = StyleSheet.create({
     margin: 12,
     borderWidth: 1,
     padding: 10,
-    backgroundColor: '#131313',
   },
   repeatContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#131313',
   },
   rightIcon: {
     fontSize: 22,
-    color: '#ffffff',
   },
 });
