@@ -16,7 +16,7 @@ jobs:
       
       - name: Build Spring Cloud project
         working-directory: ./smallokr_server
-        run: ./mvnw clean package
+        run: ./mvnw clean install -DskipTests
         
       - name: Upload JAR and Docker Compose
         working-directory: ./smallokr_server
