@@ -1,6 +1,6 @@
 name: SmallOKR Server CI/CD
 run-name: ${{ github.actor }} build smallokr project
-on: [push]
+on: [push, workflow_dispatch]
 jobs:
   Build:
     runs-on: ubuntu-latest
