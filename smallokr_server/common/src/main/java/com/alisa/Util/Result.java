@@ -1,4 +1,4 @@
-package com.alisa.Util;
+package com.alisa.util;
 
 import lombok.Data;
 

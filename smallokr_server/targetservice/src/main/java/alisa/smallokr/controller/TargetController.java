@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alisa.Util.JwtUtil;
-import com.alisa.Util.Result;
-import com.alisa.Util.UUIDTool;
+import com.alisa.util.JwtUtil;
+import com.alisa.util.Result;
+import com.alisa.util.UUIDTool;
 
 import alisa.smallokr.entity.Target;
 import alisa.smallokr.service.TargetService;

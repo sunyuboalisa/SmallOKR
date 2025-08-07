@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alisa.Util.UUIDTool;
+import com.alisa.util.UUIDTool;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,7 +25,7 @@ public class ResultController {
     private ResultService resultService;
 
     @PostMapping("save")
-    public com.alisa.Util.Result<Boolean> addResult(@RequestBody List<Result> results) {
+    public com.alisa.util.Result<Boolean> addResult(@RequestBody List<Result> results) {
         boolean res = true;
 
         if (results.size() > 0) {
@@ -41,24 +41,24 @@ public class ResultController {
             }
         }
 
-        return new com.alisa.Util.Result<Boolean>(res);
+        return new com.alisa.util.Result<Boolean>(res);
     }
 
     @DeleteMapping("delete")
-    public com.alisa.Util.Result<Boolean> deleteResult(@RequestParam String resultId) {
+    public com.alisa.util.Result<Boolean> deleteResult(@RequestParam String resultId) {
         boolean res = resultService.deleteResult(resultId);
-        return new com.alisa.Util.Result<Boolean>(res);
+        return new com.alisa.util.Result<Boolean>(res);
     }
 
     @GetMapping("get")
-    public com.alisa.Util.Result<Result> get(String resultId) {
+    public com.alisa.util.Result<Result> get(String resultId) {
         var result = resultService.findResultById(resultId);
-        return new com.alisa.Util.Result<Result>(result);
+        return new com.alisa.util.Result<Result>(result);
     }
 
     @GetMapping("getAll")
-    public com.alisa.Util.Result<List<Result>> getAll(@RequestParam String targetId) {
+    public com.alisa.util.Result<List<Result>> getAll(@RequestParam String targetId) {
         List<Result> targets = resultService.findAll(targetId);
-        return new com.alisa.Util.Result<>(targets);
+        return new com.alisa.util.Result<>(targets);
     }
 }
