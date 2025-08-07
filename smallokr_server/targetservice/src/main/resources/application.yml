@@ -1,12 +1,13 @@
-spring:
-  datasource:
-    url: jdbc:mysql://47.94.97.3:3306/db_target?useUnicode=true&characterEncoding=utf8
-    username: one
-    password: '#Alisa96312'
 server:
   port: 9081
   servlet:
     context-path: /target-service
+
+spring:
+  application:
+    name: target-service
+  profiles:
+    active: dev
+
 mybatis:
   mapper-locations: classpath:alisa/smallokr/mapper/xml/*.xml
-   

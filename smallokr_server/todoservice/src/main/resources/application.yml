@@ -3,18 +3,8 @@ server:
 spring:
   application:
     name: todo-service
-  cloud:
-    nacos:
-      discovery:
-      server-addr: 47.94.97.3:8848 #注册中心地址
-    # sentinel:
-    #   transport:
-    #   port: 8719
-    #   dashboard: 192.168.31.134:8080
-  datasource:
-    url: jdbc:mysql://47.94.97.3:3306/db_todo?useUnicode=true&characterEncoding=utf8
-    username: one
-    password: '#Alisa96312'
+  profiles:
+    active: dev
 # seata:
 #   application-id: ${spring.application.name}
 #   tx-service-group: smallokr

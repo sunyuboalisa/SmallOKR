@@ -129,4 +129,9 @@ public class TodoController {
         var result = todoService.deleteRepeat(todoRepeatId);
         return new Result<Boolean>(result);
     }
+
+    @GetMapping("analysis")
+    public void getAnalysis() {
+
+    }
 }

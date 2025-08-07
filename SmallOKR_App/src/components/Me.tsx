@@ -4,8 +4,10 @@ import {UserContext, UserDispatchContext} from '../state/UserContext';
 import Avatar from './Avatar';
 import {ThemeContext} from '../state/ThemeContext';
 import IconMenuItem from './IconMenuItem';
+import {useNavigation} from '@react-navigation/native';
 
 const Me = () => {
+  const nav = useNavigation();
   const dispatch = useContext(UserDispatchContext);
   const userContext = useContext(UserContext);
   const themeContext = useContext(ThemeContext);
@@ -31,8 +33,16 @@ const Me = () => {
             // shadowColor: themeContext?.theme.colors.shadow,
           },
         ]}>
-        <IconMenuItem title="个人信息" icon="person-outline" />
-        <IconMenuItem title="行为分析报告" icon="analytics-outline" />
+        <IconMenuItem
+          title="个人信息"
+          icon="person-outline"
+          onPress={() => nav.navigate('PersonalInfo')}
+        />
+        <IconMenuItem
+          title="行为分析报告"
+          icon="analytics-outline"
+          onPress={() => nav.navigate('BehaviorAnalysis')}
+        />
         <IconMenuItem
           title="主题切换"
           icon="theme" // 特殊关键字会自动处理

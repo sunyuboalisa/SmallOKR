@@ -12,13 +12,22 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
 
+    public User findUserById(String id) {
+        return userMapper.findUserByID(id);
+    }
+
     @Override
     public User loadUserByName(String name) {
         return userMapper.findUserByName(name);
     }
 
-    public boolean saveUser(User user){
+    public boolean saveUser(User user) {
         return userMapper.saveUser(user);
+    }
+
+    @Override
+    public User loadUserByEmail(String email) {
+        return userMapper.findUserByEmail(email);
     }
 
 }

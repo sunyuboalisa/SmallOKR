@@ -8,11 +8,26 @@ interface ResultFilter {
 }
 
 const UserService = {
+  send: (param: {email: String}) => {
+    return axiosHelper.post('api/v1/user/send', param);
+  },
   login: (param: {username: String; password: String}) => {
-    return axiosHelper.post('/api/v1/user/signin', param);
+    return axiosHelper.post('api/v1/user/signin', param);
   },
   logout: () => {
     return axiosHelper.post('');
+  },
+  signup: (param: {username: String; password: String; email: String}) => {
+    return axiosHelper.post('api/v1/user/signup', param);
+  },
+  changePassword: (param: {
+    newPassword: String;
+    username?: String;
+    currentPassword?: String;
+    code?: String;
+    email?: String;
+  }) => {
+    return axiosHelper.post('api/v1/user/change-password', param);
   },
 };
 

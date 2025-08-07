@@ -1,0 +1,10 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 47.94.97.3:8848
+        namespace: 7b1b92db-13c9-4a96-965e-4a5117e1b7d2
+  datasource:
+    url: jdbc:mysql://47.94.97.3:3306/db_trace?useUnicode=true&characterEncoding=utf8
+    username: one
+    password: "#Alisa96312"

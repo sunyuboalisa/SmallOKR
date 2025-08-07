@@ -5,12 +5,13 @@ import {
   StyleSheet,
   TouchableOpacity,
   ImageBackground,
+  View,
 } from 'react-native';
 import {UserDispatchContext} from '../state/UserContext';
 import {UserService} from '../service/BusiService';
 import {axiosHelper} from '../util/AxiosHelper';
 
-export const LoginScreen = ({}) => {
+export const LoginScreen = ({navigation}) => {
   const dispatch = useContext(UserDispatchContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -25,7 +26,7 @@ export const LoginScreen = ({}) => {
       if (res.data.code === '200') {
         dispatch({
           type: 'Login',
-          user: {username: username, password: password},
+          user: {username: username, password: password, token: res.data.data},
         });
         axiosHelper.setToken(res.data.data);
       } else {
@@ -33,7 +34,16 @@ export const LoginScreen = ({}) => {
       }
     } catch (error) {
       console.log(error);
+      setError('登录失败，请稍后重试');
     }
+  };
+
+  const handleRegister = () => {
+    navigation.navigate('Register');
+  };
+
+  const handleForgotPassword = () => {
+    navigation.navigate('ForgotPassword');
   };
 
   return (
@@ -59,6 +69,15 @@ export const LoginScreen = ({}) => {
       <TouchableOpacity onPress={handleLogin} style={styles.login}>
         <Text children="登录" style={styles.loginText} />
       </TouchableOpacity>
+
+      <View style={styles.linkContainer}>
+        <TouchableOpacity onPress={handleForgotPassword}>
+          <Text style={styles.linkText}>忘记密码?</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleRegister}>
+          <Text style={styles.linkText}>注册账号</Text>
+        </TouchableOpacity>
+      </View>
     </ImageBackground>
   );
 };
@@ -100,6 +119,16 @@ const styles = StyleSheet.create({
     fontSize: 24,
     textAlign: 'center',
     color: 'white',
+  },
+  linkContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '80%',
+    marginTop: 20,
+  },
+  linkText: {
+    color: '#007eff',
+    fontSize: 16,
   },
 });
 

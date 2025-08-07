@@ -1,15 +1,16 @@
 server:
   port: 8080
 spring:
-  application: gateway
+  application:
+    name: gateway-service
+  profiles:
+    active: dev
   cloud:
-    nacos:
-      server-addr: 47.94.97.3:8848
     gateway:
       # 网关全局跨域配置
       globalcors:
         cors-configurations:
-          '[/**]':
+          "[/**]":
             allowedOriginPatterns: "*"
             allowedMethods: "*"
             allowedHeaders: "*"
@@ -33,9 +34,3 @@ spring:
           uri: lb://user-service
           predicates:
             - Path=/api/v1/user/**
-        
-  datasource:
-    url: jdbc:mysql://47.94.97.3:3306/db_target?useUnicode=true&characterEncoding=utf8
-    username: one
-    password: '#Alisa96312'
-  

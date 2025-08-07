@@ -10,4 +10,9 @@ export type StackParamList = {
   EditTarget: {target: ITarget};
   MainApp: undefined;
   Login: undefined;
+  PersonalInfo: undefined;
+  BehaviorAnalysis: undefined;
+  ChangePassword: undefined;
+  ForgotPassword: undefined;
+  Register: undefined;
 };

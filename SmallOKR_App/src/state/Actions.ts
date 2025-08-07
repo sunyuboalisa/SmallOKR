@@ -14,4 +14,8 @@ export type TargetAction =
   | {type: 'AddResult'; newResult: IResult}
   | {type: 'ChangeResult'; newResult: IResult}
   | {type: 'Reload'; reload: boolean};
-export type UserAction = {type: 'Login'; user: User} | {type: 'Logout'};
+export type UserAction =
+  | {type: 'Login'; user: User}
+  | {type: 'Logout'}
+  | {type: 'Loading'}
+  | {type: 'Loaded'};

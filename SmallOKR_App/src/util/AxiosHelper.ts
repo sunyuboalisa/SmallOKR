@@ -51,6 +51,10 @@ class AxiosHelper {
     this.token = token;
   }
 
+  public clearToken() {
+    this.token = '';
+  }
+
   public get<T = any>(url: string, params?: any): Promise<AxiosResponse<T>> {
     try {
       return this.instance.get<T>(url, {params});
@@ -79,4 +83,4 @@ class AxiosHelper {
 }
 
 export const axiosHelper = new AxiosHelper('47.94.97.3:8080');
-// export const axiosHelper = new AxiosHelper('127.0.0.1:8080');
+//export const axiosHelper = new AxiosHelper('10.0.2.2:8080');
