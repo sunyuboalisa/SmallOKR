@@ -29,10 +29,9 @@ services:
     image: openjdk:17-jdk-slim
     command: java -jar /app/user.jar
     volumes:
-      - ./userservice-*.jar:/app/user.jar
+      - ./userservice.jar:/app/user.jar
     networks:
       - my_network
 
 networks:
   my_network:
-    external: true
