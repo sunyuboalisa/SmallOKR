@@ -4,7 +4,7 @@ spring:
   application:
     name: todo-service
   profiles:
-    active: dev
+    active: test
 # seata:
 #   application-id: ${spring.application.name}
 #   tx-service-group: smallokr

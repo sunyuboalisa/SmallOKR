@@ -7,7 +7,7 @@ spring:
   application:
     name: target-service
   profiles:
-    active: dev
+    active: test
 
 mybatis:
   mapper-locations: classpath:alisa/smallokr/mapper/xml/*.xml
