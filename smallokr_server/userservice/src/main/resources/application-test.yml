@@ -8,3 +8,15 @@ spring:
     url: jdbc:mysql://47.94.97.3:3306/db_user?useUnicode=true&characterEncoding=utf8
     username: one
     password: "#Alisa96312"
+  mail:
+    host: smtp.qq.com   
+    port: 465
+    username: 1660743099@qq.com  # 你的 Outlook 邮箱
+    password: 'qdnfprawwwqqecbb'       # 邮箱密码或应用密码
+    protocol: smtp             # 邮件协议
+    properties:
+      mail:
+        smtp:
+          auth: true           # 启用认证
+          starttls.enable: true # 启用 TLS
+          ssl.enable: true      # 启用 SSL 加密
