@@ -21,12 +21,12 @@ jobs:
       - name: Upload JAR and Docker Compose
         working-directory: ./smallokr_server
         run: | 
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./target/package/gateway-1.0-SNAPSHOT.jar root@47.94.97.3:/root/smallokr/
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./target/package/targetservice-1.0-SNAPSHOT.jar root@47.94.97.3:/root/smallokr/
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./target/package/todoservice-1.0-SNAPSHOT.jar root@47.94.97.3:/root/smallokr/
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./target/package/traceservice-1.0-SNAPSHOT.jar root@47.94.97.3:/root/smallokr/
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./target/package/userservice-1.0-SNAPSHOT.jar root@47.94.97.3:/root/smallokr/
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./docker-compose.yml root@47.94.97.3:/root/smallokr/
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./target/package/gateway-*.jar root@47.94.97.3:/root/smallokr/gateway.jar
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./target/package/targetservice-*.jar root@47.94.97.3:/root/smallokr/targetservice.jar
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./target/package/todoservice-*.jar root@47.94.97.3:/root/smallokr/todoservice.jar
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./target/package/traceservice-*.jar root@47.94.97.3:/root/smallokr/traceservice.jar
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./target/package/userservice-*.jar root@47.94.97.3:/root/smallokr/userservice.jar
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./docker-compose.yml root@47.94.97.3:/root/smallokr/docker-compose.yml
   
       - name: Deploy on Alibaba Cloud Server
         run: |

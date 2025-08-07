@@ -3,7 +3,7 @@ services:
     image: openjdk:17-jdk-slim
     command: java -jar /app/gateway.jar
     volumes:
-      - ./gateway-1.0-SNAPSHOT.jar:/app/gateway.jar
+      - ./gateway.jar:/app/gateway.jar
     ports:
       - 8080:8080
     networks:
@@ -11,17 +11,17 @@ services:
 
   targetservice:
     image: openjdk:17-jdk-slim
-    command: java -jar /app/target.jar
+    command: java -jar /app/targetservice.jar
     volumes:
-      - ./targetservice-1.0-SNAPSHOT.jar:/app/target.jar
+      - ./targetservice.jar:/app/targetservice.jar
     networks:
       - my_network
 
   todoservice:
     image: openjdk:17-jdk-slim
-    command: java -jar /app/todo.jar
+    command: java -jar /app/todoservice.jar
     volumes:
-      - ./todoservice-1.0-SNAPSHOT.jar:/app/todo.jar
+      - ./todoservice.jar:/app/todoservice.jar
     networks:
       - my_network
 
@@ -29,7 +29,7 @@ services:
     image: openjdk:17-jdk-slim
     command: java -jar /app/user.jar
     volumes:
-      - ./userservice-1.0-SNAPSHOT.jar:/app/user.jar
+      - ./userservice-*.jar:/app/user.jar
     networks:
       - my_network
 
