@@ -2,9 +2,8 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 47.94.97.3:8848
-        namespace: 6f570c3f-f269-46e5-88a0-7064fc868ed7
+        server-addr: ${NACOS_SERVER_ADDR}
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/db_todo?useUnicode=true&characterEncoding=utf8
-    username: one
-    password: "#Alisa96312"
+    url: ${MYSQL_URL}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}

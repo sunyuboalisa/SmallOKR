@@ -6,8 +6,10 @@ server:
 spring:
   application:
     name: target-service
+  config:
+    import: optional:file:./smallokr_server/targetservice/.env[.properties]
   profiles:
-    active: test
+    active: dev
 
 mybatis:
   mapper-locations: classpath:alisa/smallokr/mapper/xml/*.xml

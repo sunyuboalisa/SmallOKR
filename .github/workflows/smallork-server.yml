@@ -7,31 +7,65 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
+
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu' 
-          java-version: '17'
-      
+          distribution: "zulu"
+          java-version: "17"
+
       - name: Build Spring Cloud project
         working-directory: ./smallokr_server
         run: ./mvnw clean install -DskipTests
-        
+
       - name: Upload JAR and Docker Compose
         working-directory: ./smallokr_server
-        run: | 
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./target/package/gateway-*.jar root@47.94.97.3:/root/smallokr/gateway.jar
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./target/package/targetservice-*.jar root@47.94.97.3:/root/smallokr/targetservice.jar
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./target/package/todoservice-*.jar root@47.94.97.3:/root/smallokr/todoservice.jar
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./target/package/traceservice-*.jar root@47.94.97.3:/root/smallokr/traceservice.jar
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./target/package/userservice-*.jar root@47.94.97.3:/root/smallokr/userservice.jar
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -o StrictHostKeyChecking=no ./docker-compose.yml root@47.94.97.3:/root/smallokr/docker-compose.yml
-  
-      - name: Deploy on Alibaba Cloud Server
         run: |
-            sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no root@47.94.97.3 << 'EOF'
-            cd /root/smallokr/
-            docker compose down
-            docker compose up -d
-            EOF
+          # 创建远程目录
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" \
+            ssh -p "${{ secrets.SSH_PORT }}" -o StrictHostKeyChecking=no \
+            "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}" "mkdir -p ~/smallokr"
+
+          # 上传 gateway
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" \
+            scp -P "${{ secrets.SSH_PORT }}" -o StrictHostKeyChecking=no \
+            ./target/package/gateway-*.jar \
+            "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}":~/smallokr/gateway.jar
+
+          # 上传 targetservice
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" \
+            scp -P "${{ secrets.SSH_PORT }}" -o StrictHostKeyChecking=no \
+            ./target/package/targetservice-*.jar \
+            "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}":~/smallokr/targetservice.jar
+
+          # 上传 todoservice
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" \
+            scp -P "${{ secrets.SSH_PORT }}" -o StrictHostKeyChecking=no \
+            ./target/package/todoservice-*.jar \
+            "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}":~/smallokr/todoservice.jar
+
+          # 上传 traceservice
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" \
+            scp -P "${{ secrets.SSH_PORT }}" -o StrictHostKeyChecking=no \
+            ./target/package/traceservice-*.jar \
+            "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}":~/smallokr/traceservice.jar
+
+          # 上传 userservice
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" \
+            scp -P "${{ secrets.SSH_PORT }}" -o StrictHostKeyChecking=no \
+            ./target/package/userservice-*.jar \
+            "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}":~/smallokr/userservice.jar
+
+          # 上传 docker-compose.yml
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" \
+            scp -P "${{ secrets.SSH_PORT }}" -o StrictHostKeyChecking=no \
+            ./docker-compose.yml \
+            "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}":~/smallokr/docker-compose.yml
+
+      - name: Deploy on Cloud Server
+        run: |
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p "${{ secrets.SSH_PORT }}" "{{secrets.SSH_USER}}”@"{{secrets.SSH_HOST}}" << 'EOF'
+          cd ~/smallokr/
+          docker compose down
+          docker compose up -d
+          EOF

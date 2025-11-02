@@ -3,8 +3,11 @@ server:
 spring:
   application:
     name: gateway-service
+  config:
+    import:
+      - optional:file:./smallokr_server/gateway/.env[.properties]
   profiles:
-    active: test
+    active: dev
   cloud:
     gateway:
       # 网关全局跨域配置

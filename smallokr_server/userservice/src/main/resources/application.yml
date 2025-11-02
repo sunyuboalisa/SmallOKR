@@ -3,7 +3,9 @@ server:
 spring:
   application:
     name: user-service
+  config:
+    import: optional:file:./smallokr_server/userservice/.env[.properties]
   profiles:
-    active: test
+    active: dev
 mybatis:
   mapper-locations: classpath:alisa/smallokr/mapper/xml/*.xml

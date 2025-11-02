@@ -3,8 +3,10 @@ server:
 spring:
   application:
     name: todo-service
+  config:
+    import: optional:file:./smallokr_server/todoservice/.env[.properties]
   profiles:
-    active: test
+    active: dev
 # seata:
 #   application-id: ${spring.application.name}
 #   tx-service-group: smallokr

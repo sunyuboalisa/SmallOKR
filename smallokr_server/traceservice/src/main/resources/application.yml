@@ -3,5 +3,8 @@ server:
 spring:
   application:
     name: trace-service
+  config:
+    import:
+      - optional:file:./smallokr_server/traceservice/.env[.properties]
   profiles:
     active: dev

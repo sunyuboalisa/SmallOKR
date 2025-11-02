@@ -6,6 +6,8 @@ services:
       - ./gateway.jar:/app/gateway.jar
     ports:
       - 8080:8080
+    env_file:
+      - ./gateway.env
     networks:
       - my_network
 
@@ -14,6 +16,8 @@ services:
     command: java -jar /app/targetservice.jar
     volumes:
       - ./targetservice.jar:/app/targetservice.jar
+    env_file:
+      - ./targetservice.env
     networks:
       - my_network
 
@@ -22,6 +26,8 @@ services:
     command: java -jar /app/todoservice.jar
     volumes:
       - ./todoservice.jar:/app/todoservice.jar
+    env_file:
+      - ./todoservice.env
     networks:
       - my_network
 
@@ -30,6 +36,18 @@ services:
     command: java -jar /app/user.jar
     volumes:
       - ./userservice.jar:/app/user.jar
+    env_file:
+      - ./userservice.env
+    networks:
+      - my_network
+
+  traceservice:
+    image: openjdk:17-jdk-slim
+    command: java -jar /app/traceservice.jar
+    volumes:
+      - ./traceservice.jar:/app/traceservice.jar
+    env_file:
+      - ./traceservice.env
     networks:
       - my_network
 
