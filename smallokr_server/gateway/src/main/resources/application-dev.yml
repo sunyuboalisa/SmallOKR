@@ -3,3 +3,4 @@ spring:
     nacos:
       discovery:
         server-addr: ${NACOS_SERVER_ADDR}
+        namespace: ${NACOS_NAMESPACE}
