@@ -8,3 +8,5 @@ spring:
       - optional:file:./smallokr_server/traceservice/.env[.properties]
   profiles:
     active: dev
+mybatis:
+  mapper-locations: classpath:alisa/smallokr/mapper/xml/*.xml
