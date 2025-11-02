@@ -64,7 +64,9 @@ jobs:
 
       - name: Deploy on Cloud Server
         run: |
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p "${{ secrets.SSH_PORT }}" "{{secrets.SSH_USER}}”@"{{secrets.SSH_HOST}}" << 'EOF'
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" \
+            ssh -p "${{ secrets.SSH_PORT }}" -o StrictHostKeyChecking=no \
+            "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}" << 'EOF'
           cd ~/smallokr/
           docker compose down
           docker compose up -d
