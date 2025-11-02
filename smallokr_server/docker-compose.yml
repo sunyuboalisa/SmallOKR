@@ -1,53 +1,50 @@
+version: "3.9"
+
 services:
   gateway:
-    image: openjdk:17-jdk-slim
-    command: java -jar /app/gateway.jar
-    volumes:
-      - ./gateway.jar:/app/gateway.jar
+    image: ghcr.io/sunyuboalisa/smallokr-gateway:latest
+    container_name: smallokr-gateway
     ports:
       - 8100:8080
     env_file:
       - ./gateway.env
+    restart: always
     networks:
       - my_network
 
   targetservice:
-    image: openjdk:17-jdk-slim
-    command: java -jar /app/targetservice.jar
-    volumes:
-      - ./targetservice.jar:/app/targetservice.jar
+    image: ghcr.io/sunyuboalisa/smallokr-targetservice:latest
+    container_name: smallokr-targetservice
     env_file:
       - ./targetservice.env
+    restart: always
     networks:
       - my_network
 
   todoservice:
-    image: openjdk:17-jdk-slim
-    command: java -jar /app/todoservice.jar
-    volumes:
-      - ./todoservice.jar:/app/todoservice.jar
+    image: ghcr.io/sunyuboalisa/smallokr-todoservice:latest
+    container_name: smallokr-todoservice
     env_file:
       - ./todoservice.env
+    restart: always
     networks:
       - my_network
 
   userservice:
-    image: openjdk:17-jdk-slim
-    command: java -jar /app/user.jar
-    volumes:
-      - ./userservice.jar:/app/user.jar
+    image: ghcr.io/sunyuboalisa/smallokr-userservice:latest
+    container_name: smallokr-userservice
     env_file:
       - ./userservice.env
+    restart: always
     networks:
       - my_network
 
   traceservice:
-    image: openjdk:17-jdk-slim
-    command: java -jar /app/traceservice.jar
-    volumes:
-      - ./traceservice.jar:/app/traceservice.jar
+    image: ghcr.io/sunyuboalisa/smallokr-traceservice:latest
+    container_name: smallokr-traceservice
     env_file:
       - ./traceservice.env
+    restart: always
     networks:
       - my_network
 

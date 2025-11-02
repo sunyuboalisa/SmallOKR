@@ -1,12 +1,23 @@
 name: SmallOKR Server CI/CD
-run-name: ${{ github.actor }} build smallokr project
-on: [push, workflow_dispatch]
+run-name: ${{ github.actor }} build and push docker images
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
 jobs:
-  Build:
+  build:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+      id-token: write # ✅ 支持 OIDC（未来更安全的认证方式）
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -16,58 +27,36 @@ jobs:
 
       - name: Build Spring Cloud project
         working-directory: ./smallokr_server
-        run: ./mvnw clean install -DskipTests
+        run: ./mvnw clean package -DskipTests
 
-      - name: Upload JAR and Docker Compose
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build and push service images
         working-directory: ./smallokr_server
+        env:
+          IMAGE_BASE: ghcr.io/${{ github.repository_owner }}/smallokr
         run: |
-          # 创建远程目录
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" \
-            ssh -p "${{ secrets.SSH_PORT }}" -o StrictHostKeyChecking=no \
-            "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}" "mkdir -p ~/smallokr"
-
-          # 上传 gateway
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" \
-            scp -P "${{ secrets.SSH_PORT }}" -o StrictHostKeyChecking=no \
-            ./target/package/gateway-*.jar \
-            "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}":~/smallokr/gateway.jar
-
-          # 上传 targetservice
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" \
-            scp -P "${{ secrets.SSH_PORT }}" -o StrictHostKeyChecking=no \
-            ./target/package/targetservice-*.jar \
-            "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}":~/smallokr/targetservice.jar
-
-          # 上传 todoservice
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" \
-            scp -P "${{ secrets.SSH_PORT }}" -o StrictHostKeyChecking=no \
-            ./target/package/todoservice-*.jar \
-            "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}":~/smallokr/todoservice.jar
-
-          # 上传 traceservice
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" \
-            scp -P "${{ secrets.SSH_PORT }}" -o StrictHostKeyChecking=no \
-            ./target/package/traceservice-*.jar \
-            "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}":~/smallokr/traceservice.jar
-
-          # 上传 userservice
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" \
-            scp -P "${{ secrets.SSH_PORT }}" -o StrictHostKeyChecking=no \
-            ./target/package/userservice-*.jar \
-            "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}":~/smallokr/userservice.jar
-
-          # 上传 docker-compose.yml
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" \
-            scp -P "${{ secrets.SSH_PORT }}" -o StrictHostKeyChecking=no \
-            ./docker-compose.yml \
-            "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}":~/smallokr/docker-compose.yml
+          services=(gateway targetservice todoservice traceservice userservice)
+          for service in "${services[@]}"; do
+            echo "🚀 Building $service ..."
+            docker build -t $IMAGE_BASE-$service:latest -f ./docker/$service.Dockerfile .
+            docker push $IMAGE_BASE-$service:latest
+          done
 
       - name: Deploy on Cloud Server
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
         run: |
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" \
-            ssh -p "${{ secrets.SSH_PORT }}" -o StrictHostKeyChecking=no \
-            "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}" << 'EOF'
-          cd ~/smallokr/
-          docker compose down
-          docker compose up -d
+          sshpass -p "$SSH_PASSWORD" ssh -p "$SSH_PORT" -o StrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" << 'EOF'
+            set -e
+            cd ~/smallokr/
+            echo "🧰 Pulling latest images..."
+            docker compose pull
+            echo "🧹 Restarting containers..."
+            docker compose down
+            docker compose up -d
           EOF
