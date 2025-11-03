@@ -1,11 +1,27 @@
-import React, {useContext} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-import {AppStackNav} from './src/screens/AppStackNav';
-import {UserContextProvider} from './src/state/UserContext';
-import AxiosNavigation from './src/components/AxiosNavigation';
-import {ThemeContext, ThemeProvider} from './src/state/ThemeContext';
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ *
+ * @format
+ */
 
-const App = () => {
+import React, { useContext } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { AppStackNav } from './src/screens/AppStackNav';
+import { UserContextProvider } from './src/state/UserContext';
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
+
+import { ThemeContext, ThemeProvider } from './src/state/ThemeContext';
+import AxiosNavigation from './src/components/AxiosNavigation';
+import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
+import { NewAppScreen } from '@react-native/new-app-screen';
+import { enableScreens } from 'react-native-screens';
+enableScreens(); // 启用屏幕优化
+
+const App1 = () => {
   const themeContext = useContext(ThemeContext);
   return (
     <UserContextProvider>
@@ -20,8 +36,41 @@ const App = () => {
 // 使用 ThemeProvider 包裹整个应用
 const WrappedApp = () => (
   <ThemeProvider>
-    <App />
+    <App1 />
   </ThemeProvider>
 );
 
-export default WrappedApp;
+// export default WrappedApp;
+
+function App() {
+  const isDarkMode = useColorScheme() === 'dark';
+
+  return (
+    <SafeAreaProvider>
+      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      <AppContent />
+    </SafeAreaProvider>
+  );
+}
+
+function AppContent() {
+  const safeAreaInsets = useSafeAreaInsets();
+
+  return (
+    <View style={styles.container}>
+      {/* <NewAppScreen
+        templateFileName="App.tsx"
+        safeAreaInsets={safeAreaInsets}
+      /> */}
+      <WrappedApp />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
+
+export default App;

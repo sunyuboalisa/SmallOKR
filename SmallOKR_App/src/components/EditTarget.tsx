@@ -9,16 +9,16 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import React, {useContext, useEffect, useState} from 'react';
-import {useNavigation, useRoute} from '@react-navigation/native';
-import {TargetService} from '../service/BusiService';
+import React, { useContext, useEffect, useState } from 'react';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { TargetService } from '../service/BusiService';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {TargetContext, TargetDispatchContext} from '../state/TargetContext';
-import {ThemeContext} from '../state/ThemeContext';
+import { TargetContext, TargetDispatchContext } from '../state/TargetContext';
+import { ThemeContext } from '../state/ThemeContext';
 
 const EditTarget = () => {
   const route = useRoute();
-  const {target} = route.params;
+  const { target } = route.params;
   const navigation = useNavigation();
   const [description, onChangeDescription] = useState(target.description);
   const [targetName, onChangeTargetName] = useState(target.name);
@@ -53,7 +53,7 @@ const EditTarget = () => {
       const getTargetsRes = await TargetService.getTargets();
       let data = getTargetsRes.data.data;
       const newState = data.map(
-        (value: {id: any; name: any; description: any}) => {
+        (value: { id: any; name: any; description: any }) => {
           let entry = {
             id: value.id,
             name: value.name,
@@ -62,8 +62,8 @@ const EditTarget = () => {
           return entry;
         },
       );
-      dispatch({type: 'Load', targets: newState});
-      dispatch({type: 'Reload', reload: true});
+      dispatch({ type: 'Load', targets: newState });
+      dispatch({ type: 'Reload', reload: true });
       navigation.goBack();
     } catch (error) {
       console.log(error);
@@ -72,8 +72,8 @@ const EditTarget = () => {
 
   const featchData = async () => {
     try {
-      const res = await TargetService.getResults({targetId: target.id});
-      dispatch({type: 'LoadResult', results: res.data.data});
+      const res = await TargetService.getResults({ targetId: target.id });
+      dispatch({ type: 'LoadResult', results: res.data.data });
     } catch (error) {
       console.log(error);
     }
@@ -87,27 +87,31 @@ const EditTarget = () => {
     <KeyboardAvoidingView
       style={[
         styles.container,
-        {backgroundColor: themeContext?.theme.colors.background},
+        { backgroundColor: themeContext?.theme.colors.background },
       ]}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={90}>
+      keyboardVerticalOffset={90}
+    >
       <ScrollView
-        style={{flex: 1}}
+        style={{ flex: 1 }}
         contentContainerStyle={styles.scrollContainer}
-        keyboardShouldPersistTaps="handled">
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.page}>
           {/* Input Section */}
           <View
             style={[
               styles.card,
-              {backgroundColor: themeContext?.theme.colors.card},
-            ]}>
+              { backgroundColor: themeContext?.theme.colors.card },
+            ]}
+          >
             <View style={styles.inputGroup}>
               <Text
                 style={[
                   styles.label,
-                  {color: themeContext?.theme.colors.text},
-                ]}>
+                  { color: themeContext?.theme.colors.text },
+                ]}
+              >
                 目标名称
               </Text>
               <TextInput
@@ -130,8 +134,9 @@ const EditTarget = () => {
               <Text
                 style={[
                   styles.label,
-                  {color: themeContext?.theme.colors.text},
-                ]}>
+                  { color: themeContext?.theme.colors.text },
+                ]}
+              >
                 目标描述
               </Text>
               <TextInput
@@ -159,14 +164,16 @@ const EditTarget = () => {
               <Text
                 style={[
                   styles.sectionTitle,
-                  {color: themeContext?.theme.colors.text},
-                ]}>
+                  { color: themeContext?.theme.colors.text },
+                ]}
+              >
                 阶段成果
               </Text>
               <Pressable
                 style={styles.addButton}
                 onPress={onAddBtnPress}
-                hitSlop={10}>
+                hitSlop={10}
+              >
                 <Ionicons
                   name="add-circle"
                   size={28}
@@ -179,7 +186,7 @@ const EditTarget = () => {
               scrollEnabled={false}
               data={targetContext.results}
               keyExtractor={(item, index) => index.toString()}
-              renderItem={({item}) => (
+              renderItem={({ item }) => (
                 <View
                   style={[
                     styles.resultCard,
@@ -187,13 +194,15 @@ const EditTarget = () => {
                       borderColor: themeContext?.theme.colors.border,
                       backgroundColor: themeContext?.theme.colors.card,
                     },
-                  ]}>
+                  ]}
+                >
                   <View style={styles.resultInputGroup}>
                     <Text
                       style={[
                         styles.resultLabel,
-                        {color: themeContext?.theme.colors.text},
-                      ]}>
+                        { color: themeContext?.theme.colors.text },
+                      ]}
+                    >
                       阶段名称
                     </Text>
                     <TextInput
@@ -223,8 +232,9 @@ const EditTarget = () => {
                     <Text
                       style={[
                         styles.resultLabel,
-                        {color: themeContext?.theme.colors.text},
-                      ]}>
+                        { color: themeContext?.theme.colors.text },
+                      ]}
+                    >
                       阶段成果
                     </Text>
                     <TextInput
@@ -263,7 +273,8 @@ const EditTarget = () => {
                   backgroundColor: themeContext?.theme.colors.primary,
                 },
               ]}
-              onPress={handleOKBtnPress}>
+              onPress={handleOKBtnPress}
+            >
               <Text style={styles.buttonText}>保存目标</Text>
             </Pressable>
           </View>
@@ -290,7 +301,7 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 24,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 6,
     elevation: 3,
@@ -359,7 +370,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowOffset: {width: 0, height: 4},
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 3,

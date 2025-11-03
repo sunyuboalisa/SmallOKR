@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -9,10 +9,10 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import {LineChart, BarChart, PieChart} from 'react-native-chart-kit';
-import {TodoContext, TodoDispatchContext} from '../state/TodoContext';
-import {TargetContext, TargetDispatchContext} from '../state/TargetContext';
-import {TargetService, TodoService} from '../service/BusiService';
+import { LineChart, BarChart, PieChart } from 'react-native-chart-kit';
+import { TodoContext, TodoDispatchContext } from '../state/TodoContext';
+import { TargetContext, TargetDispatchContext } from '../state/TargetContext';
+import { TargetService, TodoService } from '../service/BusiService';
 import dayjs from 'dayjs';
 
 const BehaviorAnalysis = () => {
@@ -40,8 +40,8 @@ const BehaviorAnalysis = () => {
       const localDateTime = now;
       const todoRes = await TodoService.getTodosByDate(localDateTime);
       const todos = todoRes.data.data;
-      todoDispatch({type: 'Load', newTodos: todos});
-      dispatch({type: 'Load', targets: newState});
+      todoDispatch({ type: 'Load', newTodos: todos });
+      dispatch({ type: 'Load', targets: newState });
       console.log(todoContext.todos);
     } catch (e) {
       console.error('获取目标数据失败:', e);
@@ -111,10 +111,10 @@ const BehaviorAnalysis = () => {
   // 处理待办时间分布
   const processTodoTimeDistribution = () => {
     const timeSlots = [
-      {label: '早晨 (6-12)', count: 0},
-      {label: '下午 (12-18)', count: 0},
-      {label: '晚上 (18-24)', count: 0},
-      {label: '凌晨 (0-6)', count: 0},
+      { label: '早晨 (6-12)', count: 0 },
+      { label: '下午 (12-18)', count: 0 },
+      { label: '晚上 (18-24)', count: 0 },
+      { label: '凌晨 (0-6)', count: 0 },
     ];
 
     if (todoContext?.todos && Array.isArray(todoContext.todos)) {
@@ -201,19 +201,22 @@ const BehaviorAnalysis = () => {
       style={styles.container}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }>
+      }
+    >
       {/* 时间筛选标签 */}
       <View style={styles.tabContainer}>
         {(['daily', 'weekly', 'monthly'] as const).map(tab => (
           <TouchableOpacity
             key={tab}
             style={[styles.tabButton, activeTab === tab && styles.activeTab]}
-            onPress={() => setActiveTab(tab)}>
+            onPress={() => setActiveTab(tab)}
+          >
             <Text
               style={[
                 styles.tabText,
                 activeTab === tab && styles.activeTabText,
-              ]}>
+              ]}
+            >
               {tab === 'daily'
                 ? '日统计'
                 : tab === 'weekly'
@@ -394,7 +397,7 @@ const styles = StyleSheet.create({
     padding: 8,
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
   },
@@ -421,7 +424,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
   },
@@ -444,7 +447,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
   },

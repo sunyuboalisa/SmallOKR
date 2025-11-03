@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "s.app"
-               BlueprintName = "s"
-               ReferencedContainer = "container:s.xcodeproj">
+               BuildableName = "SmallOKR.app"
+               BlueprintName = "SmallOKR"
+               ReferencedContainer = "container:SmallOKR.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "sTests.xctest"
-               BlueprintName = "sTests"
-               ReferencedContainer = "container:s.xcodeproj">
+               BuildableName = "SmallOKRTests.xctest"
+               BlueprintName = "SmallOKRTests"
+               ReferencedContainer = "container:SmallOKR.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "s.app"
-            BlueprintName = "s"
-            ReferencedContainer = "container:s.xcodeproj">
+            BuildableName = "SmallOKR.app"
+            BlueprintName = "SmallOKR"
+            ReferencedContainer = "container:SmallOKR.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "s.app"
-            BlueprintName = "s"
-            ReferencedContainer = "container:s.xcodeproj">
+            BuildableName = "SmallOKR.app"
+            BlueprintName = "SmallOKR"
+            ReferencedContainer = "container:SmallOKR.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -1,4 +1,4 @@
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Me from '../components/Me';
 import React from 'react';
 import PersonalInfo from '../components/PersonalInfo';
@@ -12,7 +12,8 @@ const MeStackScreen = () => {
     <MeStack.Navigator
       screenOptions={{
         headerShown: false,
-      }}>
+      }}
+    >
       <MeStack.Screen name="Me" component={Me} />
       <MeStack.Screen
         name="PersonalInfo"

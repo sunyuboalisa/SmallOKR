@@ -1,13 +1,12 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   PanResponder,
   GestureResponderEvent,
   Dimensions,
   View,
 } from 'react-native';
-import Svg, {Circle, Line, Text} from 'react-native-svg';
-import {getColor} from '../theme';
-import {ThemeContext} from '../state/ThemeContext';
+import Svg, { Circle, Line, Text } from 'react-native-svg';
+import { ThemeContext } from '../state/ThemeContext';
 
 class PseudoRandom {
   private seed: number;
@@ -39,13 +38,13 @@ interface GalaxyGraphProps {
   data: string[];
 }
 
-const GalaxyGraph: React.FC<GalaxyGraphProps> = ({data}) => {
-  const {width, height} = Dimensions.get('window');
+const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
+  const { width, height } = Dimensions.get('window');
 
   const generateCoordinates = (titles: string[]) => {
     const rng = new PseudoRandom(33);
     // 生成随机角度和随机半径
-    const center = {x: width / 2, y: height / 2}; // 画布中心点
+    const center = { x: width / 2, y: height / 2 }; // 画布中心点
     const radius = Math.min(width, height) / 2; // 形状半径
     // const density = titles.length / (Math.PI * radius * radius); // 密度
     return titles.map((title, index) => {
@@ -54,7 +53,7 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({data}) => {
       const r = Math.sqrt(rng.next()) * radius;
       const x = center.x + r * Math.cos(angle);
       const y = center.y + r * Math.sin(angle);
-      return {id: index, x, y, title};
+      return { id: index, x, y, title };
     });
   };
 
@@ -63,11 +62,11 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({data}) => {
   };
 
   const [nodes, setNodes] = useState<Node[]>([
-    {id: 1, x: 0, y: 0, title: '1'},
-    {id: 2, x: 100, y: 100, title: '2'},
-    {id: 3, x: 150, y: 200, title: '3'},
-    {id: 4, x: 300, y: 100, title: '4'},
-    {id: 5, x: 250, y: 200, title: '5'},
+    { id: 1, x: 0, y: 0, title: '1' },
+    { id: 2, x: 100, y: 100, title: '2' },
+    { id: 3, x: 150, y: 200, title: '3' },
+    { id: 4, x: 300, y: 100, title: '4' },
+    { id: 5, x: 250, y: 200, title: '5' },
   ]);
 
   const [connections] = useState<Connection[]>([
@@ -77,7 +76,7 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({data}) => {
   const [selectedNodeId, setSelectedNodeId] = useState<number | null>(null);
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: (_, gestureState) => {
-      const {dx, dy} = gestureState;
+      const { dx, dy } = gestureState;
       // 判断是否是水平或垂直滑动，防止误触发节点拖动
       return Math.abs(dx) > 5 || Math.abs(dy) > 5;
     },
@@ -86,7 +85,7 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({data}) => {
       if (selectedNodeId !== null) {
         const updatedNodes = nodes.map(node =>
           node.id === selectedNodeId
-            ? {...node, x: node.x + gesture.dx, y: node.y + gesture.dy}
+            ? { ...node, x: node.x + gesture.dx, y: node.y + gesture.dy }
             : node,
         );
         setNodes(updatedNodes);
@@ -148,7 +147,8 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({data}) => {
             dy="0.3em"
             fontSize={20}
             alignmentBaseline="middle"
-            textAnchor="middle">
+            textAnchor="middle"
+          >
             {node.title}
           </Text>
         </View>

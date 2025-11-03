@@ -1,4 +1,5 @@
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
+import {API_HOST, API_PORT} from '@env';
 
 class AxiosHelper {
   private token: string;
@@ -81,6 +82,6 @@ class AxiosHelper {
     });
   }
 }
-
-export const axiosHelper = new AxiosHelper('47.94.97.3:8080');
-//export const axiosHelper = new AxiosHelper('10.0.2.2:8080');
+const API_BASE_URL = `${API_HOST}:${API_PORT}`;
+export const axiosHelper = new AxiosHelper(API_BASE_URL);
+// export const axiosHelper = new AxiosHelper('192.168.1.116:8100');

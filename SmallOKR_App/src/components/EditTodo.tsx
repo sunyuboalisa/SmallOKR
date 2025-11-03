@@ -1,27 +1,28 @@
-import {Pressable, StyleSheet, Text, TextInput, View} from 'react-native';
-import React, {useContext, useState} from 'react';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useContext, useState } from 'react';
 import {
   NavigationProp,
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
 import AndDesign from 'react-native-vector-icons/AntDesign';
-import {DateCom} from './DateCom';
-import {TodoService} from '../service/BusiService';
-import {TodoDispatchContext} from '../state/TodoContext';
+import { DateCom } from './DateCom';
+import { TodoService } from '../service/BusiService';
+import { TodoDispatchContext } from '../state/TodoContext';
 import dayjs from 'dayjs';
-import {ThemeContext} from '../state/ThemeContext';
+import { ThemeContext } from '../state/ThemeContext';
 
 type SelectProps = {
   handlePress: () => void;
 };
 
-const Select = ({handlePress}: SelectProps) => {
+const Select = ({ handlePress }: SelectProps) => {
   const themeContext = useContext(ThemeContext);
   return (
     <Pressable style={styles.repeatContainer} onPress={handlePress}>
       <Text
-        style={{...styles.repeatText, color: themeContext?.theme.colors.text}}>
+        style={{ ...styles.repeatText, color: themeContext?.theme.colors.text }}
+      >
         重复设置
       </Text>
       <AndDesign
@@ -35,7 +36,7 @@ const Select = ({handlePress}: SelectProps) => {
 
 const EditTodo = () => {
   const route = useRoute();
-  const {todo} = route.params;
+  const { todo } = route.params;
   const navigation =
     useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
   const dispatch = useContext(TodoDispatchContext);
@@ -82,7 +83,7 @@ const EditTodo = () => {
         status: '',
       };
       const addTodoRes = await TodoService.AddOrSaveTodo(newTodo);
-      dispatch({type: 'Reload', reload: true});
+      dispatch({ type: 'Reload', reload: true });
       navigation.goBack();
     } catch (error) {
       console.log(error);
@@ -95,12 +96,14 @@ const EditTodo = () => {
     <View
       style={[
         styles.container,
-        {backgroundColor: themeContext?.theme.colors.background},
-      ]}>
+        { backgroundColor: themeContext?.theme.colors.background },
+      ]}
+    >
       <View style={styles.card}>
         <View style={styles.inputContainer}>
           <Text
-            style={{...styles.label, color: themeContext?.theme.colors.text}}>
+            style={{ ...styles.label, color: themeContext?.theme.colors.text }}
+          >
             任务名称
           </Text>
           <TextInput
@@ -118,7 +121,8 @@ const EditTodo = () => {
 
         <View style={styles.inputContainer}>
           <Text
-            style={{...styles.label, color: themeContext?.theme.colors.text}}>
+            style={{ ...styles.label, color: themeContext?.theme.colors.text }}
+          >
             任务描述
           </Text>
           <TextInput
@@ -140,7 +144,11 @@ const EditTodo = () => {
         <View style={styles.timeContainer}>
           <View style={styles.timeInputContainer}>
             <Text
-              style={{...styles.label, color: themeContext?.theme.colors.text}}>
+              style={{
+                ...styles.label,
+                color: themeContext?.theme.colors.text,
+              }}
+            >
               开始时间
             </Text>
             <DateCom date={beginDate} onConfirm={d => seBeginDate(d)} />
@@ -148,7 +156,11 @@ const EditTodo = () => {
 
           <View style={styles.timeInputContainer}>
             <Text
-              style={{...styles.label, color: themeContext?.theme.colors.text}}>
+              style={{
+                ...styles.label,
+                color: themeContext?.theme.colors.text,
+              }}
+            >
               结束时间
             </Text>
             <DateCom date={endDate} onConfirm={d => seEndDate(d)} />
@@ -158,7 +170,7 @@ const EditTodo = () => {
         <View style={styles.inputContainer}>
           <Select
             handlePress={() =>
-              navigation.navigate('RepeatPage', {todoId: todo.id as string})
+              navigation.navigate('RepeatPage', { todoId: todo.id as string })
             }
           />
         </View>
@@ -170,12 +182,14 @@ const EditTodo = () => {
             ...styles.button,
             backgroundColor: themeContext?.theme.colors.primary,
           }}
-          onPress={addTodo}>
+          onPress={addTodo}
+        >
           <Text
             style={{
               ...styles.buttonText,
               color: themeContext?.theme.colors.text,
-            }}>
+            }}
+          >
             保存任务
           </Text>
         </Pressable>
