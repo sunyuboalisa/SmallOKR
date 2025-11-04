@@ -1,13 +1,13 @@
-import {Modal, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useContext, useEffect, useState} from 'react';
-import {FlatList} from 'react-native';
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { FlatList } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {TargetContext, TargetDispatchContext} from '../state/TargetContext';
-import {Card} from './Card';
-import {TargetService} from '../service/BusiService';
-import {ITarget} from '../model/OKRModel';
-import {ThemeContext} from '../state/ThemeContext';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { TargetContext, TargetDispatchContext } from '../state/TargetContext';
+import { Card } from './Card';
+import { TargetService } from '../service/BusiService';
+import { ITarget } from '../model/OKRModel';
+import { ThemeContext } from '../state/ThemeContext';
 
 const TargetHeaderRight = () => {
   const navigation =
@@ -15,7 +15,7 @@ const TargetHeaderRight = () => {
 
   const onAddBtnPress = () => {
     navigation.navigate('EditTarget', {
-      target: {description: '', name: '', id: '', status: '0'},
+      target: { description: '', name: '', id: '', status: '0' },
     });
   };
   return <Ionicons name="add" style={styles.addBtn} onPress={onAddBtnPress} />;
@@ -33,7 +33,7 @@ const Target = () => {
   };
 
   const handlePress = (target: ITarget) => {
-    navigation.navigate('EditTarget', {target: target});
+    navigation.navigate('EditTarget', { target: target });
   };
   const handleLongPress = (target: ITarget) => {
     setSelectedTarget(target);
@@ -54,7 +54,7 @@ const Target = () => {
       .then(res => {
         let data = res.data.data;
         const newState = data.map(
-          (value: {id: any; name: any; description: any}) => {
+          (value: { id: any; name: any; description: any }) => {
             let entry = {
               id: value.id,
               name: value.name,
@@ -63,7 +63,7 @@ const Target = () => {
             return entry;
           },
         );
-        dispatch({type: 'Load', targets: newState});
+        dispatch({ type: 'Load', targets: newState });
       })
       .catch(e => console.log('targets error：', e));
     setModalVisible(false);
@@ -85,7 +85,7 @@ const Target = () => {
       .then(res => {
         let data = res.data.data;
         const newState = data.map(
-          (value: {id: any; name: any; description: any}) => {
+          (value: { id: any; name: any; description: any }) => {
             let entry = {
               id: value.id,
               name: value.name,
@@ -94,7 +94,7 @@ const Target = () => {
             return entry;
           },
         );
-        dispatch({type: 'Load', targets: newState});
+        dispatch({ type: 'Load', targets: newState });
       })
       .catch(e => console.log('targets error：', e));
   }, [dispatch, targetContext.reload]);
@@ -103,7 +103,7 @@ const Target = () => {
     <View style={styles.container}>
       <FlatList
         keyExtractor={(item, index) => item.name + index}
-        renderItem={({item, index}) => {
+        renderItem={({ item, index }) => {
           return (
             <Card
               key={index}
@@ -121,11 +121,13 @@ const Target = () => {
         animationType="fade" // 改为淡入淡出动画
         transparent={true}
         visible={modalVisible}
-        onRequestClose={closeModal}>
+        onRequestClose={closeModal}
+      >
         <TouchableOpacity
           style={styles.modalMask}
           activeOpacity={1}
-          onPress={closeModal}>
+          onPress={closeModal}
+        >
           <View style={styles.modalOuterContainer}>
             <View style={styles.modalContent}>
               <View style={styles.modalHandle} />
@@ -135,7 +137,8 @@ const Target = () => {
                   handleFinishTarget();
                   closeModal();
                 }}
-                style={styles.modalBtn}>
+                style={styles.modalBtn}
+              >
                 <Ionicons
                   name="checkmark-circle"
                   size={22}
@@ -148,7 +151,8 @@ const Target = () => {
                 onPress={() => {
                   handleCommitDayLog();
                 }}
-                style={styles.modalBtn}>
+                style={styles.modalBtn}
+              >
                 <Ionicons
                   name="create-outline"
                   size={22}
@@ -159,7 +163,8 @@ const Target = () => {
 
               <TouchableOpacity
                 onPress={handleDelete}
-                style={[styles.modalBtn, styles.lastModalBtn]}>
+                style={[styles.modalBtn, styles.lastModalBtn]}
+              >
                 <Ionicons
                   name="trash-outline"
                   size={22}
@@ -207,7 +212,7 @@ const styles = StyleSheet.create({
     borderRadius: 16, // 统一圆角
     paddingBottom: 8,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 4},
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 10,
     elevation: 5,
@@ -269,4 +274,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export {TargetHeaderRight, Target};
+export { TargetHeaderRight, Target };
