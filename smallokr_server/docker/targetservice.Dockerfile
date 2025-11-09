@@ -1,4 +1,4 @@
-FROM openjdk:17-jdk-slim
+FROM openjdk:17-ea-17-jdk-slim
 WORKDIR /app
 COPY ./target/package/targetservice-*.jar /app/targetservice.jar
 EXPOSE 8081
