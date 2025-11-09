@@ -1,7 +1,7 @@
-import { StackParamList } from './src/common/Pages';
+import { MyStackParamList } from './src/common/NativeScreenTypes';
 
 declare global {
   namespace MyReactNavigation {
-    interface ParamList extends StackParamList {}
+    interface ParamList extends MyStackParamList {}
   }
 }

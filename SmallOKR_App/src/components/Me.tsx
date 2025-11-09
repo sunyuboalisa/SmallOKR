@@ -1,26 +1,26 @@
-import React, {useContext} from 'react';
-import {View, StyleSheet} from 'react-native';
-import {UserContext, UserDispatchContext} from '../state/UserContext';
+import React, { useContext } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { UserContext, UserDispatchContext } from '../state/UserContext';
 import Avatar from './Avatar';
-import {ThemeContext} from '../state/ThemeContext';
+import { ThemeContext } from '../state/ThemeContext';
 import IconMenuItem from './IconMenuItem';
-import {useNavigation} from '@react-navigation/native';
+import { MyStackScreenProps } from '../common/NativeScreenTypes';
 
-const Me = () => {
-  const nav = useNavigation();
+const Me = ({ navigation }: MyStackScreenProps<'Me'>) => {
   const dispatch = useContext(UserDispatchContext);
   const userContext = useContext(UserContext);
   const themeContext = useContext(ThemeContext);
 
-  const handleLogout = () => dispatch({type: 'Logout'});
+  const handleLogout = () => dispatch({ type: 'Logout' });
   const handleToggleTheme = () => themeContext?.toggleTheme();
 
   return (
     <View
       style={[
         styles.page,
-        {backgroundColor: themeContext?.theme.colors.background},
-      ]}>
+        { backgroundColor: themeContext?.theme.colors.background },
+      ]}
+    >
       <View style={styles.container}>
         <Avatar username={userContext?.userInfo?.username} />
       </View>
@@ -32,16 +32,17 @@ const Me = () => {
             backgroundColor: themeContext?.theme.colors.card,
             // shadowColor: themeContext?.theme.colors.shadow,
           },
-        ]}>
+        ]}
+      >
         <IconMenuItem
           title="个人信息"
           icon="person-outline"
-          onPress={() => nav.navigate('PersonalInfo')}
+          onPress={() => navigation.navigate('PersonalInfo')}
         />
         <IconMenuItem
           title="行为分析报告"
           icon="analytics-outline"
-          onPress={() => nav.navigate('BehaviorAnalysis')}
+          onPress={() => navigation.navigate('BehaviorAnalysis')}
         />
         <IconMenuItem
           title="主题切换"
@@ -75,7 +76,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     marginTop: 20,
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 6,
     elevation: 3,

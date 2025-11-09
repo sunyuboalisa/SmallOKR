@@ -2,18 +2,20 @@ import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { FlatList } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { TargetContext, TargetDispatchContext } from '../state/TargetContext';
 import { Card } from './Card';
 import useTargetService from '../service/TargetService';
 import { ITarget } from '../model/OKRModel';
 import { ThemeContext } from '../state/ThemeContext';
+import {
+  MyStackParamList,
+  MyStackScreenProps,
+} from '../common/NativeScreenTypes';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 const TargetHeaderRight = () => {
   const themeContext = useContext(ThemeContext);
-  const navigation =
-    useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
-
+  const navigation = useNavigation<NavigationProp<MyStackParamList>>();
   const onAddBtnPress = () => {
     navigation.navigate('EditTarget', {
       target: { description: '', name: '', id: '', status: 0 },
@@ -28,14 +30,12 @@ const TargetHeaderRight = () => {
   );
 };
 
-const Target = () => {
+const Target = ({ navigation }: MyStackScreenProps<'Target'>) => {
   const targetService = useTargetService();
   const themeContext = useContext(ThemeContext);
   const [modalVisible, setModalVisible] = useState(false);
   const targetContext = useContext(TargetContext);
   const dispatch = useContext(TargetDispatchContext);
-  const navigation =
-    useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
   const [selectedTarget, setSelectedTarget] = useState<ITarget>();
   const closeModal = () => {
     setModalVisible(false);

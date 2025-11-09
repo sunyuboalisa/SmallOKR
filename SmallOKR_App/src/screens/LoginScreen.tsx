@@ -9,11 +9,9 @@ import {
 } from 'react-native';
 import { UserDispatchContext } from '../state/UserContext';
 import useUserService from '../service/UserService';
-import { useAxios } from '../hooks/useAxios';
-
-export const LoginScreen = ({ navigation }) => {
+import { MyStackScreenProps } from '../common/NativeScreenTypes';
+export const LoginScreen = ({ navigation }: MyStackScreenProps<'Login'>) => {
   const userService = useUserService();
-  const axios = useAxios();
   const dispatch = useContext(UserDispatchContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');

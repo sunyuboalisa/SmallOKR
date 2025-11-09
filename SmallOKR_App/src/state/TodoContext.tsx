@@ -1,5 +1,5 @@
 import React, { createContext, useReducer } from 'react';
-import { Todo } from '../model/OKRModel';
+import { ITodo } from '../model/OKRModel';
 import { TodoAction } from './Actions';
 interface UITodo {
   id: string;
@@ -7,7 +7,7 @@ interface UITodo {
   title: string;
 }
 interface TodoState {
-  todos: Todo[];
+  todos: ITodo[];
   uiTodos: UITodo[];
   reload: boolean;
 }

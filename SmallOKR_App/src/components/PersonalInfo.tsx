@@ -1,8 +1,9 @@
-import React, {useContext} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import {UserContext} from '../state/UserContext';
+import React, { useContext } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { UserContext } from '../state/UserContext';
+import { MyStackScreenProps } from '../common/NativeScreenTypes';
 
-const PersonalInfo = ({navigation}) => {
+const PersonalInfo = ({ navigation }: MyStackScreenProps<'PersonalInfo'>) => {
   const userContext = useContext(UserContext);
   // 假设这是从后端或全局状态获取的用户数据
   const userInfo = {
@@ -34,7 +35,8 @@ const PersonalInfo = ({navigation}) => {
       {/* 更改密码选项 */}
       <TouchableOpacity
         style={styles.optionItem}
-        onPress={handleChangePassword}>
+        onPress={handleChangePassword}
+      >
         <Text style={styles.optionText}>更改密码</Text>
       </TouchableOpacity>
     </View>

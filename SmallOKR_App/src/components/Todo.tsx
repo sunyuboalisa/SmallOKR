@@ -12,6 +12,8 @@ import { TimeLine } from './TimeLine';
 import useTodoService from '../service/TodoService';
 import dayjs from 'dayjs';
 import { ThemeContext } from '../state/ThemeContext';
+import { ITodo } from '../model/OKRModel';
+import { MyStackScreenProps } from '../common/NativeScreenTypes';
 
 const PlanHeaderRight = () => {
   const themeContext = useContext(ThemeContext);
@@ -38,13 +40,11 @@ const PlanHeaderRight = () => {
   );
 };
 
-const Todo = () => {
+const Todo = ({ navigation }: MyStackScreenProps<'Todo'>) => {
   const todoService = useTodoService();
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedTodo, setSelectedTodo] = useState();
+  const [selectedTodo, setSelectedTodo] = useState<ITodo>();
 
-  const navigation =
-    useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
   // const themeContext = useContext(ThemeContext);
   const todoContext = useContext(TodoContext);
   const dispatch = useContext(TodoDispatchContext);

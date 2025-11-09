@@ -10,17 +10,18 @@ import {
   View,
 } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
-import { useNavigation, useRoute } from '@react-navigation/native';
 import useTargetService from '../service/TargetService';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { TargetContext, TargetDispatchContext } from '../state/TargetContext';
 import { ThemeContext } from '../state/ThemeContext';
+import { MyStackScreenProps } from '../common/NativeScreenTypes';
 
-const EditTarget = () => {
-  const targetService = useTargetService();
-  const route = useRoute();
+const EditTarget = ({
+  navigation,
+  route,
+}: MyStackScreenProps<'EditTarget'>) => {
   const { target } = route.params;
-  const navigation = useNavigation();
+  const targetService = useTargetService();
   const [description, onChangeDescription] = useState(target.description);
   const [targetName, onChangeTargetName] = useState(target.name);
   const targetContext = useContext(TargetContext);

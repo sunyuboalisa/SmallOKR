@@ -34,11 +34,11 @@ class Plan {
     this.Name = name;
     this.Todos = [];
   }
-  Todos: Array<Todo>;
+  Todos: Array<ITodo>;
   Name: string;
 }
 
-class Todo {
+class ITodo {
   constructor(title: string) {
     this.id = '';
     this.name = title;
@@ -55,4 +55,4 @@ class Todo {
   repeat: number;
 }
 
-export { OKR, Plan, Todo, GroupTarget };
+export { OKR, Plan, ITodo, GroupTarget };

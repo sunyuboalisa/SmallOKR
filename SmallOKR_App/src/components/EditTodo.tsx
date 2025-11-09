@@ -11,6 +11,7 @@ import useTodoService from '../service/TodoService';
 import { TodoDispatchContext } from '../state/TodoContext';
 import dayjs from 'dayjs';
 import { ThemeContext } from '../state/ThemeContext';
+import { MyStackScreenProps } from '../common/NativeScreenTypes';
 
 type SelectProps = {
   handlePress: () => void;
@@ -34,9 +35,8 @@ const Select = ({ handlePress }: SelectProps) => {
   );
 };
 
-const EditTodo = () => {
+const EditTodo = ({ route }: MyStackScreenProps<'EditTodo'>) => {
   const todoService = useTodoService();
-  const route = useRoute();
   const { todo } = route.params;
   const navigation =
     useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
@@ -46,8 +46,8 @@ const EditTodo = () => {
   let initailEndDate = new Date();
   const now = new Date();
 
-  if (todo.dateTime != null) {
-    const [hours, minutes] = todo.dateTime.split(':').map(Number);
+  if (todo.beginDate != null) {
+    const [hours, minutes] = todo.beginDate.split(':').map(Number);
     initailBeginDate = new Date(
       now.getFullYear(),
       now.getMonth(),
@@ -57,8 +57,8 @@ const EditTodo = () => {
     );
   }
 
-  if (todo.endTime != null) {
-    const [hours, minutes] = todo.endTime.split(':').map(Number);
+  if (todo.endDate != null) {
+    const [hours, minutes] = todo.endDate.split(':').map(Number);
     initailEndDate = new Date(
       now.getFullYear(),
       now.getMonth(),
@@ -71,7 +71,7 @@ const EditTodo = () => {
   const [beginDate, seBeginDate] = useState<Date>(initailBeginDate);
   const [endDate, seEndDate] = useState<Date>(initailEndDate);
   const [description, onChangeDescription] = useState('');
-  const [todoName, onChangeTodoName] = useState(todo.title);
+  const [todoName, onChangeTodoName] = useState(todo.name);
 
   const addTodo = async () => {
     try {

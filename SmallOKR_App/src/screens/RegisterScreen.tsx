@@ -8,8 +8,11 @@ import {
   Alert,
 } from 'react-native';
 import useUserService from '../service/UserService';
+import { MyStackScreenProps } from '../common/NativeScreenTypes';
 
-export const RegisterScreen = ({ navigation }) => {
+export const RegisterScreen = ({
+  navigation,
+}: MyStackScreenProps<'Register'>) => {
   const userService = useUserService();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');

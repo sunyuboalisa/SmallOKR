@@ -10,8 +10,11 @@ import {
   Platform,
 } from 'react-native';
 import useUserService from '../service/UserService';
+import { MyStackScreenProps } from '../common/NativeScreenTypes';
 
-export const ForgotPasswordScreen = ({ navigation }) => {
+export const ForgotPasswordScreen = ({
+  navigation,
+}: MyStackScreenProps<'ForgotPassword'>) => {
   // 状态管理
   const userService = useUserService();
   const [email, setEmail] = useState('');
@@ -20,20 +23,6 @@ export const ForgotPasswordScreen = ({ navigation }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [countdown, setCountdown] = useState(0);
   const [activeStep, setActiveStep] = useState(1); // 1: 邮箱验证, 2: 重置密码
-  const countdownRef = useRef<NodeJS.Timeout | null>(null);
-
-  // 倒计时处理
-  useEffect(() => {
-    if (countdown > 0) {
-      countdownRef.current = setTimeout(
-        () => setCountdown(countdown - 1),
-        1000,
-      );
-    }
-    return () => {
-      countdownRef.current && clearTimeout(countdownRef.current);
-    };
-  }, [countdown]);
 
   // 发送验证码
   const sendVerificationCode = async () => {
@@ -43,7 +32,6 @@ export const ForgotPasswordScreen = ({ navigation }) => {
     }
 
     try {
-      // 这里替换为实际的API调用
       await userService.send({ email });
       setCountdown(60);
       setActiveStep(2);
@@ -66,7 +54,6 @@ export const ForgotPasswordScreen = ({ navigation }) => {
     }
 
     try {
-      // 这里替换为实际的API调用
       await userService.changePassword({ email, code, newPassword });
       Alert.alert('成功', '密码重置成功', [
         { text: '确定', onPress: () => navigation.navigate('Login') },

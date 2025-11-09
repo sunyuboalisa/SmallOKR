@@ -9,9 +9,9 @@ import {
   Alert,
 } from 'react-native';
 import useTodoService from '../service/TodoService';
-import { useRoute } from '@react-navigation/native';
 import { ThemeContext } from '../state/ThemeContext';
 import { useContext } from 'react';
+import { MyStackScreenProps } from '../common/NativeScreenTypes';
 
 type ItemProps = {
   title: string;
@@ -36,7 +36,6 @@ const Item = ({ title, selected, handlePress }: ItemProps) => {
         },
       ]}
       onPress={handlePress}
-      android_ripple={{ color: themeContext?.theme.colors.ripple }}
     >
       <Text
         style={[
@@ -63,9 +62,8 @@ type ItemModel = {
   selected: boolean;
 };
 
-export const RepeatPage = () => {
+export const RepeatPage = ({ route }: MyStackScreenProps<'RepeatPage'>) => {
   const todoService = useTodoService();
-  const route = useRoute();
   const { todoId } = route.params;
   const [data, setData] = useState<ItemModel[]>([]);
   const themeContext = useContext(ThemeContext);

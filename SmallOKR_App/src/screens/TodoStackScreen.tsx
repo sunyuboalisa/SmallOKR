@@ -3,8 +3,9 @@ import AddTodo from '../components/EditTodo';
 import { Todo, PlanHeaderRight } from '../components/Todo';
 import { RepeatPage } from '../components/RepeatPage';
 import React from 'react';
+import { MyStackParamList } from '../common/NativeScreenTypes';
 
-const TodoStack = createNativeStackNavigator<MyReactNavigation.ParamList>();
+const TodoStack = createNativeStackNavigator<MyStackParamList>();
 
 const TodoStackScreen = () => {
   return (

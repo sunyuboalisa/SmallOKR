@@ -7,7 +7,7 @@ import {
   publishUserError,
 } from '../common/EventBusPubSub';
 import { useContext } from 'react';
-import { UserContext, UserDispatchContext } from '../state/UserContext';
+import { UserDispatchContext } from '../state/UserContext';
 
 const useUserService = () => {
   const { sendRequest } = useApiService();
