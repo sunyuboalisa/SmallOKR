@@ -1,5 +1,5 @@
-import {DefaultTheme, Theme} from '@react-navigation/native';
-import React, {createContext, useState, useContext, ReactNode} from 'react';
+import { DefaultTheme, Theme } from '@react-navigation/native';
+import React, { createContext, useState, useContext, ReactNode } from 'react';
 
 // 定义主题
 const themes = {
@@ -46,7 +46,7 @@ interface ThemeProviderProps {
   children: ReactNode;
 }
 
-export const ThemeProvider = ({children}: ThemeProviderProps) => {
+export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   const [theme, setTheme] = useState<Theme>(themes.light); // 默认是 light 主题
 
   const toggleTheme = () => {
@@ -56,7 +56,7 @@ export const ThemeProvider = ({children}: ThemeProviderProps) => {
   };
 
   return (
-    <ThemeContext.Provider value={{theme, toggleTheme}}>
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );

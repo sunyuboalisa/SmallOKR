@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -9,10 +9,11 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import {UserService} from '../service/BusiService';
+import useUserService from '../service/UserService';
 
-export const ForgotPasswordScreen = ({navigation}) => {
+export const ForgotPasswordScreen = ({ navigation }) => {
   // 状态管理
+  const userService = useUserService();
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -43,7 +44,7 @@ export const ForgotPasswordScreen = ({navigation}) => {
 
     try {
       // 这里替换为实际的API调用
-      await UserService.send({email});
+      await userService.send({ email });
       setCountdown(60);
       setActiveStep(2);
       Alert.alert('已发送', '验证码已发送至您的邮箱');
@@ -66,9 +67,9 @@ export const ForgotPasswordScreen = ({navigation}) => {
 
     try {
       // 这里替换为实际的API调用
-      await UserService.changePassword({email, code, newPassword});
+      await userService.changePassword({ email, code, newPassword });
       Alert.alert('成功', '密码重置成功', [
-        {text: '确定', onPress: () => navigation.navigate('Login')},
+        { text: '确定', onPress: () => navigation.navigate('Login') },
       ]);
     } catch (error) {
       Alert.alert('错误', '重置失败，请检查验证码');
@@ -78,7 +79,8 @@ export const ForgotPasswordScreen = ({navigation}) => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}>
+      style={styles.container}
+    >
       {/* 步骤指示器 */}
       <View style={styles.stepIndicator}>
         <View style={[styles.step, activeStep === 1 && styles.activeStep]}>
@@ -108,7 +110,8 @@ export const ForgotPasswordScreen = ({navigation}) => {
           <TouchableOpacity
             style={[styles.button, countdown > 0 && styles.disabledButton]}
             onPress={sendVerificationCode}
-            disabled={countdown > 0}>
+            disabled={countdown > 0}
+          >
             <Text style={styles.buttonText}>
               {countdown > 0 ? `${countdown}秒后重试` : '获取验证码'}
             </Text>
@@ -155,7 +158,8 @@ export const ForgotPasswordScreen = ({navigation}) => {
         style={styles.backLink}
         onPress={() =>
           activeStep === 1 ? navigation.goBack() : setActiveStep(1)
-        }>
+        }
+      >
         <Text style={styles.backText}>
           {activeStep === 1 ? '返回登录' : '返回修改邮箱'}
         </Text>
@@ -164,7 +168,6 @@ export const ForgotPasswordScreen = ({navigation}) => {
   );
 };
 
-// 现代化UI样式
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -204,7 +207,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 24,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 6,
     elevation: 3,

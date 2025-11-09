@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, { useContext, useState } from 'react';
 import {
   Text,
   TextInput,
@@ -7,11 +7,13 @@ import {
   ImageBackground,
   View,
 } from 'react-native';
-import {UserDispatchContext} from '../state/UserContext';
-import {UserService} from '../service/BusiService';
-import {axiosHelper} from '../util/AxiosHelper';
+import { UserDispatchContext } from '../state/UserContext';
+import useUserService from '../service/UserService';
+import { useAxios } from '../hooks/useAxios';
 
-export const LoginScreen = ({navigation}) => {
+export const LoginScreen = ({ navigation }) => {
+  const userService = useUserService();
+  const axios = useAxios();
   const dispatch = useContext(UserDispatchContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -19,16 +21,19 @@ export const LoginScreen = ({navigation}) => {
 
   const handleLogin = async () => {
     try {
-      const res = await UserService.login({
+      const res = await userService.login({
         username: username,
         password: password,
       });
       if (res.data.code === '200') {
         dispatch({
           type: 'Login',
-          user: {username: username, password: password, token: res.data.data},
+          user: {
+            username: username,
+            password: password,
+            token: res.data.data,
+          },
         });
-        axiosHelper.setToken(res.data.data);
       } else {
         setError('用户名或密码错误');
       }
@@ -49,7 +54,8 @@ export const LoginScreen = ({navigation}) => {
   return (
     <ImageBackground
       source={require('../../assets/imgs/login-background.png')}
-      style={styles.container}>
+      style={styles.container}
+    >
       <TextInput
         autoCapitalize="none"
         style={styles.input}

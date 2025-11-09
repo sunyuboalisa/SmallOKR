@@ -1,17 +1,17 @@
-import {View, Text, Modal, TouchableOpacity} from 'react-native';
-import React, {useContext, useState} from 'react';
-import {StyleSheet} from 'react-native';
+import { View, Text, Modal, TouchableOpacity } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { StyleSheet } from 'react-native';
 import {
   NavigationProp,
   useFocusEffect,
   useNavigation,
 } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {TodoContext, TodoDispatchContext} from '../state/TodoContext';
-import {TimeLine} from './TimeLine';
-import {TodoService} from '../service/BusiService';
+import { TodoContext, TodoDispatchContext } from '../state/TodoContext';
+import { TimeLine } from './TimeLine';
+import useTodoService from '../service/TodoService';
 import dayjs from 'dayjs';
-import {ThemeContext} from '../state/ThemeContext';
+import { ThemeContext } from '../state/ThemeContext';
 
 const PlanHeaderRight = () => {
   const themeContext = useContext(ThemeContext);
@@ -32,13 +32,14 @@ const PlanHeaderRight = () => {
   return (
     <Ionicons
       name="add"
-      style={{...styles.addBtn, color: themeContext?.theme.colors.text}}
+      style={{ ...styles.addBtn, color: themeContext?.theme.colors.text }}
       onPress={onAddBtnPress}
     />
   );
 };
 
 const Todo = () => {
+  const todoService = useTodoService();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedTodo, setSelectedTodo] = useState();
 
@@ -65,11 +66,13 @@ const Todo = () => {
 
   const handleDelete = async () => {
     try {
-      const res = await TodoService.deleteTodo(selectedTodo.id);
-      console.log('删除todo：', selectedTodo);
-      console.log(res.data);
-      closeModal();
-      fetchData();
+      if (selectedTodo) {
+        const res = await todoService.deleteTodo(selectedTodo.id);
+        console.log('删除todo：', selectedTodo);
+        console.log(res.data);
+        closeModal();
+        fetchData();
+      }
     } catch (error) {
       console.log(error);
     }
@@ -79,9 +82,9 @@ const Todo = () => {
     try {
       const now = dayjs().format('YYYY-MM-DD HH:mm:ss');
       const localDateTime = now;
-      const res = await TodoService.getTodosByDate(localDateTime);
+      const res = await todoService.getTodosByDate(localDateTime);
       const todos = res.data.data;
-      dispatch({type: 'Load', newTodos: todos});
+      dispatch({ type: 'Load', newTodos: todos });
     } catch (error) {
       console.log('error in fetch user todos:', error);
     }
@@ -104,11 +107,13 @@ const Todo = () => {
         animationType="fade" // 改为淡入淡出动画
         transparent={true}
         visible={modalVisible}
-        onRequestClose={closeModal}>
+        onRequestClose={closeModal}
+      >
         <TouchableOpacity
           style={styles.modalMask}
           activeOpacity={1}
-          onPress={closeModal}>
+          onPress={closeModal}
+        >
           <View style={styles.modalOuterContainer}>
             <View style={styles.modalContent}>
               <View style={styles.modalHandle} />
@@ -127,7 +132,8 @@ const Todo = () => {
                   handleItemPress(selectedTodo);
                   closeModal();
                 }}
-                style={styles.modalBtn}>
+                style={styles.modalBtn}
+              >
                 <Ionicons
                   name="create-outline"
                   size={22}
@@ -138,7 +144,8 @@ const Todo = () => {
 
               <TouchableOpacity
                 onPress={handleDelete}
-                style={[styles.modalBtn, styles.lastModalBtn]}>
+                style={[styles.modalBtn, styles.lastModalBtn]}
+              >
                 <Ionicons
                   name="trash-outline"
                   size={22}
@@ -191,7 +198,7 @@ const styles = StyleSheet.create({
     borderRadius: 16, // 统一圆角
     paddingBottom: 8,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 4},
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 10,
     elevation: 5,
@@ -232,4 +239,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export {PlanHeaderRight, Todo};
+export { PlanHeaderRight, Todo };

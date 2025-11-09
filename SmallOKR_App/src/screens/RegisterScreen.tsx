@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,9 +7,10 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
-import {UserService} from '../service/BusiService';
+import useUserService from '../service/UserService';
 
-export const RegisterScreen = ({navigation}) => {
+export const RegisterScreen = ({ navigation }) => {
+  const userService = useUserService();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -28,7 +29,7 @@ export const RegisterScreen = ({navigation}) => {
     }
 
     try {
-      const res = await UserService.signup({
+      const res = await userService.signup({
         username,
         password,
         email,
@@ -36,7 +37,7 @@ export const RegisterScreen = ({navigation}) => {
 
       if (res.data.code === '200') {
         Alert.alert('注册成功', '请返回登录', [
-          {text: '确定', onPress: () => navigation.goBack()},
+          { text: '确定', onPress: () => navigation.goBack() },
         ]);
       } else {
         setError(res.data.message || '注册失败');

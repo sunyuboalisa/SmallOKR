@@ -1,6 +1,6 @@
-import React, {createContext, useReducer} from 'react';
-import {Todo} from '../model/OKRModel';
-import {TodoAction} from './Actions';
+import React, { createContext, useReducer } from 'react';
+import { Todo } from '../model/OKRModel';
+import { TodoAction } from './Actions';
 interface UITodo {
   id: string;
   dateTime: string;
@@ -24,7 +24,7 @@ const initialDispatch = (action: TodoAction) => {
 const TodoContext = createContext(initialPlanStates);
 const TodoDispatchContext = createContext(initialDispatch);
 
-const TodoContextProvider = ({children}: {children: React.ReactNode}) => {
+const TodoContextProvider = ({ children }: { children: React.ReactNode }) => {
   const TodoReducer = (state: TodoState, action: TodoAction) => {
     switch (action.type) {
       case 'Add':
@@ -36,9 +36,9 @@ const TodoContextProvider = ({children}: {children: React.ReactNode}) => {
           endTime: x.endDate,
           title: x.name,
         }));
-        return {...state, todos: action.newTodos, uiTodos: temp};
+        return { ...state, todos: action.newTodos, uiTodos: temp };
       case 'Reload':
-        return {...state, reload: action.reload};
+        return { ...state, reload: action.reload };
       default:
         break;
     }
@@ -56,4 +56,4 @@ const TodoContextProvider = ({children}: {children: React.ReactNode}) => {
   );
 };
 
-export {TodoContext, TodoDispatchContext, TodoContextProvider};
+export { TodoContext, TodoDispatchContext, TodoContextProvider };

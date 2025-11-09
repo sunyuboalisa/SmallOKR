@@ -5,23 +5,32 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { TargetContext, TargetDispatchContext } from '../state/TargetContext';
 import { Card } from './Card';
-import { TargetService } from '../service/BusiService';
+import useTargetService from '../service/TargetService';
 import { ITarget } from '../model/OKRModel';
 import { ThemeContext } from '../state/ThemeContext';
 
 const TargetHeaderRight = () => {
+  const themeContext = useContext(ThemeContext);
   const navigation =
     useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
 
   const onAddBtnPress = () => {
     navigation.navigate('EditTarget', {
-      target: { description: '', name: '', id: '', status: '0' },
+      target: { description: '', name: '', id: '', status: 0 },
     });
   };
-  return <Ionicons name="add" style={styles.addBtn} onPress={onAddBtnPress} />;
+  return (
+    <Ionicons
+      name="add"
+      style={{ ...styles.addBtn, color: themeContext?.theme.colors.text }}
+      onPress={onAddBtnPress}
+    />
+  );
 };
 
 const Target = () => {
+  const targetService = useTargetService();
+  const themeContext = useContext(ThemeContext);
   const [modalVisible, setModalVisible] = useState(false);
   const targetContext = useContext(TargetContext);
   const dispatch = useContext(TargetDispatchContext);
@@ -31,7 +40,6 @@ const Target = () => {
   const closeModal = () => {
     setModalVisible(false);
   };
-
   const handlePress = (target: ITarget) => {
     navigation.navigate('EditTarget', { target: target });
   };
@@ -42,7 +50,8 @@ const Target = () => {
   const handleDelete = () => {
     console.log('删除目标：', selectedTarget);
     if (selectedTarget) {
-      TargetService.deleteTarget(selectedTarget.id)
+      targetService
+        .deleteTarget(selectedTarget.id)
         .then(res => {
           console.log(res);
         })
@@ -50,7 +59,8 @@ const Target = () => {
           console.log(err);
         });
     }
-    TargetService.getTargets()
+    targetService
+      .getTargets()
       .then(res => {
         let data = res.data.data;
         const newState = data.map(
@@ -72,16 +82,18 @@ const Target = () => {
     closeModal();
   };
   const handleFinishTarget = async () => {
-    const res = await TargetService.saveTarget({
-      ...selectedTarget,
-      status: '2',
-    });
-    closeModal();
+    if (selectedTarget) {
+      const res = await targetService.saveTarget({
+        ...selectedTarget,
+        status: 2,
+      });
+      closeModal();
+    }
   };
 
-  const themeContext = useContext(ThemeContext);
   useEffect(() => {
-    TargetService.getTargets()
+    targetService
+      .getTargets()
       .then(res => {
         let data = res.data.data;
         const newState = data.map(
@@ -94,6 +106,7 @@ const Target = () => {
             return entry;
           },
         );
+        console.log('加载目标：', newState);
         dispatch({ type: 'Load', targets: newState });
       })
       .catch(e => console.log('targets error：', e));
@@ -192,7 +205,6 @@ const styles = StyleSheet.create({
   },
   addBtn: {
     fontSize: 24,
-    color: '#ffffff',
   },
   modalMask: {
     flex: 1,

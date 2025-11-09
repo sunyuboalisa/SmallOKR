@@ -1,8 +1,9 @@
-import React, {Dispatch, createContext, useEffect, useReducer} from 'react';
-import {UserAction} from './Actions';
-import {User} from '../model/User';
+import React, { Dispatch, createContext, useEffect, useReducer } from 'react';
+import { UserAction } from './Actions';
+import { User } from '../model/User';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {axiosHelper} from '../util/AxiosHelper';
+import { useAxios } from '../hooks/useAxios';
+import { eventBus } from '../common/EventBus';
 
 export type UserState = {
   userInfo: User | null;
@@ -26,36 +27,31 @@ const storeUser = async (user: User) => {
   }
 };
 
-// 清除用户存储信息
-const clearUserStorage = async () => {
-  try {
-    await AsyncStorage.removeItem('userInfo');
-    axiosHelper.clearToken();
-  } catch (error) {
-    console.error('清除用户存储失败:', error);
-  }
-};
-
-export function UserContextProvider({children}: {children: React.ReactNode}) {
+export function UserContextProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [userState, dispatch] = useReducer(UserReducer, {
     userInfo: null,
     status: 'offline',
     isloading: false,
   });
-
+  const axios = useAxios();
   // 初始化时从存储中加载用户信息
   useEffect(() => {
     const loadUser = async () => {
       try {
-        dispatch({type: 'Loading'});
+        dispatch({ type: 'Loading' });
         const storedUser = await AsyncStorage.getItem('userInfo');
         if (storedUser) {
-          dispatch({type: 'Login', user: JSON.parse(storedUser)});
+          const user = JSON.parse(storedUser);
+          dispatch({ type: 'Login', user });
         }
       } catch (error) {
         console.error('加载用户信息失败', error);
       } finally {
-        dispatch({type: 'Loaded'});
+        dispatch({ type: 'Loaded' });
       }
     };
     loadUser();
@@ -69,16 +65,21 @@ export function UserContextProvider({children}: {children: React.ReactNode}) {
     </UserContext.Provider>
   );
 }
-
+const clearUserStorage = async () => {
+  try {
+    await AsyncStorage.removeItem('userInfo');
+  } catch (error) {
+    console.error('清除用户存储失败:', error);
+  }
+};
 const UserReducer = function (state: UserState, action: UserAction): UserState {
   switch (action.type) {
     case 'Loading':
-      return {...state, isloading: true};
+      return { ...state, isloading: true };
     case 'Loaded':
-      return {...state, isloading: false};
+      return { ...state, isloading: false };
     case 'Login':
       storeUser(action.user);
-      axiosHelper.setToken(action.user.token);
       return {
         userInfo: action.user,
         status: 'online',
@@ -86,8 +87,9 @@ const UserReducer = function (state: UserState, action: UserAction): UserState {
       };
     case 'Logout':
       clearUserStorage();
+      eventBus.emit('USER_LOGOUT');
       return {
-        userInfo: null,
+        userInfo: { ...state.userInfo, token: '' } as User,
         status: 'offline',
         isloading: false,
       };
@@ -96,4 +98,4 @@ const UserReducer = function (state: UserState, action: UserAction): UserState {
   }
 };
 
-export {UserReducer};
+export { UserReducer };

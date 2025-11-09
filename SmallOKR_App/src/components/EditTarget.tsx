@@ -11,12 +11,13 @@ import {
 } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { TargetService } from '../service/BusiService';
+import useTargetService from '../service/TargetService';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { TargetContext, TargetDispatchContext } from '../state/TargetContext';
 import { ThemeContext } from '../state/ThemeContext';
 
 const EditTarget = () => {
+  const targetService = useTargetService();
   const route = useRoute();
   const { target } = route.params;
   const navigation = useNavigation();
@@ -41,16 +42,16 @@ const EditTarget = () => {
 
   const handleOKBtnPress = async () => {
     try {
-      const addTargetRes = await TargetService.saveTarget({
+      const addTargetRes = await targetService.saveTarget({
         name: targetName,
         description: description,
         id: target.id,
-        status: '0',
+        status: 0,
       });
-      const addResultRes = await TargetService.saveResult(
+      const addResultRes = await targetService.saveResult(
         targetContext.results,
       );
-      const getTargetsRes = await TargetService.getTargets();
+      const getTargetsRes = await targetService.getTargets();
       let data = getTargetsRes.data.data;
       const newState = data.map(
         (value: { id: any; name: any; description: any }) => {
@@ -72,7 +73,7 @@ const EditTarget = () => {
 
   const featchData = async () => {
     try {
-      const res = await TargetService.getResults({ targetId: target.id });
+      const res = await targetService.getResults({ targetId: target.id });
       dispatch({ type: 'LoadResult', results: res.data.data });
     } catch (error) {
       console.log(error);

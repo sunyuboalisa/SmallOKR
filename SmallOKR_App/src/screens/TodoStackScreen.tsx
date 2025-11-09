@@ -1,9 +1,8 @@
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AddTodo from '../components/EditTodo';
-import {Todo, PlanHeaderRight} from '../components/Todo';
-import {RepeatPage} from '../components/RepeatPage';
+import { Todo, PlanHeaderRight } from '../components/Todo';
+import { RepeatPage } from '../components/RepeatPage';
 import React from 'react';
-import {TodoContextProvider} from '../state/TodoContext';
 
 const TodoStack = createNativeStackNavigator<MyReactNavigation.ParamList>();
 
@@ -16,7 +15,8 @@ const TodoStackScreen = () => {
         headerStyle: {
           backgroundColor: 'transparent',
         },
-      }}>
+      }}
+    >
       <TodoStack.Screen
         name="Todo"
         component={Todo}
@@ -28,7 +28,7 @@ const TodoStackScreen = () => {
       <TodoStack.Screen
         name="EditTodo"
         component={AddTodo}
-        options={{title: '编辑待办'}}
+        options={{ title: '编辑待办' }}
       />
       <TodoStack.Screen name="RepeatPage" component={RepeatPage} />
     </TodoStack.Navigator>

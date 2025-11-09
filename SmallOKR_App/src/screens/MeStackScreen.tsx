@@ -19,24 +19,24 @@ const MeStackScreen = () => {
         name="PersonalInfo"
         component={PersonalInfo}
         options={{
-          headerShown: true, // Show header for this screen
-          title: '个人信息', // Set a title
+          headerShown: true,
+          title: '个人信息',
         }}
       />
       <MeStack.Screen
         name="BehaviorAnalysis"
         component={BehaviorAnalysis}
         options={{
-          headerShown: true, // Show header for this screen
-          title: '行为分析报告', // Set a title
+          headerShown: true,
+          title: '行为分析报告',
         }}
       />
       <MeStack.Screen
         name="ChangePassword"
         component={ChangePasswordScreen}
         options={{
-          headerShown: true, // Show header for this screen
-          title: '修改密码', // Set a title
+          headerShown: true,
+          title: '修改密码',
         }}
       />
     </MeStack.Navigator>

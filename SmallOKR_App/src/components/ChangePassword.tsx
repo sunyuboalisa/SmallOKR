@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, { useContext, useState } from 'react';
 import {
   View,
   Text,
@@ -7,14 +7,13 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import {UserService} from '../service/BusiService';
-import {UserContext, UserDispatchContext} from '../state/UserContext';
+import { UserContext, UserDispatchContext } from '../state/UserContext';
+import useUserService from '../service/UserService';
 
 const ChangePasswordScreen = () => {
+  const userService = useUserService();
   const user = useContext(UserContext);
   const dispatch = useContext(UserDispatchContext);
-  const navigation = useNavigation();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -60,7 +59,7 @@ const ChangePasswordScreen = () => {
 
     setIsSubmitting(true);
     try {
-      const res = await UserService.changePassword({
+      const res = await userService.changePassword({
         username: user?.userInfo?.username,
         currentPassword: currentPassword,
         newPassword: newPassword,
@@ -75,7 +74,7 @@ const ChangePasswordScreen = () => {
               setNewPassword('');
               setConfirmPassword('');
               // 返回上一页
-              dispatch({type: 'Logout'});
+              dispatch({ type: 'Logout' });
             },
           },
         ]);
@@ -145,7 +144,8 @@ const ChangePasswordScreen = () => {
       <TouchableOpacity
         style={[styles.button, isSubmitting ? styles.buttonDisabled : null]}
         onPress={handleSubmit}
-        disabled={isSubmitting}>
+        disabled={isSubmitting}
+      >
         <Text style={styles.buttonText}>
           {isSubmitting ? '处理中...' : '确认修改'}
         </Text>

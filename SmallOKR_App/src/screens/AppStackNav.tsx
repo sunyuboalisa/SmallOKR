@@ -1,14 +1,15 @@
-import {createStackNavigator} from '@react-navigation/stack';
-import {AppTabNav} from './AppTabNav';
+import { createStackNavigator } from '@react-navigation/stack';
+import { AppTabNav } from './AppTabNav';
 import LoginScreen from './LoginScreen';
-import React, {useContext, useEffect, useState} from 'react';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {UserContext} from '../state/UserContext';
+import React, { useContext, useEffect, useState } from 'react';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { UserContext } from '../state/UserContext';
 import RegisterScreen from './RegisterScreen';
 import ForgotPasswordScreen from './ForgotPasswordScreen';
-import {SplashScreen} from './SplashScreen';
+import { SplashScreen } from './SplashScreen';
+import { eventBus } from '../common/EventBus';
+import { USER_EVENTS } from '../common/EventType';
 
-// 创建堆栈导航器
 const Stack = createStackNavigator<MyReactNavigation.ParamList>();
 export const AppStackNav = () => {
   const userContext = useContext(UserContext);
@@ -22,12 +23,12 @@ export const AppStackNav = () => {
       if (userContext?.userInfo) {
         navigation.reset({
           index: 0,
-          routes: [{name: 'MainApp'}],
+          routes: [{ name: 'MainApp' }],
         });
       } else {
         navigation.reset({
           index: 0,
-          routes: [{name: 'Login'}],
+          routes: [{ name: 'Login' }],
         });
       }
     }
@@ -41,6 +42,34 @@ export const AppStackNav = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    // 订阅会话过期事件
+    const handleSessionExpired = () => {
+      console.log('Session expired. Redirecting to Login...');
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      });
+    };
+
+    const handleUserLogin = () => {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'MainApp' }],
+      });
+    };
+
+    // 订阅会话过期事件
+    eventBus.on(USER_EVENTS.USER_SESSION_EXPIRED, handleSessionExpired);
+    eventBus.on(USER_EVENTS.USER_LOGIN, handleUserLogin);
+    eventBus.on(USER_EVENTS.USER_LOGOUT, handleSessionExpired);
+    // 清理事件监听器
+    return () => {
+      eventBus.off(USER_EVENTS.USER_SESSION_EXPIRED, handleSessionExpired);
+      eventBus.off(USER_EVENTS.USER_LOGIN, handleUserLogin);
+    };
+  }, [navigation]);
+
   if (userContext.isloading || !isReady) {
     return <SplashScreen />;
   }
@@ -51,7 +80,8 @@ export const AppStackNav = () => {
         gestureEnabled: false,
         headerShown: false,
       }}
-      initialRouteName={userContext?.userInfo ? 'MainApp' : 'Login'}>
+      initialRouteName={userContext?.userInfo ? 'MainApp' : 'Login'}
+    >
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Register" component={RegisterScreen} />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />

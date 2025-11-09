@@ -12,10 +12,13 @@ import {
 import { LineChart, BarChart, PieChart } from 'react-native-chart-kit';
 import { TodoContext, TodoDispatchContext } from '../state/TodoContext';
 import { TargetContext, TargetDispatchContext } from '../state/TargetContext';
-import { TargetService, TodoService } from '../service/BusiService';
 import dayjs from 'dayjs';
+import useTargetService from '../service/TargetService';
+import useTodoService from '../service/TodoService';
 
 const BehaviorAnalysis = () => {
+  const targetService = useTargetService();
+  const todoService = useTodoService();
   const [activeTab, setActiveTab] = useState<'daily' | 'weekly' | 'monthly'>(
     'daily',
   );
@@ -28,17 +31,17 @@ const BehaviorAnalysis = () => {
   const todoDispatch = useContext(TodoDispatchContext);
   const fetchData = async () => {
     try {
-      const res = await TargetService.getTargets();
+      const res = await targetService.getTargets();
       const newState = res.data.data.map((value: any) => ({
         id: value.id || '',
         name: value.name || '未命名目标',
         description: value.description || '',
-        status: value.status || '0', // 默认未开始状态
+        status: value.status || 0,
       }));
 
       const now = dayjs().format('YYYY-MM-DD HH:mm:ss');
       const localDateTime = now;
-      const todoRes = await TodoService.getTodosByDate(localDateTime);
+      const todoRes = await todoService.getTodosByDate(localDateTime);
       const todos = todoRes.data.data;
       todoDispatch({ type: 'Load', newTodos: todos });
       dispatch({ type: 'Load', targets: newState });
@@ -97,10 +100,10 @@ const BehaviorAnalysis = () => {
       targetContext.targets.forEach(target => {
         if (!target) return;
 
-        const status = target.status || '0';
-        if (status === '0') statusData[0].value++;
-        else if (status === '1') statusData[1].value++;
-        else if (status === '2') statusData[2].value++;
+        const status = target.status || 0;
+        if (status === 0) statusData[0].value++;
+        else if (status === 1) statusData[1].value++;
+        else if (status === 2) statusData[2].value++;
         else statusData[3].value++;
       });
     }
@@ -273,6 +276,8 @@ const BehaviorAnalysis = () => {
               color: (opacity = 1) => `rgba(155, 89, 182, ${opacity})`,
             }}
             fromZero
+            yAxisLabel="Count"
+            yAxisSuffix="%"
           />
         ) : (
           <Text style={styles.noDataText}>暂无待办数据</Text>

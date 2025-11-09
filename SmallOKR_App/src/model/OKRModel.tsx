@@ -18,7 +18,7 @@ export interface ITarget {
   id: string;
   name: string;
   description: string;
-  status: string;
+  status: number;
 }
 
 export interface IResult {
@@ -55,4 +55,4 @@ class Todo {
   repeat: number;
 }
 
-export {OKR, Plan, Todo, GroupTarget};
+export { OKR, Plan, Todo, GroupTarget };

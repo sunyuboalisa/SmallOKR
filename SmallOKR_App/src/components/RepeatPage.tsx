@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   FlatList,
   Pressable,
@@ -8,10 +8,10 @@ import {
   View,
   Alert,
 } from 'react-native';
-import {TodoService} from '../service/BusiService';
-import {useRoute} from '@react-navigation/native';
-import {ThemeContext} from '../state/ThemeContext';
-import {useContext} from 'react';
+import useTodoService from '../service/TodoService';
+import { useRoute } from '@react-navigation/native';
+import { ThemeContext } from '../state/ThemeContext';
+import { useContext } from 'react';
 
 type ItemProps = {
   title: string;
@@ -19,30 +19,32 @@ type ItemProps = {
   handlePress: () => void;
 };
 
-const Item = ({title, selected, handlePress}: ItemProps) => {
+const Item = ({ title, selected, handlePress }: ItemProps) => {
   const themeContext = useContext(ThemeContext);
 
   return (
     <Pressable
-      style={({pressed}) => [
+      style={({ pressed }) => [
         styles.item,
         {
           backgroundColor: themeContext?.theme.colors.card,
           opacity: pressed ? 0.8 : 1,
-          transform: [{scale: pressed ? 0.98 : 1}],
+          transform: [{ scale: pressed ? 0.98 : 1 }],
         },
         selected && {
           backgroundColor: themeContext?.theme.colors.primary,
         },
       ]}
       onPress={handlePress}
-      android_ripple={{color: themeContext?.theme.colors.ripple}}>
+      android_ripple={{ color: themeContext?.theme.colors.ripple }}
+    >
       <Text
         style={[
           styles.title,
-          {color: themeContext?.theme.colors.text},
+          { color: themeContext?.theme.colors.text },
           selected && styles.selectedText,
-        ]}>
+        ]}
+      >
         {title}
       </Text>
       {selected && (
@@ -62,19 +64,20 @@ type ItemModel = {
 };
 
 export const RepeatPage = () => {
+  const todoService = useTodoService();
   const route = useRoute();
-  const {todoId} = route.params;
+  const { todoId } = route.params;
   const [data, setData] = useState<ItemModel[]>([]);
   const themeContext = useContext(ThemeContext);
 
   const fetchData = async () => {
     try {
-      const repeatDicRes = await TodoService.getRepeatDicEntrys();
-      const todoRepeatRes = await TodoService.getRepeat(todoId);
+      const repeatDicRes = await todoService.getRepeatDicEntrys();
+      const todoRepeatRes = await todoService.getRepeat(todoId);
 
       const todoRepeats = todoRepeatRes.data.data;
       const resData = repeatDicRes.data.data.map(
-        (item: {id: any; entryValue: any}) => {
+        (item: { id: any; entryValue: any }) => {
           let entry = {
             todoRepeatId: '',
             repeatId: item.id,
@@ -83,7 +86,7 @@ export const RepeatPage = () => {
           };
 
           todoRepeats.forEach(
-            (element: {repeatId: any; todoRepeatId: string}) => {
+            (element: { repeatId: any; todoRepeatId: string }) => {
               if (element.repeatId === item.id) {
                 entry.todoRepeatId = element.todoRepeatId;
                 entry.selected = true;
@@ -107,7 +110,7 @@ export const RepeatPage = () => {
     repeatId: string;
   }) => {
     try {
-      await TodoService.addRepeat(todoRepeat);
+      await todoService.addRepeat(todoRepeat);
     } catch (error) {
       Alert.alert('Error', 'Failed to add repeat. Please try again.');
       console.error(error);
@@ -119,7 +122,7 @@ export const RepeatPage = () => {
     repeatId: string;
   }) => {
     try {
-      await TodoService.deleteRepeat(todoRepeat);
+      await todoService.deleteRepeat(todoRepeat);
     } catch (error) {
       Alert.alert('Error', 'Failed to delete repeat. Please try again.');
       console.error(error);
@@ -130,9 +133,9 @@ export const RepeatPage = () => {
     const newData = data.map(entry => {
       if (entry.repeatId === item.repeatId) {
         if (entry.selected) {
-          deleteRepeat({todoId: todoId, repeatId: entry.repeatId});
+          deleteRepeat({ todoId: todoId, repeatId: entry.repeatId });
         } else {
-          addRepeat({todoId: todoId, repeatId: entry.repeatId});
+          addRepeat({ todoId: todoId, repeatId: entry.repeatId });
         }
         entry.selected = !entry.selected;
       }
@@ -150,12 +153,13 @@ export const RepeatPage = () => {
     <View
       style={[
         styles.container,
-        {backgroundColor: themeContext?.theme.colors.background},
-      ]}>
+        { backgroundColor: themeContext?.theme.colors.background },
+      ]}
+    >
       <FlatList
         data={data}
         keyExtractor={item => item.repeatId}
-        renderItem={({item}) => (
+        renderItem={({ item }) => (
           <Item
             title={item.title}
             selected={item.selected}
@@ -186,7 +190,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
   },

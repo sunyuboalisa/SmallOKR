@@ -7,7 +7,7 @@ import {
 } from '@react-navigation/native';
 import AndDesign from 'react-native-vector-icons/AntDesign';
 import { DateCom } from './DateCom';
-import { TodoService } from '../service/BusiService';
+import useTodoService from '../service/TodoService';
 import { TodoDispatchContext } from '../state/TodoContext';
 import dayjs from 'dayjs';
 import { ThemeContext } from '../state/ThemeContext';
@@ -35,6 +35,7 @@ const Select = ({ handlePress }: SelectProps) => {
 };
 
 const EditTodo = () => {
+  const todoService = useTodoService();
   const route = useRoute();
   const { todo } = route.params;
   const navigation =
@@ -82,7 +83,7 @@ const EditTodo = () => {
         endDate: dayjs(endDate).format('YYYY-MM-DD HH:mm:ss'),
         status: '',
       };
-      const addTodoRes = await TodoService.AddOrSaveTodo(newTodo);
+      const addTodoRes = await todoService.addOrSaveTodo(newTodo);
       dispatch({ type: 'Reload', reload: true });
       navigation.goBack();
     } catch (error) {

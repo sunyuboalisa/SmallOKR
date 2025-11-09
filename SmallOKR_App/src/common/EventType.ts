@@ -1,0 +1,8 @@
+export const USER_EVENTS = {
+  USER_LOGIN: 'USER_LOGIN', // 用户登录
+  USER_LOGOUT: 'USER_LOGOUT', // 用户登出
+  USER_REGISTER: 'USER_REGISTER', // 用户注册
+  USER_LOGIN_FAILED: 'USER_LOGIN_FAILED', // 用户登录失败（例如 401 错误）
+  USER_SESSION_EXPIRED: 'USER_SESSION_EXPIRED', // 用户会话过期
+  USER_ERROR: 'USER_ERROR', // 用户错误（如网络问题等）
+};

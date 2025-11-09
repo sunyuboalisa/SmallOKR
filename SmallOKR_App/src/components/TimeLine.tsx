@@ -1,6 +1,6 @@
-import {FlatList, Pressable, StyleSheet, Text, View} from 'react-native';
-import React, {useContext} from 'react';
-import {ThemeContext} from '../state/ThemeContext';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useContext } from 'react';
+import { ThemeContext } from '../state/ThemeContext';
 
 type DataType = {
   id: string;
@@ -34,16 +34,20 @@ const Item = ({
     <Pressable
       style={styles.rowContainer}
       onPress={() => handlePress()}
-      onLongPress={handleLongPress}>
+      onLongPress={handleLongPress}
+    >
       <View style={styles.timeContainer}>
-        <Text style={{...styles.text, color: themeContext?.theme.colors.text}}>
+        <Text
+          style={{ ...styles.text, color: themeContext?.theme.colors.text }}
+        >
           {dateTime}
         </Text>
       </View>
       <View style={styles.titleContainer}>
-        <View style={{...styles.titleWrapper, backgroundColor: color}}>
+        <View style={{ ...styles.titleWrapper, backgroundColor: color }}>
           <Text
-            style={{...styles.text, color: themeContext?.theme.colors.text}}>
+            style={{ ...styles.text, color: themeContext?.theme.colors.text }}
+          >
             {title}
           </Text>
         </View>
@@ -63,7 +67,7 @@ const TimeLine = ({
       <FlatList
         data={data}
         keyExtractor={(item, index) => item.title + index}
-        renderItem={({item}) => {
+        renderItem={({ item }) => {
           return (
             <Item
               color={themeContext?.theme.colors.card}
@@ -79,7 +83,7 @@ const TimeLine = ({
   );
 };
 
-export {TimeLine};
+export { TimeLine };
 
 const styles = StyleSheet.create({
   rowContainer: {
@@ -105,7 +109,7 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     elevation: 3,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
   },
