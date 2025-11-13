@@ -10,7 +10,7 @@ import { useContext } from 'react';
 import { UserDispatchContext } from '../state/UserContext';
 
 const useUserService = () => {
-  const { sendRequest } = useApiService();
+  const { get, sendRequest } = useApiService();
   const dispatch = useContext(UserDispatchContext);
   const send = (param: { email: string }) => {
     return sendRequest('post', '/api/v1/user/send', param);
@@ -26,6 +26,7 @@ const useUserService = () => {
           username: param.username,
           password: param.password,
           token: token,
+          namespaceUrl: '',
         },
       });
       publishUserLogin({ username: param.username, token }); // 发布用户登录事件
@@ -83,12 +84,22 @@ const useUserService = () => {
     }
   };
 
+  const helthCheck = async () => {
+    try {
+      const response = await get('/api/v1/user/health');
+      return response;
+    } catch (error) {
+      publishUserError('Health check failed'); // 发布用户错误事件
+      throw error;
+    }
+  };
   return {
     send,
     login,
     logout,
     signup,
     changePassword,
+    helthCheck,
   };
 };
 

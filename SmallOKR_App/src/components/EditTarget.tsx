@@ -212,7 +212,10 @@ const EditTarget = ({
                         styles.resultInput,
                         {
                           borderBottomColor: themeContext?.theme.colors.border,
+                          borderColor: themeContext?.theme.colors.border,
                           color: themeContext?.theme.colors.text,
+                          backgroundColor:
+                            themeContext?.theme.colors.background,
                         },
                       ]}
                       onChangeText={text =>
@@ -245,7 +248,10 @@ const EditTarget = ({
                         styles.resultInput,
                         {
                           borderBottomColor: themeContext?.theme.colors.border,
+                          borderColor: themeContext?.theme.colors.border,
                           color: themeContext?.theme.colors.text,
+                          backgroundColor:
+                            themeContext?.theme.colors.background,
                         },
                       ]}
                       onChangeText={text =>

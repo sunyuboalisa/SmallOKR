@@ -56,7 +56,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     private boolean isExclude(String requestPath) {
         final String[] excludePaths = { "/api/v1/user/send", "/api/v1/user/signin", "/api/v1/user/signup",
-                "/api/v1/user/change-password" };
+                "/api/v1/user/change-password", "/api/v1/user/health" };
         AntPathMatcher antPathMatcher = new AntPathMatcher();
 
         for (String string : excludePaths) {

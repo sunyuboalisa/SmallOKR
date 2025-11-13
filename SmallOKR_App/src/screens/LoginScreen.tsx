@@ -10,15 +10,25 @@ import {
 import { UserDispatchContext } from '../state/UserContext';
 import useUserService from '../service/UserService';
 import { MyStackScreenProps } from '../common/NativeScreenTypes';
+import { useAxios } from '../hooks/useAxios';
 export const LoginScreen = ({ navigation }: MyStackScreenProps<'Login'>) => {
   const userService = useUserService();
+  const axios = useAxios();
   const dispatch = useContext(UserDispatchContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [namespaceUrl, setNamespaceUrl] = useState('');
   const [error, setError] = useState('');
 
   const handleLogin = async () => {
     try {
+      axios.updateBaseURL(namespaceUrl);
+      const resCheck = await userService.helthCheck();
+      console.log('Health check result:', resCheck);
+      if (resCheck.status !== 200) {
+        setError('无法连接到服务器，请检查空间地址是否正确');
+        return;
+      }
       const res = await userService.login({
         username: username,
         password: password,
@@ -30,6 +40,7 @@ export const LoginScreen = ({ navigation }: MyStackScreenProps<'Login'>) => {
             username: username,
             password: password,
             token: res.data.data,
+            namespaceUrl: namespaceUrl,
           },
         });
       } else {
@@ -68,6 +79,14 @@ export const LoginScreen = ({ navigation }: MyStackScreenProps<'Login'>) => {
         onChangeText={text => setPassword(text)}
         value={password}
         secureTextEntry={true}
+      />
+      {error ? <Text style={styles.error}>{error}</Text> : null}
+      <TextInput
+        autoCapitalize="none"
+        style={styles.input}
+        placeholder="空间地址"
+        onChangeText={text => setNamespaceUrl(text)}
+        value={namespaceUrl}
       />
       {error ? <Text style={styles.error}>{error}</Text> : null}
       <TouchableOpacity onPress={handleLogin} style={styles.login}>

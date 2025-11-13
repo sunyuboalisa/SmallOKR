@@ -59,5 +59,10 @@ export const useAxios = () => {
     [],
   );
 
-  return { axiosRequest };
+  const updateBaseURL = (newBaseURL: string) => {
+    axiosInstanceRef.current.defaults.baseURL = newBaseURL;
+    console.log('Updated Axios baseURL to:', newBaseURL);
+  };
+
+  return { axiosRequest, updateBaseURL };
 };
