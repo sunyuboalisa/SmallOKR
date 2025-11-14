@@ -1,9 +1,9 @@
-import { IResult, ITarget, Todo } from '../model/OKRModel';
+import { IResult, ITarget, ITodo } from '../model/OKRModel';
 import { User } from '../model/User';
 
 export type TodoAction =
-  | { type: 'Add'; newTodo: Todo }
-  | { type: 'Load'; newTodos: Todo[] }
+  | { type: 'Add'; newTodo: ITodo }
+  | { type: 'Load'; newTodos: ITodo[] }
   | { type: 'Reload'; reload: boolean };
 export type TargetAction =
   | { type: 'Add'; newTarget: ITarget; group: string }
@@ -16,6 +16,6 @@ export type TargetAction =
   | { type: 'Reload'; reload: boolean };
 export type UserAction =
   | { type: 'Login'; user: User }
-  | { type: 'Logout' }
+  | { type: 'Logout'; user: User }
   | { type: 'Loading' }
   | { type: 'Loaded' };

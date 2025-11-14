@@ -3,4 +3,5 @@ export interface User {
   password: string;
   token: string;
   namespaceUrl: string;
+  status: 'online' | 'offline';
 }

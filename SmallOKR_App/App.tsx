@@ -12,7 +12,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeContext, ThemeProvider } from './src/state/ThemeContext';
 import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
 import { enableScreens } from 'react-native-screens';
-enableScreens(); // 启用屏幕优化
+import { AppConfigProvider } from './src/state/AppConfigContext';
+enableScreens();
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -28,13 +29,15 @@ function AppContent() {
   const themeContext = useContext(ThemeContext);
   return (
     <View style={styles.container}>
-      <ThemeProvider>
-        <UserContextProvider>
-          <NavigationContainer theme={themeContext?.theme}>
-            <AppStackNav />
-          </NavigationContainer>
-        </UserContextProvider>
-      </ThemeProvider>
+      <AppConfigProvider>
+        <ThemeProvider>
+          <UserContextProvider>
+            <NavigationContainer theme={themeContext?.theme}>
+              <AppStackNav />
+            </NavigationContainer>
+          </UserContextProvider>
+        </ThemeProvider>
+      </AppConfigProvider>
     </View>
   );
 }

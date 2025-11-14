@@ -15,9 +15,11 @@ export const LoginScreen = ({ navigation }: MyStackScreenProps<'Login'>) => {
   const userService = useUserService();
   const axios = useAxios();
   const dispatch = useContext(UserDispatchContext);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [namespaceUrl, setNamespaceUrl] = useState('');
+  const [username, setUsername] = useState('test');
+  const [password, setPassword] = useState('test');
+  const [namespaceUrl, setNamespaceUrl] = useState(
+    'https://test.alisacloud.com',
+  );
   const [error, setError] = useState('');
 
   const handleLogin = async () => {
@@ -34,13 +36,17 @@ export const LoginScreen = ({ navigation }: MyStackScreenProps<'Login'>) => {
         password: password,
       });
       if (res.data.code === '200') {
+        const token = res.data.data;
+        console.log('Login successful, token:', token);
+        // 更新 Context
         dispatch({
           type: 'Login',
           user: {
-            username: username,
-            password: password,
-            token: res.data.data,
-            namespaceUrl: namespaceUrl,
+            username,
+            password,
+            token,
+            namespaceUrl,
+            status: 'online',
           },
         });
       } else {

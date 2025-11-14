@@ -1,101 +1,110 @@
-import React, { Dispatch, createContext, useEffect, useReducer } from 'react';
-import { UserAction } from './Actions';
+import React, {
+  createContext,
+  useEffect,
+  useReducer,
+  Dispatch,
+  useContext,
+} from 'react';
 import { User } from '../model/User';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UserAction } from './Actions';
+import { StorageService } from '../service/StorageService';
 import { useAxios } from '../hooks/useAxios';
-import { eventBus } from '../common/EventBus';
+import { AppConfigContext } from '../state/AppConfigContext';
 
 export type UserState = {
-  userInfo: User | null;
-  status: 'online' | 'offline';
-  isloading: boolean;
+  userInfo: User;
+  isLoading: boolean;
 };
 
-export const UserContext = createContext<UserState>({
-  userInfo: null,
-  status: 'offline',
-  isloading: false,
-});
-export const UserDispatchContext = createContext({} as Dispatch<UserAction>);
+const initialState: UserState = {
+  userInfo: {
+    username: '',
+    password: '',
+    token: '',
+    namespaceUrl: '',
+    status: 'offline',
+  },
+  isLoading: true,
+};
 
-// 存储用户信息
-const storeUser = async (user: User) => {
-  try {
-    await AsyncStorage.setItem('userInfo', JSON.stringify(user));
-  } catch (error) {
-    console.error('存储用户信息失败:', error);
+export const UserContext = createContext<UserState>(initialState);
+export const UserDispatchContext = createContext<Dispatch<UserAction>>(
+  (() => {}) as Dispatch<UserAction>,
+);
+
+// reducer 是纯函数：只管状态，不管副作用
+function userReducer(state: UserState, action: UserAction): UserState {
+  switch (action.type) {
+    case 'Loading':
+      return { ...state, isLoading: true };
+    case 'Loaded':
+      return { ...state, isLoading: false };
+    case 'Login':
+      console.log('login');
+      return {
+        userInfo: { ...action.user, status: 'online' },
+        isLoading: false,
+      };
+    case 'Logout':
+      console.log('logout');
+      return {
+        userInfo: { ...action.user, status: 'offline' },
+        isLoading: false,
+      };
+    default:
+      return state;
   }
-};
+}
 
 export function UserContextProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [userState, dispatch] = useReducer(UserReducer, {
-    userInfo: null,
-    status: 'offline',
-    isloading: false,
-  });
-  const axios = useAxios();
-  // 初始化时从存储中加载用户信息
+  const { updateToken } = useAxios();
+  const appConfig = useContext(AppConfigContext);
+  const [state, dispatch] = useReducer(userReducer, initialState);
+  // 初始化加载
   useEffect(() => {
     const loadUser = async () => {
-      try {
-        dispatch({ type: 'Loading' });
-        const storedUser = await AsyncStorage.getItem('userInfo');
-        if (storedUser) {
-          const user = JSON.parse(storedUser);
-          dispatch({ type: 'Login', user });
-        }
-      } catch (error) {
-        console.error('加载用户信息失败', error);
-      } finally {
-        dispatch({ type: 'Loaded' });
-      }
+      dispatch({ type: 'Loading' });
+      const storedUser = await StorageService.getUser();
+      if (storedUser) dispatch({ type: 'Login', user: storedUser });
     };
     loadUser();
   }, []);
 
+  useEffect(() => {
+    switch (state.userInfo?.status) {
+      case 'online':
+        updateToken(state.userInfo?.token || '');
+        StorageService.saveUser(state.userInfo);
+        break;
+      case 'offline':
+        updateToken('');
+        if (appConfig.rememberMe) {
+          const userToStore: User = {
+            username: state.userInfo?.username || '',
+            password: '',
+            token: '',
+            namespaceUrl: state.userInfo?.namespaceUrl || '',
+            status: 'online',
+          };
+          StorageService.saveUser(userToStore);
+        } else {
+          StorageService.clearUser();
+        }
+        break;
+      default:
+        break;
+    }
+  }, [state.userInfo?.status]);
+
   return (
-    <UserContext.Provider value={userState}>
+    <UserContext.Provider value={state}>
       <UserDispatchContext.Provider value={dispatch}>
         {children}
       </UserDispatchContext.Provider>
     </UserContext.Provider>
   );
 }
-const clearUserStorage = async () => {
-  try {
-    await AsyncStorage.removeItem('userInfo');
-  } catch (error) {
-    console.error('清除用户存储失败:', error);
-  }
-};
-const UserReducer = function (state: UserState, action: UserAction): UserState {
-  switch (action.type) {
-    case 'Loading':
-      return { ...state, isloading: true };
-    case 'Loaded':
-      return { ...state, isloading: false };
-    case 'Login':
-      storeUser(action.user);
-      return {
-        userInfo: action.user,
-        status: 'online',
-        isloading: false,
-      };
-    case 'Logout':
-      clearUserStorage();
-      eventBus.emit('USER_LOGOUT');
-      return {
-        userInfo: { ...state.userInfo, token: '' } as User,
-        status: 'offline',
-        isloading: false,
-      };
-    default:
-      return state;
-  }
-};
-
-export { UserReducer };
