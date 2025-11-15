@@ -1,18 +1,14 @@
 import { View, Text, Modal, TouchableOpacity } from 'react-native';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import {
-  NavigationProp,
-  useFocusEffect,
-  useNavigation,
-} from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { TodoContext, TodoDispatchContext } from '../state/TodoContext';
 import { TimeLine } from './TimeLine';
 import useTodoService from '../service/TodoService';
 import dayjs from 'dayjs';
 import { ThemeContext } from '../state/ThemeContext';
-import { ITodo } from '../model/OKRModel';
+import { ITodo, IUITodo } from '../model/OKRModel';
 import { MyStackScreenProps } from '../common/NativeScreenTypes';
 
 const PlanHeaderRight = () => {
@@ -20,14 +16,17 @@ const PlanHeaderRight = () => {
   const navigation =
     useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
   const onAddBtnPress = () => {
+    const now = dayjs().format('YYYY-MM-DD HH:mm:ss');
+    console.log(now);
     navigation.navigate('EditTodo', {
       todo: {
-        name: 'string',
-        description: 'string',
-        beginDate: 'string',
-        endDate: 'string',
+        name: '',
+        description: '',
+        beginDate: now,
+        endDate: now,
         repeat: 1,
         id: '',
+        status: 0,
       },
     });
   };
@@ -53,9 +52,12 @@ const Todo = ({ navigation }: MyStackScreenProps<'Todo'>) => {
     setModalVisible(false);
   };
 
-  const handleItemPress = (data: any) => {
+  const handleItemPress = (data: IUITodo) => {
+    const todo = todoContext.todos.find(t => t.id === data.id);
+    if (!todo) return;
+    console.log('编辑待办：', todo);
     navigation.navigate('EditTodo', {
-      todo: data,
+      todo: todo,
     });
   };
 
@@ -84,16 +86,18 @@ const Todo = ({ navigation }: MyStackScreenProps<'Todo'>) => {
       const localDateTime = now;
       const res = await todoService.getTodosByDate(localDateTime);
       const todos = res.data.data;
+
       dispatch({ type: 'Load', newTodos: todos });
     } catch (error) {
       console.log('error in fetch user todos:', error);
     }
   };
 
-  useFocusEffect(
+  useEffect(
     React.useCallback(() => {
       fetchData();
     }, []),
+    [],
   );
 
   return (
@@ -104,7 +108,7 @@ const Todo = ({ navigation }: MyStackScreenProps<'Todo'>) => {
         handleItemLongPress={handleItemLongPress}
       />
       <Modal
-        animationType="fade" // 改为淡入淡出动画
+        animationType="fade"
         transparent={true}
         visible={modalVisible}
         onRequestClose={closeModal}

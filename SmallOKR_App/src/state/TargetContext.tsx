@@ -26,7 +26,7 @@ const TargetContextProvider = (props: { children: React.ReactNode }) => {
       case 'Add':
         return { ...state, targets: [...state.targets, action.newTarget] };
       case 'Load':
-        console.log('Reducer加载目标：', action.targets);
+        console.log('加载目标：', action.targets);
         return { ...state, targets: action.targets };
       case 'AddResult':
         return { ...state, results: [...state.results, action.newResult] };

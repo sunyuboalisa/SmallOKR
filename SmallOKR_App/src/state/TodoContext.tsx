@@ -1,14 +1,10 @@
 import React, { createContext, useReducer } from 'react';
-import { ITodo } from '../model/OKRModel';
+import { ITodo, IUITodo } from '../model/OKRModel';
 import { TodoAction } from './Actions';
-interface UITodo {
-  id: string;
-  dateTime: string;
-  title: string;
-}
+
 interface TodoState {
   todos: ITodo[];
-  uiTodos: UITodo[];
+  uiTodos: IUITodo[];
   reload: boolean;
 }
 
@@ -28,7 +24,20 @@ const TodoContextProvider = ({ children }: { children: React.ReactNode }) => {
   const TodoReducer = (state: TodoState, action: TodoAction) => {
     switch (action.type) {
       case 'Add':
-        break;
+        let newTodo = {
+          id: action.newTodo.id,
+          dateTime: action.newTodo.beginDate,
+          endTime: action.newTodo.endDate,
+          title: action.newTodo.name,
+          status: action.newTodo.status,
+        };
+        console.log('添加待办列表', newTodo);
+
+        return {
+          ...state,
+          todos: [...state.todos, action.newTodo],
+          uiTodos: [...state.uiTodos, newTodo],
+        };
       case 'Load':
         let temp = action.newTodos.map(x => ({
           id: x.id,
@@ -36,9 +45,9 @@ const TodoContextProvider = ({ children }: { children: React.ReactNode }) => {
           endTime: x.endDate,
           title: x.name,
         }));
+        console.log('加载待办列表', temp);
+
         return { ...state, todos: action.newTodos, uiTodos: temp };
-      case 'Reload':
-        return { ...state, reload: action.reload };
       default:
         break;
     }

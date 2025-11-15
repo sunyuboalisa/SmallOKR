@@ -1,42 +1,48 @@
 import { StyleSheet, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import GalaxyGraph from './GalaxyGraph';
 import useTargetService from '../service/TargetService';
-import { useFocusEffect } from '@react-navigation/native';
+import { TargetContext, TargetDispatchContext } from '../state/TargetContext';
 
 const Dashboard = () => {
   const targetService = useTargetService();
   const [data, setData] = useState(['']);
+  const targetContext = useContext(TargetContext);
+  const dispatch = useContext(TargetDispatchContext);
 
-  useFocusEffect(
+  useEffect(
     React.useCallback(() => {
-      let isActive = true;
-
-      const fetchData = async () => {
-        try {
-          const res = await targetService.getTargets();
-          if (isActive) {
-            const resData = res.data.data;
-            const newState = resData.map(
-              (value: { id: any; name: any; description: any }) => {
-                let entry = value.name;
-                return entry;
-              },
-            );
-            setData(newState);
-          }
-        } catch (e) {
-          // Handle error
-        }
-      };
-
-      fetchData();
-
-      return () => {
-        isActive = false;
-      };
+      targetService
+        .getTargets()
+        .then(res => {
+          let data = res.data.data;
+          const newState = data.map(
+            (value: { id: any; name: any; description: any }) => {
+              let entry = {
+                id: value.id,
+                name: value.name,
+                description: value.description,
+              };
+              return entry;
+            },
+          );
+          dispatch({ type: 'Load', targets: newState });
+        })
+        .catch(e => console.log('targets error：', e));
     }, []),
+    [],
   );
+
+  useEffect(() => {
+    const resData = targetContext.targets;
+    const newState = resData.map(
+      (value: { id: any; name: any; description: any }) => {
+        let entry = value.name;
+        return entry;
+      },
+    );
+    setData(newState);
+  }, [targetContext]);
 
   return (
     <View style={styles.container}>

@@ -8,6 +8,7 @@ import axios, {
 } from 'axios';
 import { publishUserSessionExpired } from '../common/EventBusPubSub';
 import { UserContext } from '../state/UserContext';
+import { useLoadingLayer } from './useLoadingLayer';
 
 // 初始化 baseURL
 const getInitialBaseURL = () =>
@@ -23,6 +24,7 @@ const refreshToken = async (): Promise<string> => {
 };
 
 export const useAxios = () => {
+  const loading = useLoadingLayer();
   const user = useContext(UserContext);
   const [baseURL, setBaseURL] = useState<string>(getInitialBaseURL());
   const [token, setToken] = useState<string>(user.userInfo?.token || '');
@@ -66,7 +68,10 @@ export const useAxios = () => {
     });
 
     responseInterceptorId.current = instance.interceptors.response.use(
-      res => res,
+      res => {
+        console.log('response interceptor', res);
+        return res;
+      },
       async error => {
         const originalRequest = error.config;
         if (
@@ -112,10 +117,12 @@ export const useAxios = () => {
       requestedRef.current.add(key);
       try {
         const instance = getAxios();
+        loading.setLoading(true);
         const response = await instance(config);
         return response as AxiosResponse<T>;
       } finally {
         requestedRef.current.delete(key);
+        loading.setLoading(false);
       }
     },
     [getAxios],

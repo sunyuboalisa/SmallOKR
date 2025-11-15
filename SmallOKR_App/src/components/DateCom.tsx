@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import AndDesign from 'react-native-vector-icons/AntDesign';
 import { ThemeContext } from '../state/ThemeContext';
-
+// 日期格式统一为 HH:mm，UI显示时间部分 为 HH:mm
 interface DateComProps {
   date: Date;
   onConfirm: (date: Date) => void;
@@ -25,11 +25,13 @@ const DateCom = ({ date, onConfirm }: DateComProps) => {
       >
         {dayjs(date).format('HH:mm')}
       </Text>
+
       <AndDesign
         style={{ ...styles.rightIcon, color: themeContext?.theme.colors.text }}
         name="calendar"
         onPress={() => setOpen(true)}
       />
+
       <DatePicker
         modal
         mode="time"
@@ -39,9 +41,7 @@ const DateCom = ({ date, onConfirm }: DateComProps) => {
           setOpen(false);
           onConfirm(e);
         }}
-        onCancel={() => {
-          setOpen(false);
-        }}
+        onCancel={() => setOpen(false)}
       />
     </View>
   );
@@ -50,12 +50,6 @@ const DateCom = ({ date, onConfirm }: DateComProps) => {
 export { DateCom };
 
 const styles = StyleSheet.create({
-  input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-  },
   repeatContainer: {
     flexDirection: 'row',
     justifyContent: 'center',

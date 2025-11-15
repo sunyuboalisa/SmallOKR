@@ -46,6 +46,7 @@ class ITodo {
     this.beginDate = '';
     this.endDate = '';
     this.repeat = 1;
+    this.status = 0;
   }
   id: string;
   name: string;
@@ -53,6 +54,11 @@ class ITodo {
   beginDate: string;
   endDate: string;
   repeat: number;
+  status: number;
 }
-
+export interface IUITodo {
+  id: string;
+  dateTime: string;
+  title: string;
+}
 export { OKR, Plan, ITodo, GroupTarget };

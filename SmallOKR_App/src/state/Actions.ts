@@ -1,8 +1,12 @@
-import { IResult, ITarget, ITodo } from '../model/OKRModel';
+import { IResult, ITarget, ITodo, IUITodo } from '../model/OKRModel';
 import { User } from '../model/User';
 
 export type TodoAction =
-  | { type: 'Add'; newTodo: ITodo }
+  | {
+      type: 'Add';
+      newTodo: ITodo;
+      uiTodo: IUITodo;
+    }
   | { type: 'Load'; newTodos: ITodo[] }
   | { type: 'Reload'; reload: boolean };
 export type TargetAction =

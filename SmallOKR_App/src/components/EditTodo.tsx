@@ -1,10 +1,5 @@
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import React, { useContext, useState } from 'react';
-import {
-  NavigationProp,
-  useNavigation,
-  useRoute,
-} from '@react-navigation/native';
+import React, { useContext, useEffect, useState } from 'react';
 import AndDesign from 'react-native-vector-icons/AntDesign';
 import { DateCom } from './DateCom';
 import useTodoService from '../service/TodoService';
@@ -34,44 +29,33 @@ const Select = ({ handlePress }: SelectProps) => {
     </Pressable>
   );
 };
+// YYYY-MM-DD HH:mm:ss => Date
+const parseBackendDate = (str: string | null) => {
+  if (!str) return new Date();
+  console.log('parse date', str);
 
-const EditTodo = ({ route }: MyStackScreenProps<'EditTodo'>) => {
+  const hasDate = str.includes('-');
+  const fullStr = hasDate ? str : `${dayjs().format('YYYY-MM-DD')} ${str}`;
+
+  const d = dayjs(fullStr, 'YYYY-MM-DD HH:mm:ss');
+  const date = d.isValid() ? d.toDate() : new Date();
+  console.log('parsed date:', date);
+
+  return date;
+};
+
+const EditTodo = ({ route, navigation }: MyStackScreenProps<'EditTodo'>) => {
   const todoService = useTodoService();
   const { todo } = route.params;
-  const navigation =
-    useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
   const dispatch = useContext(TodoDispatchContext);
+  const themeContext = useContext(ThemeContext);
 
-  let initailBeginDate = new Date();
-  let initailEndDate = new Date();
-  const now = new Date();
-
-  if (todo.beginDate != null) {
-    const [hours, minutes] = todo.beginDate.split(':').map(Number);
-    initailBeginDate = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      hours,
-      minutes,
-    );
-  }
-
-  if (todo.endDate != null) {
-    const [hours, minutes] = todo.endDate.split(':').map(Number);
-    initailEndDate = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      hours,
-      minutes,
-    );
-  }
-
-  const [beginDate, seBeginDate] = useState<Date>(initailBeginDate);
-  const [endDate, seEndDate] = useState<Date>(initailEndDate);
-  const [description, onChangeDescription] = useState('');
   const [todoName, onChangeTodoName] = useState(todo.name);
+  const [description, onChangeDescription] = useState(todo.description || '');
+  const [beginDate, seBeginDate] = useState<Date>(
+    parseBackendDate(todo.beginDate),
+  );
+  const [endDate, seEndDate] = useState<Date>(parseBackendDate(todo.endDate));
 
   const addTodo = async () => {
     try {
@@ -81,17 +65,27 @@ const EditTodo = ({ route }: MyStackScreenProps<'EditTodo'>) => {
         description: description,
         beginDate: dayjs(beginDate).format('YYYY-MM-DD HH:mm:ss'),
         endDate: dayjs(endDate).format('YYYY-MM-DD HH:mm:ss'),
-        status: '',
+        status: todo.status || 0,
+        repeat: todo.repeat || 0,
       };
-      const addTodoRes = await todoService.addOrSaveTodo(newTodo);
-      dispatch({ type: 'Reload', reload: true });
+      const uiTodo = {
+        id: todo.id,
+        title: todoName,
+        dateTime: dayjs(beginDate).format('HH:mm'),
+      };
+      await todoService.addOrSaveTodo(newTodo);
+      dispatch({ type: 'Add', newTodo: newTodo, uiTodo: uiTodo });
       navigation.goBack();
     } catch (error) {
       console.log(error);
     }
   };
 
-  const themeContext = useContext(ThemeContext);
+  useEffect(() => {
+    console.log('date', todo.beginDate);
+    seBeginDate(parseBackendDate(todo.beginDate));
+    seEndDate(parseBackendDate(todo.endDate));
+  }, []);
 
   return (
     <View
@@ -200,31 +194,16 @@ const EditTodo = ({ route }: MyStackScreenProps<'EditTodo'>) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  card: {
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-  },
-  inputContainer: {
-    marginBottom: 20,
-  },
+  container: { flex: 1, padding: 16 },
+  card: { borderRadius: 12, padding: 16, marginBottom: 16 },
+  inputContainer: { marginBottom: 20 },
   timeContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 20,
   },
-  timeInputContainer: {
-    width: '48%',
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginBottom: 8,
-  },
+  timeInputContainer: { width: '48%' },
+  label: { fontSize: 14, fontWeight: '500', marginBottom: 8 },
   input: {
     width: '100%',
     height: 48,
@@ -242,12 +221,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: '#e0e0e0',
   },
-  repeatText: {
-    fontSize: 16,
-  },
-  buttonContainer: {
-    marginTop: 8,
-  },
+  repeatText: { fontSize: 16 },
+  buttonContainer: { marginTop: 8 },
   button: {
     marginHorizontal: 100,
     height: 50,
@@ -255,10 +230,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  buttonText: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
+  buttonText: { fontSize: 18, fontWeight: '600' },
 });
 
 export default EditTodo;
