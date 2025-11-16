@@ -78,7 +78,7 @@ docker-compose -f example/standalone-derby.yaml up
 ### SmallOKR Server Devloyment
 ```sh
 git clone https://github.com/sunyuboalisa/SmallOKR.git
-cd ~/SmallOKR/smallokr_server
+cd SmallOKR/smallokr_server
 # 将 ./smallokr_server/gateway/example.env 复制进去并修改相关变量
 cp gateway/example.env gateway.env
 nano gateway.env 
