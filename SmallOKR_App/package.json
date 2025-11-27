@@ -9,6 +9,8 @@
     "start": "react-native start",
     "dev": "APP_ENV=development npx react-native start --reset-cache",
     "local": "APP_ENV=local npx react-native start --reset-cache",
+    "clean:android": "cd android && ./gradlew clean && cd ../",
+    "clean:ios": "cd ios && xcodebuild clean && cd ../",
     "test": "jest"
   },
   "dependencies": {
