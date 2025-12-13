@@ -12,6 +12,9 @@ import Svg, {
   G,
   Line,
   Text,
+  Defs,
+  RadialGradient, // <-- 导入 RadialGradient
+  Stop, // <-- 导入 Stop
 } from 'react-native-svg';
 import { ThemeContext } from '../state/ThemeContext';
 
@@ -45,17 +48,26 @@ interface GalaxyGraphProps {
   data: string[];
 }
 
+interface Particle {
+  id: number;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  life: number;
+}
+
 const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
   const { width, height } = Dimensions.get('window');
+  const rng = new PseudoRandom(33);
+  const particleRng = new PseudoRandom(Date.now());
 
   const generateCoordinates = (titles: string[]) => {
-    const rng = new PseudoRandom(33);
-    // 生成随机角度和随机半径
-    const center = { x: width / 2, y: height / 2 }; // 画布中心点
-    const radius = Math.min(width, height) / 2; // 形状半径
-    // const density = titles.length / (Math.PI * radius * radius); // 密度
+    // 保持您原有的随机坐标生成逻辑
+    const center = { x: width / 2, y: height / 2 };
+    const radius = Math.min(width, height) / 2;
+
     return titles.map((title, index) => {
-      // 计算节点的坐标
       const angle = rng.next() * 2 * Math.PI;
       const r = Math.sqrt(rng.next()) * radius;
       const x = center.x + r * Math.cos(angle);
@@ -77,16 +89,16 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
   ]);
 
   const [selectedNodeId, setSelectedNodeId] = useState<number | null>(null);
-  const [draggedNodeId, setDraggedNodeId] = useState<number | null>(null); // 新增状态：记录正在拖动的节点ID
+  const [draggedNodeId, setDraggedNodeId] = useState<number | null>(null);
   const [initialPressPoint, setInitialPressPoint] = useState<{
     x: number;
     y: number;
-  } | null>(null); // 记录初始点击位置
+  } | null>(null);
+  const [particles, setParticles] = useState<Particle[]>([]);
 
   // 辅助函数：根据事件坐标找到被按下的节点 ID
   const findNodeIdAtCoordinates = (x: number, y: number): number | null => {
-    // 遍历所有节点，检查 (x, y) 是否在任一节点的半径范围内
-    const hitRadius = 30; // 扩大点击区域，便于操作
+    const hitRadius = 30;
     const foundNode = nodes.find(node => {
       const distance = Math.sqrt(
         Math.pow(node.x - x, 2) + Math.pow(node.y - y, 2),
@@ -95,36 +107,33 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
     });
     return foundNode ? foundNode.id : null;
   };
-  // 修正 handlePress 逻辑，它现在只负责设置初始点击信息
+
+  // handlePress 逻辑 (保持不变)
   const handlePress = (event: GestureResponderEvent, id: number | null) => {
-    // 记录手指按下的位置，用于后续区分点击和拖动
     setInitialPressPoint({
       x: event.nativeEvent.pageX,
       y: event.nativeEvent.pageY,
     });
-    // 记录被按下的节点ID
     setDraggedNodeId(id);
   };
+
   const panResponder = PanResponder.create({
-    // 无论是否选中，只要在节点上按下就应该准备响应
+    // PanResponder 逻辑 (保持不变)
     onStartShouldSetPanResponder: (evt, gestureState) => {
-      // 找到被按下的节点ID
       const id = findNodeIdAtCoordinates(
         evt.nativeEvent.locationX,
         evt.nativeEvent.locationY,
       );
       if (id !== null) {
-        // 如果找到了节点，则允许PanResponder响应
         setDraggedNodeId(id);
         return true;
       }
-      return false; // 没按到节点，不响应拖动
+      return false;
     },
-    onMoveShouldSetPanResponder: () => true, // 允许移动时也响应
+    onMoveShouldSetPanResponder: () => true,
 
     onPanResponderMove: (_, gesture) => {
       if (draggedNodeId !== null) {
-        // 使用 draggedNodeId 而不是 selectedNodeId
         const updatedNodes = nodes.map(node =>
           node.id === draggedNodeId
             ? { ...node, x: node.x + gesture.dx, y: node.y + gesture.dy }
@@ -135,54 +144,161 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
     },
 
     onPanResponderRelease: (evt, gesture) => {
-      const clickTolerance = 5; // 允许的最小移动距离
+      const clickTolerance = 5;
 
       if (draggedNodeId !== null) {
-        // 检查是否发生了实质性的拖动
         if (
           Math.abs(gesture.dx) <= clickTolerance &&
           Math.abs(gesture.dy) <= clickTolerance
         ) {
-          // 动作是“点击”：切换选中状态
           setSelectedNodeId(prevId =>
             prevId === draggedNodeId ? null : draggedNodeId,
           );
         } else {
-          // 动作是“拖动”：保持当前选中状态不变（可选：可以将拖动节点设为选中）
-          // setSelectedNodeId(draggedNodeId); // 如果希望拖动后自动选中，可以加上这行
+          // 动作是“拖动”
         }
       }
 
-      // 清理拖动状态
       setDraggedNodeId(null);
       setInitialPressPoint(null);
     },
 
-    // 确保在手势取消时也清理状态
     onPanResponderTerminate: () => {
       setDraggedNodeId(null);
       setInitialPressPoint(null);
     },
   });
 
+  // 全局粒子动画效果 (保持不变)
+  useEffect(() => {
+    const maxParticles = 80;
+    const animationSpeedFactor = 0.005;
+
+    const animate = () => {
+      setParticles(prevParticles => {
+        let newParticles = prevParticles
+          .map(p => {
+            const newLife = p.life - animationSpeedFactor;
+            return {
+              ...p,
+              x: p.x + p.vx,
+              y: p.y + p.vy,
+              life: newLife,
+            };
+          })
+          .filter(p => p.life > 0);
+
+        if (newParticles.length < maxParticles) {
+          const particlesToGenerate = maxParticles - newParticles.length;
+          for (let i = 0; i < particlesToGenerate; i++) {
+            const randomX = particleRng.next() * width;
+            const randomY = particleRng.next() * height;
+
+            const angle = particleRng.next() * 2 * Math.PI;
+            const speed = particleRng.next() * 0.1 * animationSpeedFactor * 100;
+
+            newParticles.push({
+              id: particleRng.next() * 1000000,
+              x: randomX,
+              y: randomY,
+              vx: Math.cos(angle) * speed,
+              vy: Math.sin(angle) * speed,
+              life: 1,
+            });
+          }
+        }
+        return newParticles;
+      });
+
+      animationFrameRef.current = requestAnimationFrame(animate);
+    };
+
+    const animationFrameRef = { current: 0 };
+    animationFrameRef.current = requestAnimationFrame(animate);
+
+    return () => cancelAnimationFrame(animationFrameRef.current);
+  }, [width, height]);
+
   useEffect(() => {
     const temp = generateCoordinates(data);
     setNodes(temp);
-  }, [data]);
+  }, [data, width, height]);
+
   const themeContext = useContext(ThemeContext);
   const nodeRadius = 20;
+
+  // 定义星球渐变色标
+  const planetGradientStops = [
+    // 亮部（使用主题 primary 色作为高光）
+    {
+      offset: '0%',
+      color: themeContext?.theme.colors.card || '#00FFFF',
+      opacity: 1,
+    },
+    {
+      offset: '40%',
+      color: themeContext?.theme.colors.card || '#00FFFF',
+      opacity: 0.9,
+    },
+    // 阴影/过渡区（使用黑色 text 或深灰色）
+    {
+      offset: '80%',
+      color: themeContext?.theme.colors.text || '#000000',
+      opacity: 0.6,
+    },
+    {
+      offset: '100%',
+      color: themeContext?.theme.colors.card || '#333333',
+      opacity: 0.8,
+    }, // 边缘使用卡片色作为柔和过渡
+  ];
   return (
-    <Svg>
-      <Filter id="glow">
-        <FeDropShadow
-          dx="0" // 水平不偏移
-          dy="0" // 垂直不偏移
-          stdDeviation="4" // 较大的模糊半径，模拟光晕
-          floodColor={themeContext?.theme.colors.primary} // 使用主色调作为光晕颜色
-          floodOpacity="0.8" // 较高的不透明度
+    <Svg width={width} height={height}>
+      <Defs>
+        {/* 1. 保持原有的 DropShadow Filter (用于光晕) */}
+        <Filter id="glow">
+          <FeDropShadow
+            dx="0"
+            dy="0"
+            stdDeviation="4"
+            floodColor={themeContext?.theme.colors.primary}
+            floodOpacity="0.8"
+          />
+        </Filter>
+
+        {/* 2. 新增星球光照渐变 */}
+        <RadialGradient
+          id="planetGradient"
+          cx="40%" // 渐变中心 X 偏移，模拟左上角光源
+          cy="40%" // 渐变中心 Y 偏移
+          r="70%" // 渐变半径
+          fx="50%" // 焦点 X
+          fy="50%" // 焦点 Y
+        >
+          {planetGradientStops.map((stop, index) => (
+            <Stop
+              key={index}
+              offset={stop.offset}
+              stopColor={stop.color}
+              stopOpacity={stop.opacity}
+            />
+          ))}
+        </RadialGradient>
+      </Defs>
+
+      {/* 渲染粒子效果 (作为背景) */}
+      {particles.map(p => (
+        <Circle
+          key={p.id}
+          cx={p.x}
+          cy={p.y}
+          r={p.life * 0.5 + 0.5}
+          fill={themeContext?.theme.colors.text || '#FFFFFF'}
+          opacity={p.life * 0.8}
         />
-      </Filter>
-      {/* 渲染节点之间的关系连线 */}
+      ))}
+
+      {/* 渲染连线 */}
       {connections.map((connection, index) => {
         const fromNode = nodes.find(node => node.id === connection.fromNodeId);
         const toNode = nodes.find(node => node.id === connection.toNodeId);
@@ -202,16 +318,18 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
 
         return null;
       })}
+
       {/* 渲染节点 */}
       {nodes.map((node, index) => (
         <G
-          key={index}
+          key={node.id} // 使用 node.id 作为 key
           {...panResponder.panHandlers}
           onPressIn={event => handlePress(event, node.id)}
         >
-          {draggedNodeId === node.id && (
+          {/* 渲染选中/拖动时的光晕 */}
+          {(selectedNodeId === node.id || draggedNodeId === node.id) && (
             <>
-              {/* 最外层光晕：最大半径，最低透明度 */}
+              {/* 最外层光晕 */}
               <Circle
                 cx={node.x}
                 cy={node.y}
@@ -219,7 +337,7 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
                 fill={themeContext?.theme.colors.primary}
                 opacity={0.15}
               />
-              {/* 中层光晕：中等半径，中等透明度 */}
+              {/* 中层光晕 */}
               <Circle
                 cx={node.x}
                 cy={node.y}
@@ -229,17 +347,18 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
               />
             </>
           )}
+
+          {/* 核心星球圆 */}
           <Circle
             key={index + 'circle'}
             cx={node.x}
             cy={node.y}
             r={nodeRadius}
-            fill={
-              draggedNodeId === node.id
-                ? themeContext?.theme.colors.primary
-                : themeContext?.theme.colors.card
-            }
+            // **** 核心修改：使用定义的渐变填充 ****
+            fill="url(#planetGradient)"
           />
+
+          {/* 节点文本 */}
           <Text
             fill={themeContext?.theme.colors.text}
             key={index + 'text'}
