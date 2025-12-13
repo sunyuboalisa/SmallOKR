@@ -1,10 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react';
-import {
-  PanResponder,
-  GestureResponderEvent,
-  Dimensions,
-  View,
-} from 'react-native';
+import React, {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  useReducer,
+} from 'react';
+import { PanResponder, GestureResponderEvent, Dimensions } from 'react-native';
 import Svg, {
   Circle,
   FeDropShadow,
@@ -13,8 +14,8 @@ import Svg, {
   Line,
   Text,
   Defs,
-  RadialGradient, // <-- 导入 RadialGradient
-  Stop, // <-- 导入 Stop
+  RadialGradient,
+  Stop,
 } from 'react-native-svg';
 import { ThemeContext } from '../state/ThemeContext';
 
@@ -25,7 +26,6 @@ class PseudoRandom {
     this.seed = seed;
   }
 
-  // 生成 [0, 1) 之间的伪随机数
   next(): number {
     this.seed = (this.seed * 9301 + 49297) % 233280;
     return this.seed / 233280;
@@ -36,6 +36,8 @@ interface Node {
   id: number;
   x: number;
   y: number;
+  vx: number;
+  vy: number;
   title: string;
 }
 
@@ -57,49 +59,59 @@ interface Particle {
   life: number;
 }
 
+// 辅助 Hook: 强制组件重新渲染 (轻量级)
+const useForceUpdate = () => useReducer(x => x + 1, 0)[1];
+
 const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
   const { width, height } = Dimensions.get('window');
-  const rng = new PseudoRandom(33);
-  const particleRng = new PseudoRandom(Date.now());
+  const rng = useRef(new PseudoRandom(33)).current;
+  const particleRng = useRef(new PseudoRandom(Date.now())).current;
+  const forceUpdate = useForceUpdate();
 
-  const generateCoordinates = (titles: string[]) => {
-    // 保持您原有的随机坐标生成逻辑
-    const center = { x: width / 2, y: height / 2 };
-    const radius = Math.min(width, height) / 2;
-
-    return titles.map((title, index) => {
-      const angle = rng.next() * 2 * Math.PI;
-      const r = Math.sqrt(rng.next()) * radius;
-      const x = center.x + r * Math.cos(angle);
-      const y = center.y + r * Math.sin(angle);
-      return { id: index, x, y, title };
-    });
-  };
-
-  const [nodes, setNodes] = useState<Node[]>([
-    { id: 1, x: 0, y: 0, title: '1' },
-    { id: 2, x: 100, y: 100, title: '2' },
-    { id: 3, x: 150, y: 200, title: '3' },
-    { id: 4, x: 300, y: 100, title: '4' },
-    { id: 5, x: 250, y: 200, title: '5' },
-  ]);
-
-  const [connections] = useState<Connection[]>([
-    // {fromNodeId: 1, toNodeId: 2}
-  ]);
+  const nodesRef = useRef<Node[]>([]);
+  const particlesRef = useRef<Particle[]>([]);
 
   const [selectedNodeId, setSelectedNodeId] = useState<number | null>(null);
   const [draggedNodeId, setDraggedNodeId] = useState<number | null>(null);
-  const [initialPressPoint, setInitialPressPoint] = useState<{
-    x: number;
-    y: number;
-  } | null>(null);
-  const [particles, setParticles] = useState<Particle[]>([]);
+  const initialPressPoint = useRef<{ x: number; y: number } | null>(null);
 
-  // 辅助函数：根据事件坐标找到被按下的节点 ID
+  const nodeRadius = 20;
+  const themeContext = useContext(ThemeContext);
+
+  useEffect(() => {
+    // 初始坐标生成函数
+    const generateCoordinates = (titles: string[]) => {
+      const center = { x: width / 2, y: height / 2 };
+      const radius = Math.min(width, height) / 2.5;
+
+      return titles.map((title, index) => {
+        const angle = rng.next() * 2 * Math.PI;
+        const r = Math.sqrt(rng.next()) * radius;
+        const x = center.x + r * Math.cos(angle);
+        const y = center.y + r * Math.sin(angle);
+
+        return {
+          id: index,
+          x,
+          y,
+          title,
+          vx: (rng.next() - 0.5) * 0.1,
+          vy: (rng.next() - 0.5) * 0.1,
+        };
+      });
+    };
+    const initialData =
+      data.length > 0
+        ? data
+        : ['Node 1', 'Node 2', 'Node 3', 'Node 4', 'Node 5'];
+
+    nodesRef.current = generateCoordinates(initialData);
+    forceUpdate();
+  }, [data, width, height, forceUpdate, rng]);
+
   const findNodeIdAtCoordinates = (x: number, y: number): number | null => {
     const hitRadius = 30;
-    const foundNode = nodes.find(node => {
+    const foundNode = nodesRef.current.find(node => {
       const distance = Math.sqrt(
         Math.pow(node.x - x, 2) + Math.pow(node.y - y, 2),
       );
@@ -108,18 +120,16 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
     return foundNode ? foundNode.id : null;
   };
 
-  // handlePress 逻辑 (保持不变)
   const handlePress = (event: GestureResponderEvent, id: number | null) => {
-    setInitialPressPoint({
+    initialPressPoint.current = {
       x: event.nativeEvent.pageX,
       y: event.nativeEvent.pageY,
-    });
+    };
     setDraggedNodeId(id);
   };
 
   const panResponder = PanResponder.create({
-    // PanResponder 逻辑 (保持不变)
-    onStartShouldSetPanResponder: (evt, gestureState) => {
+    onStartShouldSetPanResponder: evt => {
       const id = findNodeIdAtCoordinates(
         evt.nativeEvent.locationX,
         evt.nativeEvent.locationY,
@@ -134,12 +144,14 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
 
     onPanResponderMove: (_, gesture) => {
       if (draggedNodeId !== null) {
-        const updatedNodes = nodes.map(node =>
-          node.id === draggedNodeId
-            ? { ...node, x: node.x + gesture.dx, y: node.y + gesture.dy }
-            : node,
+        const nodeIndex = nodesRef.current.findIndex(
+          node => node.id === draggedNodeId,
         );
-        setNodes(updatedNodes);
+        if (nodeIndex !== -1) {
+          nodesRef.current[nodeIndex].x += gesture.dx;
+          nodesRef.current[nodeIndex].y += gesture.dy;
+          forceUpdate();
+        }
       }
     },
 
@@ -155,60 +167,168 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
             prevId === draggedNodeId ? null : draggedNodeId,
           );
         } else {
-          // 动作是“拖动”
+          // 赋予释放时的惯性速度
+          const nodeIndex = nodesRef.current.findIndex(
+            node => node.id === draggedNodeId,
+          );
+          if (nodeIndex !== -1) {
+            nodesRef.current[nodeIndex].vx = gesture.vx * 5;
+            nodesRef.current[nodeIndex].vy = gesture.vy * 5;
+          }
         }
       }
 
       setDraggedNodeId(null);
-      setInitialPressPoint(null);
+      initialPressPoint.current = null;
+      forceUpdate();
     },
 
     onPanResponderTerminate: () => {
       setDraggedNodeId(null);
-      setInitialPressPoint(null);
+      initialPressPoint.current = null;
+      forceUpdate();
     },
   });
 
-  // 全局粒子动画效果 (保持不变)
+  // ***** 动画循环 (核心逻辑) *****
   useEffect(() => {
+    // 动画参数
     const maxParticles = 80;
-    const animationSpeedFactor = 0.005;
+    const particleAnimationSpeedFactor = 0.005;
 
+    // ****** 调整后的节点动画参数 (实现平滑和自然运动) ******
+    const timeStep = 0.1; // 关键：大幅减小时间步进，消除抽搐感
+    const friction = 0.99; // 增加摩擦力，平滑加速度
+
+    // 力参数等比例放大 (原值 * 5)
+    const repulsionStrength = 400; // 80 * 5
+    const randomForceMagnitude = 1.5; // 0.3 * 5
+    const centerGravityStrength = 0.04; // 0.008 * 5
+    const boundaryStrength = 2.5; // 0.5 * 5
+    // ****************************************************
+
+    const boundaryMargin = 30;
     const animate = () => {
-      setParticles(prevParticles => {
-        let newParticles = prevParticles
-          .map(p => {
-            const newLife = p.life - animationSpeedFactor;
-            return {
-              ...p,
-              x: p.x + p.vx,
-              y: p.y + p.vy,
-              life: newLife,
-            };
-          })
-          .filter(p => p.life > 0);
+      // --- 1. 更新粒子 ---
+      let newParticles = particlesRef.current
+        .map(p => {
+          const newLife = p.life - particleAnimationSpeedFactor;
+          return {
+            ...p,
+            x: p.x + p.vx,
+            y: p.y + p.vy,
+            life: newLife,
+          };
+        })
+        .filter(p => p.life > 0);
 
-        if (newParticles.length < maxParticles) {
-          const particlesToGenerate = maxParticles - newParticles.length;
-          for (let i = 0; i < particlesToGenerate; i++) {
-            const randomX = particleRng.next() * width;
-            const randomY = particleRng.next() * height;
+      if (newParticles.length < maxParticles) {
+        const particlesToGenerate = maxParticles - newParticles.length;
+        for (let i = 0; i < particlesToGenerate; i++) {
+          const randomX = particleRng.next() * width;
+          const randomY = particleRng.next() * height;
 
-            const angle = particleRng.next() * 2 * Math.PI;
-            const speed = particleRng.next() * 0.1 * animationSpeedFactor * 100;
+          const angle = particleRng.next() * 2 * Math.PI;
+          const speed =
+            particleRng.next() * 0.1 * particleAnimationSpeedFactor * 100;
 
-            newParticles.push({
-              id: particleRng.next() * 1000000,
-              x: randomX,
-              y: randomY,
-              vx: Math.cos(angle) * speed,
-              vy: Math.sin(angle) * speed,
-              life: 1,
-            });
+          newParticles.push({
+            id: particleRng.next() * 1000000,
+            x: randomX,
+            y: randomY,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            life: 1,
+          });
+        }
+      }
+      particlesRef.current = newParticles;
+
+      // --- 2. 更新节点 ---
+      const center = { x: width / 2, y: height / 2 };
+      const currentNodes = nodesRef.current;
+
+      for (let i = 0; i < currentNodes.length; i++) {
+        const node = currentNodes[i];
+
+        if (node.id === draggedNodeId) {
+          continue;
+        }
+
+        let totalFx = 0;
+        let totalFy = 0;
+
+        // a) 节点间的排斥力
+        for (let j = 0; j < currentNodes.length; j++) {
+          const otherNode = currentNodes[j];
+          if (i !== j) {
+            const dx = node.x - otherNode.x;
+            const dy = node.y - otherNode.y;
+            const distanceSq = dx * dx + dy * dy;
+
+            const minDistanceSq = 4000;
+            const forceMagnitude =
+              repulsionStrength / Math.max(distanceSq, minDistanceSq);
+
+            totalFx += dx * forceMagnitude;
+            totalFy += dy * forceMagnitude;
           }
         }
-        return newParticles;
-      });
+
+        // b) 随机漂浮力
+        totalFx += (particleRng.next() - 0.5) * randomForceMagnitude;
+        totalFy += (particleRng.next() - 0.5) * randomForceMagnitude;
+
+        // c) 向心力/引力
+        const dxCenter = center.x - node.x;
+        const dyCenter = center.y - node.y;
+        totalFx += dxCenter * centerGravityStrength;
+        totalFy += dyCenter * centerGravityStrength;
+
+        // d) 柔和边界推力
+        const maxDistX = width - nodeRadius - boundaryMargin;
+        const minDistX = nodeRadius + boundaryMargin;
+        const maxDistY = height - nodeRadius - boundaryMargin;
+        const minDistY = nodeRadius + boundaryMargin;
+
+        // X 轴边界推力
+        if (node.x > maxDistX) {
+          const pushBack = (node.x - maxDistX) * boundaryStrength;
+          totalFx -= pushBack;
+        } else if (node.x < minDistX) {
+          const pushBack = (minDistX - node.x) * boundaryStrength;
+          totalFx += pushBack;
+        }
+
+        // Y 轴边界推力
+        if (node.y > maxDistY) {
+          const pushBack = (node.y - maxDistY) * boundaryStrength;
+          totalFy -= pushBack;
+        } else if (node.y < minDistY) {
+          const pushBack = (minDistY - node.y) * boundaryStrength;
+          totalFy += pushBack;
+        }
+
+        // e) 阻尼和速度更新 (摩擦力更高，吸收抽搐)
+        let newVx = (node.vx + totalFx * timeStep) * friction;
+        let newVy = (node.vy + totalFy * timeStep) * friction;
+
+        // f) 计算新位置 (小步进，运动更平滑)
+        let newX = node.x + newVx * timeStep;
+        let newY = node.y + newVy * timeStep;
+
+        // g) 边界钳制 (防止穿透)
+        newX = Math.max(nodeRadius, Math.min(newX, width - nodeRadius));
+        newY = Math.max(nodeRadius, Math.min(newY, height - nodeRadius));
+
+        // h) 更新 ref 中的值
+        node.x = newX;
+        node.y = newY;
+        node.vx = newVx;
+        node.vy = newVy;
+      }
+
+      forceUpdate();
 
       animationFrameRef.current = requestAnimationFrame(animate);
     };
@@ -217,19 +337,13 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
     animationFrameRef.current = requestAnimationFrame(animate);
 
     return () => cancelAnimationFrame(animationFrameRef.current);
-  }, [width, height]);
+  }, [width, height, draggedNodeId, forceUpdate, particleRng]);
 
-  useEffect(() => {
-    const temp = generateCoordinates(data);
-    setNodes(temp);
-  }, [data, width, height]);
+  // --- 渲染部分 (保持不变) ---
 
-  const themeContext = useContext(ThemeContext);
-  const nodeRadius = 20;
+  const connections = useRef<Connection[]>([]).current;
 
-  // 定义星球渐变色标
   const planetGradientStops = [
-    // 亮部（使用主题 primary 色作为高光）
     {
       offset: '0%',
       color: themeContext?.theme.colors.card || '#00FFFF',
@@ -240,7 +354,6 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
       color: themeContext?.theme.colors.card || '#00FFFF',
       opacity: 0.9,
     },
-    // 阴影/过渡区（使用黑色 text 或深灰色）
     {
       offset: '80%',
       color: themeContext?.theme.colors.text || '#000000',
@@ -250,12 +363,12 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
       offset: '100%',
       color: themeContext?.theme.colors.card || '#333333',
       opacity: 0.8,
-    }, // 边缘使用卡片色作为柔和过渡
+    },
   ];
+
   return (
     <Svg width={width} height={height}>
       <Defs>
-        {/* 1. 保持原有的 DropShadow Filter (用于光晕) */}
         <Filter id="glow">
           <FeDropShadow
             dx="0"
@@ -266,14 +379,13 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
           />
         </Filter>
 
-        {/* 2. 新增星球光照渐变 */}
         <RadialGradient
           id="planetGradient"
-          cx="40%" // 渐变中心 X 偏移，模拟左上角光源
-          cy="40%" // 渐变中心 Y 偏移
-          r="70%" // 渐变半径
-          fx="50%" // 焦点 X
-          fy="50%" // 焦点 Y
+          cx="40%"
+          cy="40%"
+          r="70%"
+          fx="50%"
+          fy="50%"
         >
           {planetGradientStops.map((stop, index) => (
             <Stop
@@ -286,8 +398,8 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
         </RadialGradient>
       </Defs>
 
-      {/* 渲染粒子效果 (作为背景) */}
-      {particles.map(p => (
+      {/* 渲染粒子效果 */}
+      {particlesRef.current.map(p => (
         <Circle
           key={p.id}
           cx={p.x}
@@ -300,8 +412,12 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
 
       {/* 渲染连线 */}
       {connections.map((connection, index) => {
-        const fromNode = nodes.find(node => node.id === connection.fromNodeId);
-        const toNode = nodes.find(node => node.id === connection.toNodeId);
+        const fromNode = nodesRef.current.find(
+          node => node.id === connection.fromNodeId,
+        );
+        const toNode = nodesRef.current.find(
+          node => node.id === connection.toNodeId,
+        );
 
         if (fromNode && toNode) {
           return (
@@ -315,21 +431,19 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
             />
           );
         }
-
         return null;
       })}
 
       {/* 渲染节点 */}
-      {nodes.map((node, index) => (
+      {nodesRef.current.map((node, index) => (
         <G
-          key={node.id} // 使用 node.id 作为 key
+          key={node.id}
           {...panResponder.panHandlers}
           onPressIn={event => handlePress(event, node.id)}
         >
           {/* 渲染选中/拖动时的光晕 */}
           {(selectedNodeId === node.id || draggedNodeId === node.id) && (
             <>
-              {/* 最外层光晕 */}
               <Circle
                 cx={node.x}
                 cy={node.y}
@@ -337,7 +451,6 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
                 fill={themeContext?.theme.colors.primary}
                 opacity={0.15}
               />
-              {/* 中层光晕 */}
               <Circle
                 cx={node.x}
                 cy={node.y}
@@ -354,7 +467,6 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
             cx={node.x}
             cy={node.y}
             r={nodeRadius}
-            // **** 核心修改：使用定义的渐变填充 ****
             fill="url(#planetGradient)"
           />
 
