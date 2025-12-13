@@ -80,13 +80,27 @@ const EditTarget = ({
   useEffect(() => {
     const featchData = async () => {
       try {
+        // 新的目标，id 为空，不请求阶段成果
+        if (target.id === '') {
+          return;
+        }
         const res = await targetService.getResults({ targetId: target.id });
-        dispatch({ type: 'LoadResult', results: res.data.data });
+        if (res.data.code === '200') {
+          dispatch({ type: 'LoadResult', results: res.data.data });
+        } else {
+          throw new Error('获取阶段成果失败');
+        }
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     };
     featchData();
+
+    return () => {
+      // 当组件（EditTarget）卸载时（即用户退出或导航到其他页面），执行此清理操作
+      console.log('清理阶段成果 Context 数据。');
+      dispatch({ type: 'LoadResult', results: [] });
+    };
   }, [target, dispatch, targetService]);
 
   return (

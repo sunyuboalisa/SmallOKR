@@ -44,6 +44,7 @@ const TargetContextProvider = (props: { children: React.ReactNode }) => {
         });
         return { ...state, results: newResults };
       case 'LoadResult':
+        console.log('加载阶段成果：', action.results);
         return { ...state, results: action.results };
       case 'Reload':
         return { ...state, reload: action.reload };
