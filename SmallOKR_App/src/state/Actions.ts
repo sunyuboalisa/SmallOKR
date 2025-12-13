@@ -16,7 +16,7 @@ export type TodoAction =
 export type TargetAction =
   | { type: 'Add'; newTarget: ITarget; group: string }
   | { type: 'Update'; newTarget: ITarget; group: string }
-  | { type: 'Delete'; oldTarget: ITarget; group: string }
+  | { type: 'Delete'; targetId: string }
   | { type: 'Load'; targets: ITarget[] }
   | { type: 'LoadResult'; results: IResult[] }
   | { type: 'AddResult'; newResult: IResult }

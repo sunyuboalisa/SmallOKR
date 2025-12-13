@@ -47,35 +47,16 @@ const Target = ({ navigation }: MyStackScreenProps<'Target'>) => {
     setSelectedTarget(target);
     setModalVisible(true);
   };
-  const handleDelete = () => {
-    console.log('删除目标：', selectedTarget);
+  const handleDelete = async () => {
     if (selectedTarget) {
-      targetService
-        .deleteTarget(selectedTarget.id)
-        .then(res => {
-          console.log(res);
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      try {
+        await targetService.deleteTarget(selectedTarget.id);
+        dispatch({ type: 'Delete', targetId: selectedTarget.id });
+      } catch (error) {
+        console.error('删除目标失败：', error);
+        return;
+      }
     }
-    targetService
-      .getTargets()
-      .then(res => {
-        let data = res.data.data;
-        const newState = data.map(
-          (value: { id: any; name: any; description: any }) => {
-            let entry = {
-              id: value.id,
-              name: value.name,
-              description: value.description,
-            };
-            return entry;
-          },
-        );
-        dispatch({ type: 'Load', targets: newState });
-      })
-      .catch(e => console.log('targets error：', e));
     setModalVisible(false);
   };
   const handleCommitDayLog = () => {
@@ -103,7 +84,7 @@ const Target = ({ navigation }: MyStackScreenProps<'Target'>) => {
             description: value.description,
           }),
         );
-        console.log('加载目标：', newState);
+
         dispatch({ type: 'Load', targets: newState });
       } catch (e) {
         console.log('targets error：', e);

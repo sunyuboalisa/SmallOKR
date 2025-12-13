@@ -25,6 +25,11 @@ const TargetContextProvider = (props: { children: React.ReactNode }) => {
     switch (action.type) {
       case 'Add':
         return { ...state, targets: [...state.targets, action.newTarget] };
+      case 'Delete':
+        const filteredTargets = state.targets.filter(
+          target => target.id !== action.targetId,
+        );
+        return { ...state, targets: filteredTargets };
       case 'Load':
         console.log('加载目标：', action.targets);
         return { ...state, targets: action.targets };

@@ -11,9 +11,13 @@ import { UserContext } from '../state/UserContext';
 import { useLoadingLayer } from './useLoadingLayer';
 
 // 初始化 baseURL
+// const getInitialBaseURL = () =>
+//   `${API_SCHEME || 'https'}://${API_HOST || 'test.alisacloud.com'}:${
+//     API_PORT || '443'
+//   }`;
 const getInitialBaseURL = () =>
-  `${API_SCHEME || 'https'}://${API_HOST || 'test.alisacloud.com'}:${
-    API_PORT || '443'
+  `${API_SCHEME || 'http'}://${API_HOST || '192.168.1.72'}:${
+    API_PORT || '8080'
   }`;
 
 // 待实现的 Token 刷新函数
@@ -141,11 +145,7 @@ export const useAxios = () => {
     setToken(newToken);
   }, []);
 
-  const updateBaseURL = useCallback(
-    (newBaseURL: string) => setBaseURL(newBaseURL),
-    [],
-  );
-
+  const updateBaseURL = (newBaseURL: string) => setBaseURL(newBaseURL);
   return {
     axiosRequest,
     updateToken,

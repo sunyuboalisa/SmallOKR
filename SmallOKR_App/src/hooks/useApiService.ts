@@ -47,10 +47,10 @@ export const useApiService = () => {
     // 简化后的 DELETE 请求
     const deleteRequest = <T = any>(
       url: string,
-      data?: any,
+      params?: any,
       config?: AxiosRequestConfig,
     ) => {
-      return sendRequest<T>('DELETE', url, data, config);
+      return sendRequest<T>('DELETE', url, undefined, { params, ...config });
     };
 
     // 返回稳定的服务对象

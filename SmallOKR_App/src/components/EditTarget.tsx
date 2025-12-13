@@ -55,24 +55,22 @@ const EditTarget = ({
       );
       const getTargetsRes = await targetService.getTargets();
       let data = getTargetsRes.data.data;
+
       const newState = data.map(
-        (value: { id: any; name: any; description: any }) => {
-          let entry = {
-            id: value.id,
-            name: value.name,
-            description: value.description,
-          };
-          return entry;
-        },
+        (value: { id: any; name: any; description: any }) => ({
+          id: value.id,
+          name: value.name,
+          description: value.description,
+        }),
       );
-      if (addTargetRes.data.code !== 200) {
+      console.log('tete', addTargetRes.data.code);
+      if (addTargetRes.data.code !== '200') {
         throw new Error('保存目标失败');
       }
-      if (addResultRes.data.code !== 200) {
+      if (addResultRes.data.code !== '200') {
         throw new Error('保存阶段成果失败');
       }
       dispatch({ type: 'Load', targets: newState });
-      dispatch({ type: 'Reload', reload: true });
       navigation.goBack();
     } catch (error) {
       console.log(error);
