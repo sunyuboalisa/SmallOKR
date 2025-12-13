@@ -8,7 +8,7 @@ import { TimeLine } from './TimeLine';
 import useTodoService from '../service/TodoService';
 import dayjs from 'dayjs';
 import { ThemeContext } from '../state/ThemeContext';
-import { ITodo, IUITodo } from '../model/OKRModel';
+import { IUITodo } from '../model/OKRModel';
 import { MyStackScreenProps } from '../common/NativeScreenTypes';
 
 const PlanHeaderRight = () => {
@@ -42,7 +42,7 @@ const PlanHeaderRight = () => {
 const Todo = ({ navigation }: MyStackScreenProps<'Todo'>) => {
   const todoService = useTodoService();
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedTodo, setSelectedTodo] = useState<ITodo>();
+  const [selectedTodo, setSelectedTodo] = useState<IUITodo>();
 
   // const themeContext = useContext(ThemeContext);
   const todoContext = useContext(TodoContext);
@@ -73,32 +73,29 @@ const Todo = ({ navigation }: MyStackScreenProps<'Todo'>) => {
         console.log('删除todo：', selectedTodo);
         console.log(res.data);
         closeModal();
-        fetchData();
+        dispatch({ type: 'Delete', id: selectedTodo.id });
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const fetchData = async () => {
-    try {
-      const now = dayjs().format('YYYY-MM-DD HH:mm:ss');
-      const localDateTime = now;
-      const res = await todoService.getTodosByDate(localDateTime);
-      const todos = res.data.data;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const now = dayjs().format('YYYY-MM-DD HH:mm:ss');
+        const localDateTime = now;
 
-      dispatch({ type: 'Load', newTodos: todos });
-    } catch (error) {
-      console.log('error in fetch user todos:', error);
-    }
-  };
+        const res = await todoService.getTodosByDate(localDateTime);
+        const todos = res.data.data;
 
-  useEffect(
-    React.useCallback(() => {
-      fetchData();
-    }, []),
-    [],
-  );
+        dispatch({ type: 'Load', newTodos: todos });
+      } catch (error) {
+        console.log('error in fetch user todos:', error);
+      }
+    };
+    fetchData();
+  }, [dispatch, todoService]);
 
   return (
     <View style={styles.container}>
@@ -133,7 +130,9 @@ const Todo = ({ navigation }: MyStackScreenProps<'Todo'>) => {
 
               <TouchableOpacity
                 onPress={() => {
-                  handleItemPress(selectedTodo);
+                  if (selectedTodo) {
+                    handleItemPress(selectedTodo);
+                  }
                   closeModal();
                 }}
                 style={styles.modalBtn}

@@ -21,6 +21,7 @@ const EditTarget = ({
   route,
 }: MyStackScreenProps<'EditTarget'>) => {
   const { target } = route.params;
+  console.log(target);
   const targetService = useTargetService();
   const [description, onChangeDescription] = useState(target.description);
   const [targetName, onChangeTargetName] = useState(target.name);
@@ -64,6 +65,12 @@ const EditTarget = ({
           return entry;
         },
       );
+      if (addTargetRes.data.code !== 200) {
+        throw new Error('保存目标失败');
+      }
+      if (addResultRes.data.code !== 200) {
+        throw new Error('保存阶段成果失败');
+      }
       dispatch({ type: 'Load', targets: newState });
       dispatch({ type: 'Reload', reload: true });
       navigation.goBack();
@@ -72,18 +79,17 @@ const EditTarget = ({
     }
   };
 
-  const featchData = async () => {
-    try {
-      const res = await targetService.getResults({ targetId: target.id });
-      dispatch({ type: 'LoadResult', results: res.data.data });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
+    const featchData = async () => {
+      try {
+        const res = await targetService.getResults({ targetId: target.id });
+        dispatch({ type: 'LoadResult', results: res.data.data });
+      } catch (error) {
+        console.log(error);
+      }
+    };
     featchData();
-  }, [target, dispatch]);
+  }, [target, dispatch, targetService]);
 
   return (
     <KeyboardAvoidingView

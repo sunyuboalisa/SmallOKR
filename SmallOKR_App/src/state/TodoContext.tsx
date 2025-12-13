@@ -24,20 +24,15 @@ const TodoContextProvider = ({ children }: { children: React.ReactNode }) => {
   const TodoReducer = (state: TodoState, action: TodoAction) => {
     switch (action.type) {
       case 'Add':
-        let newTodo = {
-          id: action.newTodo.id,
-          dateTime: action.newTodo.beginDate,
-          endTime: action.newTodo.endDate,
-          title: action.newTodo.name,
-          status: action.newTodo.status,
-        };
-        console.log('添加待办列表', newTodo);
-
         return {
           ...state,
           todos: [...state.todos, action.newTodo],
-          uiTodos: [...state.uiTodos, newTodo],
+          uiTodos: [...state.uiTodos, action.uiTodo],
         };
+      case 'Delete':
+        let tempDelete = state.todos.filter(x => x.id !== action.id);
+        let tempUIDelete = state.uiTodos.filter(x => x.id !== action.id);
+        return { ...state, todos: tempDelete, uiTodos: tempUIDelete };
       case 'Load':
         let temp = action.newTodos.map(x => ({
           id: x.id,

@@ -10,28 +10,26 @@ const Dashboard = () => {
   const targetContext = useContext(TargetContext);
   const dispatch = useContext(TargetDispatchContext);
 
-  useEffect(
-    React.useCallback(() => {
-      targetService
-        .getTargets()
-        .then(res => {
-          let data = res.data.data;
-          const newState = data.map(
-            (value: { id: any; name: any; description: any }) => {
-              let entry = {
-                id: value.id,
-                name: value.name,
-                description: value.description,
-              };
-              return entry;
-            },
-          );
-          dispatch({ type: 'Load', targets: newState });
-        })
-        .catch(e => console.log('targets error：', e));
-    }, []),
-    [],
-  );
+  useEffect(() => {
+    const fetchTargets = async () => {
+      try {
+        const res = await targetService.getTargets();
+        let tempData = res.data.data;
+        const newState = tempData.map(
+          (value: { id: any; name: any; description: any }) => ({
+            id: value.id,
+            name: value.name,
+            description: value.description,
+          }),
+        );
+        dispatch({ type: 'Load', targets: newState });
+      } catch (e) {
+        console.log('targets error：', e);
+      }
+    };
+
+    fetchTargets();
+  }, [dispatch, targetService]);
 
   useEffect(() => {
     const resData = targetContext.targets;

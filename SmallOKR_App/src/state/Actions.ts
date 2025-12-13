@@ -7,6 +7,10 @@ export type TodoAction =
       newTodo: ITodo;
       uiTodo: IUITodo;
     }
+  | {
+      type: 'Delete';
+      id: string;
+    }
   | { type: 'Load'; newTodos: ITodo[] }
   | { type: 'Reload'; reload: boolean };
 export type TargetAction =
@@ -20,6 +24,6 @@ export type TargetAction =
   | { type: 'Reload'; reload: boolean };
 export type UserAction =
   | { type: 'Login'; user: User }
-  | { type: 'Logout'; user: User }
+  | { type: 'Logout' }
   | { type: 'Loading' }
   | { type: 'Loaded' };

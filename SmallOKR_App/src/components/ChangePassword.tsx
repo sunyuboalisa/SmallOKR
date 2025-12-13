@@ -80,6 +80,7 @@ const ChangePasswordScreen = () => {
         ]);
       }
     } catch (error) {
+      console.log('修改密码错误：', error);
     } finally {
       setIsSubmitting(false);
     }

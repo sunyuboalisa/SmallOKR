@@ -11,6 +11,7 @@
     "local": "APP_ENV=local npx react-native start --reset-cache",
     "clean:android": "cd android && ./gradlew clean && cd ../",
     "clean:ios": "cd ios && xcodebuild clean && cd ../",
+    "publish": "cd android && ./gradlew assembleRelease && cd ../",
     "test": "jest"
   },
   "dependencies": {

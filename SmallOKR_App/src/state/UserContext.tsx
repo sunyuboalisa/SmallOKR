@@ -48,7 +48,7 @@ function userReducer(state: UserState, action: UserAction): UserState {
     case 'Logout':
       console.log('logout');
       return {
-        userInfo: { ...action.user, status: 'offline' },
+        userInfo: { ...state.userInfo, status: 'offline' },
         isLoading: false,
       };
     default:
@@ -98,7 +98,12 @@ export function UserContextProvider({
       default:
         break;
     }
-  }, [state.userInfo?.status]);
+  }, [
+    appConfig.rememberMe,
+    state.userInfo,
+    state.userInfo?.status,
+    updateToken,
+  ]);
 
   return (
     <UserContext.Provider value={state}>

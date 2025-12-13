@@ -83,7 +83,7 @@ const Target = ({ navigation }: MyStackScreenProps<'Target'>) => {
   };
   const handleFinishTarget = async () => {
     if (selectedTarget) {
-      const res = await targetService.saveTarget({
+      await targetService.saveTarget({
         ...selectedTarget,
         status: 2,
       });
@@ -92,25 +92,26 @@ const Target = ({ navigation }: MyStackScreenProps<'Target'>) => {
   };
 
   useEffect(() => {
-    targetService
-      .getTargets()
-      .then(res => {
+    const loadTargets = async () => {
+      try {
+        const res = await targetService.getTargets();
         let data = res.data.data;
         const newState = data.map(
-          (value: { id: any; name: any; description: any }) => {
-            let entry = {
-              id: value.id,
-              name: value.name,
-              description: value.description,
-            };
-            return entry;
-          },
+          (value: { id: any; name: any; description: any }) => ({
+            id: value.id,
+            name: value.name,
+            description: value.description,
+          }),
         );
         console.log('加载目标：', newState);
         dispatch({ type: 'Load', targets: newState });
-      })
-      .catch(e => console.log('targets error：', e));
-  }, [dispatch, targetContext.reload]);
+      } catch (e) {
+        console.log('targets error：', e);
+      }
+    };
+
+    loadTargets();
+  }, [dispatch, targetService]);
 
   return (
     <View style={styles.container}>

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -29,7 +29,7 @@ const BehaviorAnalysis = () => {
   const todoContext = useContext(TodoContext);
   const dispatch = useContext(TargetDispatchContext);
   const todoDispatch = useContext(TodoDispatchContext);
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const res = await targetService.getTargets();
       const newState = res.data.data.map((value: any) => ({
@@ -45,18 +45,17 @@ const BehaviorAnalysis = () => {
       const todos = todoRes.data.data;
       todoDispatch({ type: 'Load', newTodos: todos });
       dispatch({ type: 'Load', targets: newState });
-      console.log(todoContext.todos);
     } catch (e) {
       console.error('获取目标数据失败:', e);
     } finally {
       setIsLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [dispatch, targetService, todoService, todoDispatch]);
 
   useEffect(() => {
     fetchData();
-  }, [dispatch, todoDispatch, targetContext.reload, todoContext.reload]);
+  }, [dispatch, fetchData, todoDispatch]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -124,7 +123,7 @@ const BehaviorAnalysis = () => {
       todoContext.todos.forEach(todo => {
         if (!todo?.beginDate) return;
 
-        const hour = parseInt(todo.beginDate.split(':')[0]) || 0;
+        const hour = parseInt(todo.beginDate.split(':')[0], 10) || 0;
         if (hour >= 6 && hour < 12) timeSlots[0].count++;
         else if (hour >= 12 && hour < 18) timeSlots[1].count++;
         else if (hour >= 18) timeSlots[2].count++;

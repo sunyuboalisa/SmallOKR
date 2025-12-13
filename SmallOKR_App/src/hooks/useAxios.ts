@@ -16,10 +16,9 @@ const getInitialBaseURL = () =>
     API_PORT || '443'
   }`;
 
-// 你需要自己实现刷新 token 的逻辑
+// 待实现的 Token 刷新函数
 const refreshToken = async (): Promise<string> => {
-  // 这里放你的刷新 token 接口
-  // return newToken
+  // 假设这个函数会调用刷新 API 并返回一个新的 Token
   throw new Error('refreshToken function not implemented');
 };
 
@@ -33,11 +32,12 @@ export const useAxios = () => {
   const requestInterceptorId = useRef<number | null>(null);
   const responseInterceptorId = useRef<number | null>(null);
 
-  // 获取或创建单例 axios 实例
+  // 1. 优化：getAxios 只依赖 baseURL
   const getAxios = useCallback((): AxiosInstance => {
     if (!axiosRef.current) {
       axiosRef.current = axios.create({ baseURL });
     } else {
+      // 保持实例的 baseURL 是最新的
       axiosRef.current.defaults.baseURL = baseURL;
     }
     return axiosRef.current!;
@@ -45,7 +45,7 @@ export const useAxios = () => {
 
   useEffect(() => {
     const instance = getAxios();
-    console.log('token value:', token);
+
     // 移除旧拦截器
     if (requestInterceptorId.current !== null) {
       instance.interceptors.request.eject(requestInterceptorId.current);
@@ -54,25 +54,36 @@ export const useAxios = () => {
       instance.interceptors.response.eject(responseInterceptorId.current);
     }
 
-    // 请求拦截器，动态注入 token
+    // 2. 请求拦截器：动态注入 token 和控制加载状态
     requestInterceptorId.current = instance.interceptors.request.use(config => {
+      // 保证 Headers 是 AxiosHeaders 类型
       if (!(config.headers instanceof AxiosHeaders)) {
         config.headers = new AxiosHeaders(config.headers);
       }
+
+      // 注入 Token（这里使用闭包中的最新 token 值）
       if (token) {
         config.headers.set('Authorization', `Bearer ${token}`);
       } else {
         config.headers.delete('Authorization');
       }
+
+      // 开启加载层
+      loading.setLoading(true);
       return config;
     });
 
+    // 3. 响应拦截器：处理错误、Token 刷新和关闭加载状态
     responseInterceptorId.current = instance.interceptors.response.use(
       res => {
-        console.log('response interceptor', res);
+        // 成功响应时关闭加载层
+        loading.setLoading(false);
         return res;
       },
       async error => {
+        // 错误响应时关闭加载层
+        loading.setLoading(false);
+
         const originalRequest = error.config;
         if (
           (error.response?.status === 401 || error.response?.status === 403) &&
@@ -80,8 +91,9 @@ export const useAxios = () => {
         ) {
           originalRequest._retry = true;
           try {
+            // Token 刷新逻辑（需要启用）
             // const newToken = await refreshToken();
-            // setToken(newToken); // 更新状态
+            // setToken(newToken);
             // instance.defaults.headers.common[
             //   'Authorization'
             // ] = `Bearer ${newToken}`;
@@ -102,9 +114,8 @@ export const useAxios = () => {
         instance.interceptors.response.eject(responseInterceptorId.current);
       }
     };
-  }, [token, getAxios]);
+  }, [token, getAxios, loading]);
 
-  // 单请求防重复
   const requestedRef = useRef<Set<string>>(new Set());
 
   const axiosRequest = useCallback(
@@ -117,27 +128,22 @@ export const useAxios = () => {
       requestedRef.current.add(key);
       try {
         const instance = getAxios();
-        loading.setLoading(true);
         const response = await instance(config);
         return response as AxiosResponse<T>;
       } finally {
         requestedRef.current.delete(key);
-        loading.setLoading(false);
       }
     },
     [getAxios],
   );
 
-  const updateToken = useCallback(
-    (newToken: string) => {
-      setToken(newToken);
-    },
-    [token],
-  );
+  const updateToken = useCallback((newToken: string) => {
+    setToken(newToken);
+  }, []);
 
   const updateBaseURL = useCallback(
     (newBaseURL: string) => setBaseURL(newBaseURL),
-    [baseURL],
+    [],
   );
 
   return {

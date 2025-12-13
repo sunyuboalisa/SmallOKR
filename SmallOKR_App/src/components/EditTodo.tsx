@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import AndDesign from 'react-native-vector-icons/AntDesign';
 import { DateCom } from './DateCom';
 import useTodoService from '../service/TodoService';
@@ -32,8 +32,6 @@ const Select = ({ handlePress }: SelectProps) => {
 // YYYY-MM-DD HH:mm:ss => Date
 const parseBackendDate = (str: string | null) => {
   if (!str) return new Date();
-  console.log('parse date', str);
-
   const hasDate = str.includes('-');
   const fullStr = hasDate ? str : `${dayjs().format('YYYY-MM-DD')} ${str}`;
 
@@ -52,11 +50,13 @@ const EditTodo = ({ route, navigation }: MyStackScreenProps<'EditTodo'>) => {
 
   const [todoName, onChangeTodoName] = useState(todo.name);
   const [description, onChangeDescription] = useState(todo.description || '');
-  const [beginDate, seBeginDate] = useState<Date>(
+  const [beginDate, seBeginDate] = useState<Date>(() =>
     parseBackendDate(todo.beginDate),
   );
-  const [endDate, seEndDate] = useState<Date>(parseBackendDate(todo.endDate));
 
+  const [endDate, seEndDate] = useState<Date>(() =>
+    parseBackendDate(todo.endDate),
+  );
   const addTodo = async () => {
     try {
       const newTodo = {
@@ -80,12 +80,6 @@ const EditTodo = ({ route, navigation }: MyStackScreenProps<'EditTodo'>) => {
       console.log(error);
     }
   };
-
-  useEffect(() => {
-    console.log('date', todo.beginDate);
-    seBeginDate(parseBackendDate(todo.beginDate));
-    seEndDate(parseBackendDate(todo.endDate));
-  }, []);
 
   return (
     <View
