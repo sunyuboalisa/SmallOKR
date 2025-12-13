@@ -44,7 +44,7 @@ const Todo = ({ navigation }: MyStackScreenProps<'Todo'>) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedTodo, setSelectedTodo] = useState<IUITodo>();
 
-  // const themeContext = useContext(ThemeContext);
+  const themeContext = useContext(ThemeContext);
   const todoContext = useContext(TodoContext);
   const dispatch = useContext(TodoDispatchContext);
 
@@ -98,7 +98,12 @@ const Todo = ({ navigation }: MyStackScreenProps<'Todo'>) => {
   }, [dispatch, todoService]);
 
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        ...styles.container,
+        backgroundColor: themeContext?.theme.colors.background,
+      }}
+    >
       <TimeLine
         data={todoContext.uiTodos}
         handleItemPress={handleItemPress}

@@ -2,10 +2,11 @@ import React, { useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { UserContext } from '../state/UserContext';
 import { MyStackScreenProps } from '../common/NativeScreenTypes';
+import { ThemeContext } from '../state/ThemeContext';
 
 const PersonalInfo = ({ navigation }: MyStackScreenProps<'PersonalInfo'>) => {
   const userContext = useContext(UserContext);
-  // 假设这是从后端或全局状态获取的用户数据
+  const themeContext = useContext(ThemeContext);
   const userInfo = {
     name: userContext?.userInfo?.username,
     email: '',
@@ -17,27 +18,85 @@ const PersonalInfo = ({ navigation }: MyStackScreenProps<'PersonalInfo'>) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.infoContainer}>
-        <View style={styles.infoItem}>
-          <Text style={styles.infoLabel}>姓名</Text>
-          <Text style={styles.infoValue}>{userInfo.name}</Text>
+    <View
+      style={{
+        ...styles.container,
+        backgroundColor: themeContext?.theme.colors.background,
+      }}
+    >
+      <View
+        style={{
+          ...styles.infoContainer,
+          backgroundColor: themeContext?.theme.colors.card,
+        }}
+      >
+        <View
+          style={{
+            ...styles.infoItem,
+            backgroundColor: themeContext?.theme.colors.card,
+          }}
+        >
+          <Text
+            style={{
+              ...styles.infoLabel,
+              color: themeContext?.theme.colors.text,
+            }}
+          >
+            姓名
+          </Text>
+          <Text
+            style={{
+              ...styles.infoValue,
+              color: themeContext?.theme.colors.text,
+            }}
+          >
+            {userInfo.name}
+          </Text>
         </View>
 
-        <View style={styles.separator} />
+        <View
+          style={{
+            ...styles.separator,
+            backgroundColor: themeContext?.theme.colors.background,
+          }}
+        />
 
         <View style={styles.infoItem}>
-          <Text style={styles.infoLabel}>邮箱</Text>
-          <Text style={styles.infoValue}>{userInfo.email}</Text>
+          <Text
+            style={{
+              ...styles.infoLabel,
+              color: themeContext?.theme.colors.text,
+            }}
+          >
+            邮箱
+          </Text>
+          <Text
+            style={{
+              ...styles.infoValue,
+              color: themeContext?.theme.colors.text,
+            }}
+          >
+            {userInfo.email}
+          </Text>
         </View>
       </View>
 
       {/* 更改密码选项 */}
       <TouchableOpacity
-        style={styles.optionItem}
+        style={{
+          ...styles.optionItem,
+          backgroundColor: themeContext?.theme.colors.card,
+        }}
         onPress={handleChangePassword}
       >
-        <Text style={styles.optionText}>更改密码</Text>
+        <Text
+          style={{
+            ...styles.optionText,
+            color: themeContext?.theme.colors.text,
+          }}
+        >
+          更改密码
+        </Text>
       </TouchableOpacity>
     </View>
   );

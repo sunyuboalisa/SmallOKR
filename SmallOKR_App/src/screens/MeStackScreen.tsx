@@ -4,14 +4,20 @@ import React from 'react';
 import PersonalInfo from '../components/PersonalInfo';
 import BehaviorAnalysis from '../components/BehaviorAnalysis';
 import ChangePasswordScreen from '../components/ChangePassword';
+import { useTheme } from '../state/ThemeContext';
 
 const MeStack = createNativeStackNavigator<MyReactNavigation.ParamList>();
 
 const MeStackScreen = () => {
+  const theme = useTheme();
   return (
     <MeStack.Navigator
       screenOptions={{
         headerShown: false,
+        headerStyle: {
+          backgroundColor: theme.theme.colors.background,
+        },
+        headerTintColor: theme.theme.colors.text,
       }}
     >
       <MeStack.Screen name="Me" component={Me} />

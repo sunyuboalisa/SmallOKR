@@ -68,40 +68,6 @@ export const RepeatPage = ({ route }: MyStackScreenProps<'RepeatPage'>) => {
   const [data, setData] = useState<ItemModel[]>([]);
   const themeContext = useContext(ThemeContext);
 
-  const fetchData = async () => {
-    try {
-      const repeatDicRes = await todoService.getRepeatDicEntrys();
-      const todoRepeatRes = await todoService.getRepeat(todoId);
-
-      const todoRepeats = todoRepeatRes.data.data;
-      const resData = repeatDicRes.data.data.map(
-        (item: { id: any; entryValue: any }) => {
-          let entry = {
-            todoRepeatId: '',
-            repeatId: item.id,
-            title: item.entryValue,
-            selected: false,
-          };
-
-          todoRepeats.forEach(
-            (element: { repeatId: any; todoRepeatId: string }) => {
-              if (element.repeatId === item.id) {
-                entry.todoRepeatId = element.todoRepeatId;
-                entry.selected = true;
-              }
-            },
-          );
-
-          return entry;
-        },
-      );
-      setData(resData);
-    } catch (error) {
-      Alert.alert('Error', 'Failed to fetch data. Please try again later.');
-      console.error(error);
-    }
-  };
-
   const addRepeat = async (todoRepeat: {
     todoRepeatId?: string;
     todoId: string;
@@ -144,8 +110,41 @@ export const RepeatPage = ({ route }: MyStackScreenProps<'RepeatPage'>) => {
   };
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const repeatDicRes = await todoService.getRepeatDicEntrys();
+        const todoRepeatRes = await todoService.getRepeat(todoId);
+
+        const todoRepeats = todoRepeatRes.data.data;
+        const resData = repeatDicRes.data.data.map(
+          (item: { id: any; entryValue: any }) => {
+            let entry = {
+              todoRepeatId: '',
+              repeatId: item.id,
+              title: item.entryValue,
+              selected: false,
+            };
+
+            todoRepeats.forEach(
+              (element: { repeatId: any; todoRepeatId: string }) => {
+                if (element.repeatId === item.id) {
+                  entry.todoRepeatId = element.todoRepeatId;
+                  entry.selected = true;
+                }
+              },
+            );
+
+            return entry;
+          },
+        );
+        setData(resData);
+      } catch (error) {
+        Alert.alert('Error', 'Failed to fetch data. Please try again later.');
+        console.error(error);
+      }
+    };
     fetchData();
-  }, []);
+  }, [todoId, todoService]);
 
   return (
     <View

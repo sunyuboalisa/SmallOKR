@@ -114,7 +114,12 @@ const Target = ({ navigation }: MyStackScreenProps<'Target'>) => {
   }, [dispatch, targetService]);
 
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        ...styles.container,
+        backgroundColor: themeContext?.theme.colors.background,
+      }}
+    >
       <FlatList
         keyExtractor={(item, index) => item.name + index}
         renderItem={({ item, index }) => {

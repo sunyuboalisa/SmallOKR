@@ -14,11 +14,6 @@ const Me = ({ navigation }: MyStackScreenProps<'Me'>) => {
   const handleLogout = () =>
     dispatch({
       type: 'Logout',
-      user: {
-        ...userContext.userInfo,
-        token: '',
-        status: 'online',
-      },
     });
   const handleToggleTheme = () => themeContext?.toggleTheme();
 

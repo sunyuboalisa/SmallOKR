@@ -4,18 +4,21 @@ import { Todo, PlanHeaderRight } from '../components/Todo';
 import { RepeatPage } from '../components/RepeatPage';
 import React from 'react';
 import { MyStackParamList } from '../common/NativeScreenTypes';
+import { useTheme } from '../state/ThemeContext';
 
 const TodoStack = createNativeStackNavigator<MyStackParamList>();
 
 const TodoStackScreen = () => {
+  const theme = useTheme();
   return (
     <TodoStack.Navigator
       screenOptions={{
         animation: 'fade',
         headerShadowVisible: false,
         headerStyle: {
-          backgroundColor: 'transparent',
+          backgroundColor: theme.theme.colors.background,
         },
+        headerTintColor: theme.theme.colors.text,
       }}
     >
       <TodoStack.Screen

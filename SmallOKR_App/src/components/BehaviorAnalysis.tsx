@@ -15,8 +15,10 @@ import { TargetContext, TargetDispatchContext } from '../state/TargetContext';
 import dayjs from 'dayjs';
 import useTargetService from '../service/TargetService';
 import useTodoService from '../service/TodoService';
+import { ThemeContext } from '../state/ThemeContext';
 
 const BehaviorAnalysis = () => {
+  const themeContext = useContext(ThemeContext);
   const targetService = useTargetService();
   const todoService = useTodoService();
   const [activeTab, setActiveTab] = useState<'daily' | 'weekly' | 'monthly'>(
@@ -187,7 +189,12 @@ const BehaviorAnalysis = () => {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View
+        style={{
+          ...styles.loadingContainer,
+          backgroundColor: themeContext?.theme.colors.background,
+        }}
+      >
         <ActivityIndicator size="large" color="#6ab04c" />
         <Text style={styles.loadingText}>数据加载中...</Text>
       </View>
@@ -200,13 +207,21 @@ const BehaviorAnalysis = () => {
 
   return (
     <ScrollView
-      style={styles.container}
+      style={{
+        ...styles.container,
+        backgroundColor: themeContext?.theme.colors.background,
+      }}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
     >
       {/* 时间筛选标签 */}
-      <View style={styles.tabContainer}>
+      <View
+        style={{
+          ...styles.tabContainer,
+          backgroundColor: themeContext?.theme.colors.background,
+        }}
+      >
         {(['daily', 'weekly', 'monthly'] as const).map(tab => (
           <TouchableOpacity
             key={tab}
@@ -230,8 +245,18 @@ const BehaviorAnalysis = () => {
       </View>
 
       {/* 目标状态分布饼图 */}
-      <View style={styles.chartContainer}>
-        <Text style={styles.chartTitle}>
+      <View
+        style={{
+          ...styles.chartContainer,
+          backgroundColor: themeContext?.theme.colors.background,
+        }}
+      >
+        <Text
+          style={{
+            ...styles.chartTitle,
+            color: themeContext?.theme.colors.text,
+          }}
+        >
           目标状态分布 ({targetContext?.targets?.length || 0})
         </Text>
         {targetStatusData?.length > 0 ? (
@@ -249,13 +274,30 @@ const BehaviorAnalysis = () => {
             }}
           />
         ) : (
-          <Text style={styles.noDataText}>暂无目标状态数据</Text>
+          <Text
+            style={{
+              ...styles.noDataText,
+              color: themeContext?.theme.colors.text,
+            }}
+          >
+            暂无目标状态数据
+          </Text>
         )}
       </View>
 
       {/* 待办时间分布柱状图 */}
-      <View style={styles.chartContainer}>
-        <Text style={styles.chartTitle}>
+      <View
+        style={{
+          ...styles.chartContainer,
+          backgroundColor: themeContext?.theme.colors.background,
+        }}
+      >
+        <Text
+          style={{
+            ...styles.chartTitle,
+            color: themeContext?.theme.colors.text,
+          }}
+        >
           待办时间分布 ({todoContext?.todos?.length || 0})
         </Text>
         {todoContext?.todos?.length > 0 ? (
@@ -284,8 +326,18 @@ const BehaviorAnalysis = () => {
       </View>
 
       {/* 结果趋势折线图 */}
-      <View style={styles.chartContainer}>
-        <Text style={styles.chartTitle}>
+      <View
+        style={{
+          ...styles.chartContainer,
+          backgroundColor: themeContext?.theme.colors.background,
+        }}
+      >
+        <Text
+          style={{
+            ...styles.chartTitle,
+            color: themeContext?.theme.colors.text,
+          }}
+        >
           完成趋势 ({resultTrendData?.rawData?.length || 0})
         </Text>
         {resultTrendData?.labels?.length > 0 ? (
@@ -311,8 +363,18 @@ const BehaviorAnalysis = () => {
       </View>
 
       {/* 详细记录列表 */}
-      <View style={styles.listContainer}>
-        <Text style={styles.listTitle}>
+      <View
+        style={{
+          ...styles.listContainer,
+          backgroundColor: themeContext?.theme.colors.background,
+        }}
+      >
+        <Text
+          style={{
+            ...styles.listTitle,
+            color: themeContext?.theme.colors.text,
+          }}
+        >
           详细记录 (
           {activeTab === 'daily'
             ? '今日'

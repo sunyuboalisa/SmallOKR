@@ -3,17 +3,20 @@ import AddTarget from '../components/EditTarget';
 import { Target, TargetHeaderRight } from '../components/Target';
 import React from 'react';
 import { MyStackParamList } from '../common/NativeScreenTypes';
+import { useTheme } from '../state/ThemeContext';
 
 const TargetStack = createNativeStackNavigator<MyStackParamList>();
 
 const TargetStackScreen = () => {
+  const theme = useTheme();
   return (
     <TargetStack.Navigator
       screenOptions={{
         headerShadowVisible: false,
         headerStyle: {
-          backgroundColor: 'transparent',
+          backgroundColor: theme.theme.colors.background,
         },
+        headerTintColor: theme.theme.colors.text,
         animation: 'fade',
       }}
     >

@@ -3,13 +3,14 @@ import React, { useContext, useEffect, useState } from 'react';
 import GalaxyGraph from './GalaxyGraph';
 import useTargetService from '../service/TargetService';
 import { TargetContext, TargetDispatchContext } from '../state/TargetContext';
+import { useTheme } from '../state/ThemeContext';
 
 const Dashboard = () => {
   const targetService = useTargetService();
   const [data, setData] = useState(['']);
   const targetContext = useContext(TargetContext);
   const dispatch = useContext(TargetDispatchContext);
-
+  const theme = useTheme();
   useEffect(() => {
     const fetchTargets = async () => {
       try {
@@ -43,7 +44,12 @@ const Dashboard = () => {
   }, [targetContext]);
 
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        ...styles.container,
+        backgroundColor: theme.theme.colors.background,
+      }}
+    >
       <GalaxyGraph data={data} />
     </View>
   );

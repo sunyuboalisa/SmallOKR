@@ -36,7 +36,12 @@ const Item = ({
       onPress={() => handlePress()}
       onLongPress={handleLongPress}
     >
-      <View style={styles.timeContainer}>
+      <View
+        style={{
+          ...styles.timeContainer,
+          borderRightColor: themeContext?.theme.colors.text,
+        }}
+      >
         <Text
           style={{ ...styles.text, color: themeContext?.theme.colors.text }}
         >
