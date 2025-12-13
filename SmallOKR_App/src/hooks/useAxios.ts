@@ -11,13 +11,9 @@ import { UserContext } from '../state/UserContext';
 import { useLoadingLayer } from './useLoadingLayer';
 
 // 初始化 baseURL
-// const getInitialBaseURL = () =>
-//   `${API_SCHEME || 'https'}://${API_HOST || 'test.alisacloud.com'}:${
-//     API_PORT || '443'
-//   }`;
 const getInitialBaseURL = () =>
-  `${API_SCHEME || 'http'}://${API_HOST || '192.168.1.72'}:${
-    API_PORT || '8080'
+  `${API_SCHEME || 'https'}://${API_HOST || 'test.alisacloud.com'}:${
+    API_PORT || '443'
   }`;
 
 // 待实现的 Token 刷新函数

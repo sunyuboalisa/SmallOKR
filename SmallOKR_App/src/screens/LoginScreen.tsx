@@ -17,10 +17,7 @@ export const LoginScreen = ({ navigation }: MyStackScreenProps<'Login'>) => {
   const dispatch = useContext(UserDispatchContext);
   const [username, setUsername] = useState('test');
   const [password, setPassword] = useState('test');
-  // const [namespaceUrl, setNamespaceUrl] = useState(
-  //   'https://test.alisacloud.com',
-  // );
-  const [namespaceUrl, setNamespaceUrl] = useState('http://192.168.1.72:8080');
+  const [namespaceUrl, setNamespaceUrl] = useState(axios.baseURL);
   const [error, setError] = useState('');
 
   const handleLogin = async () => {
