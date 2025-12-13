@@ -59,7 +59,9 @@ const Target = ({ navigation }: MyStackScreenProps<'Target'>) => {
     }
     setModalVisible(false);
   };
-  const handleCommitDayLog = () => {
+  const handleEditTarget = () => {
+    if (selectedTarget)
+      navigation.navigate('EditTarget', { target: selectedTarget });
     closeModal();
   };
   const handleFinishTarget = async () => {
@@ -149,7 +151,7 @@ const Target = ({ navigation }: MyStackScreenProps<'Target'>) => {
 
               <TouchableOpacity
                 onPress={() => {
-                  handleCommitDayLog();
+                  handleEditTarget();
                 }}
                 style={styles.modalBtn}
               >
