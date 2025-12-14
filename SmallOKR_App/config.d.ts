@@ -5,3 +5,21 @@ declare global {
     interface ParamList extends MyStackParamList {}
   }
 }
+
+declare module '@react-navigation/native' {
+  // 扩展 Colors 类型，添加 placeholder
+  export interface ThemeColors {
+    primary: string;
+    background: string;
+    card: string;
+    text: string;
+    border: string;
+    notification: string;
+    placeholder: string;
+  }
+
+  export interface Theme {
+    dark: boolean;
+    colors: ThemeColors;
+  }
+}

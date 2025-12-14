@@ -1,32 +1,32 @@
 import { DefaultTheme, Theme } from '@react-navigation/native';
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode, useMemo } from 'react';
+import { AppConfigContext, AppConfigDispatchContext } from './AppConfigContext';
 
-// 定义主题
-const themes = {
-  light: {
-    ...DefaultTheme,
-    colors: {
-      primary: '#2196F3',
-      background: '#ffffff',
-      card: '#F5F5F5',
-      text: 'rgb(28, 28, 30)',
-      border: 'transparent',
-      notification: 'rgb(255, 59, 48)',
-      placeholder: 'gray',
-    },
+// 定义主题常量 (使用外部定义，保持 Provider 简洁)
+const LightTheme: Theme = {
+  ...DefaultTheme,
+  colors: {
+    primary: '#2196F3',
+    background: '#ffffff',
+    card: '#F5F5F5',
+    text: 'rgb(28, 28, 30)',
+    border: 'transparent',
+    notification: 'rgb(255, 59, 48)',
+    placeholder: 'gray',
   },
-  dark: {
-    ...DefaultTheme,
-    dark: true,
-    colors: {
-      primary: 'gold',
-      background: '#000000',
-      card: '#333333',
-      text: '#ffffff',
-      border: 'transparent',
-      notification: 'rgb(255, 59, 48)',
-      placeholder: 'gray',
-    },
+};
+
+const DarkTheme: Theme = {
+  ...DefaultTheme,
+  dark: true,
+  colors: {
+    primary: 'gold',
+    background: '#000000',
+    card: '#333333',
+    text: '#ffffff',
+    border: 'transparent',
+    notification: 'rgb(255, 59, 48)',
+    placeholder: 'gray',
   },
 };
 
@@ -41,28 +41,32 @@ export const ThemeContext = createContext<ThemeContextType | undefined>(
   undefined,
 );
 
-// ThemeProvider 组件，接收子组件作为参数
 interface ThemeProviderProps {
   children: ReactNode;
 }
 
 export const ThemeProvider = ({ children }: ThemeProviderProps) => {
-  const [theme, setTheme] = useState<Theme>(themes.light); // 默认是 light 主题
+  const appConfig = useContext(AppConfigContext);
+  const dispatch = useContext(AppConfigDispatchContext);
+
+  const currentTheme: Theme = useMemo(() => {
+    return appConfig.theme === 'dark' ? DarkTheme : LightTheme;
+  }, [appConfig.theme]);
 
   const toggleTheme = () => {
-    setTheme(prevTheme =>
-      prevTheme === themes.light ? themes.dark : themes.light,
-    );
+    const newTheme = appConfig.theme === 'light' ? 'dark' : 'light';
+
+    dispatch({ type: 'SetTheme', value: newTheme });
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme: currentTheme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );
 };
 
-// 自定义 Hook，便于在其他组件中使用主题信息
+// 自定义 Hook，保持不变
 export const useTheme = (): ThemeContextType => {
   const context = useContext(ThemeContext);
   if (!context) {
