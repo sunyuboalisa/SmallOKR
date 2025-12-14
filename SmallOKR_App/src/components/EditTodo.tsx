@@ -37,7 +37,7 @@ const parseBackendDate = (str: string | null) => {
 
   const d = dayjs(fullStr, 'YYYY-MM-DD HH:mm:ss');
   const date = d.isValid() ? d.toDate() : new Date();
-  console.log('parsed date:', date);
+  console.log('parsed date:', date.toString());
 
   return date;
 };
@@ -80,7 +80,19 @@ const EditTodo = ({ route, navigation }: MyStackScreenProps<'EditTodo'>) => {
       console.log(error);
     }
   };
+  const mergeTimeWithOriginalDate = (originalDate: Date, newTimeDate: Date) => {
+    // 使用 dayjs 简化时间合并操作
+    const originalDayjs = dayjs(originalDate);
+    const newTimeDayjs = dayjs(newTimeDate);
 
+    // 将新时间（小时、分钟）设置到原始日期上，秒数清零以保持统一
+    const mergedDayjs = originalDayjs
+      .hour(newTimeDayjs.hour())
+      .minute(newTimeDayjs.minute())
+      .second(0);
+
+    return mergedDayjs.toDate();
+  };
   return (
     <View
       style={[
@@ -140,7 +152,12 @@ const EditTodo = ({ route, navigation }: MyStackScreenProps<'EditTodo'>) => {
             >
               开始时间
             </Text>
-            <DateCom date={beginDate} onConfirm={d => seBeginDate(d)} />
+            <DateCom
+              date={beginDate}
+              onConfirm={d =>
+                seBeginDate(mergeTimeWithOriginalDate(beginDate, d))
+              }
+            />
           </View>
 
           <View style={styles.timeInputContainer}>

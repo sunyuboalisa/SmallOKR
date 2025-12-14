@@ -1,21 +1,79 @@
 import dayjs from 'dayjs';
 import React, { useContext, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import DatePicker from 'react-native-date-picker';
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+  Modal,
+  Pressable,
+} from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import AndDesign from 'react-native-vector-icons/AntDesign';
 import { ThemeContext } from '../state/ThemeContext';
-// 日期格式统一为 HH:mm，UI显示时间部分 为 HH:mm
+
 interface DateComProps {
   date: Date;
   onConfirm: (date: Date) => void;
 }
 
 const DateCom = ({ date, onConfirm }: DateComProps) => {
-  const [open, setOpen] = useState(false);
+  // modalVisible 控制自定义 Modal 的显示
+  const [modalVisible, setModalVisible] = useState(false);
+  // tempDate 用于在模态框内临时存储用户的修改，直到点击确认
+  const [tempDate, setTempDate] = useState(date);
   const themeContext = useContext(ThemeContext);
+
+  const handleNativeChange = (event: any, selectedDate?: Date) => {
+    if (selectedDate) {
+      setTempDate(selectedDate);
+    }
+
+    // 如果是 Android 的命令式 API，它自带确认按钮，我们可以直接处理并关闭
+    if (Platform.OS === 'android' && event.type === 'set') {
+      onConfirm(selectedDate as Date);
+      setModalVisible(false); // 尽管 Android 不需要 Modal，但为了统一流程
+    }
+    // 在 iOS 滚轮模式下，这里只更新 tempDate，不关闭 Modal
+  };
+
+  // 仅在 Android 上使用命令式 API 弹出
+  const showAndroidPicker = () => {
+    import('@react-native-community/datetimepicker').then(
+      ({ DateTimePickerAndroid }) => {
+        DateTimePickerAndroid.open({
+          value: date,
+          onChange: handleNativeChange,
+          mode: 'time',
+          is24Hour: true,
+          display: 'default',
+        });
+      },
+    );
+  };
+
+  const showPicker = () => {
+    if (Platform.OS === 'android') {
+      showAndroidPicker();
+    } else {
+      // iOS: 显示自定义模态框，并同步初始日期
+      setTempDate(date);
+      setModalVisible(true);
+    }
+  };
+
+  const handleConfirm = () => {
+    onConfirm(tempDate);
+    setModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setModalVisible(false);
+  };
 
   return (
     <View style={styles.repeatContainer}>
+      {/* 1. UI 显示部分 */}
       <Text
         style={{
           marginRight: 10,
@@ -29,20 +87,57 @@ const DateCom = ({ date, onConfirm }: DateComProps) => {
       <AndDesign
         style={{ ...styles.rightIcon, color: themeContext?.theme.colors.text }}
         name="calendar"
-        onPress={() => setOpen(true)}
+        onPress={showPicker} // 点击图标触发自定义逻辑
       />
 
-      <DatePicker
-        modal
-        mode="time"
-        open={open}
-        date={date}
-        onConfirm={e => {
-          setOpen(false);
-          onConfirm(e);
-        }}
-        onCancel={() => setOpen(false)}
-      />
+      {/* 2. 自定义 Modal (仅限 iOS 使用) */}
+      {Platform.OS === 'ios' && (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={handleCancel}
+        >
+          <Pressable style={styles.modalOverlay} onPress={handleCancel}>
+            <View
+              style={[
+                styles.modalContent,
+                { backgroundColor: themeContext?.theme.colors.card },
+              ]}
+            >
+              {/* 滚轮选择器，始终使用 'spinner' 确保它稳定 */}
+              <DateTimePicker
+                value={tempDate}
+                mode="time"
+                is24Hour={true}
+                display="spinner"
+                onChange={handleNativeChange}
+                // 使用 style 强制给滚轮一个高度，避免尺寸问题
+                style={{ width: '100%', height: 180 }}
+              />
+
+              {/* 确认和取消按钮 */}
+              <View style={styles.buttonRow}>
+                <Pressable onPress={handleCancel} style={styles.modalButton}>
+                  <Text style={{ color: themeContext?.theme.colors.text }}>
+                    取消
+                  </Text>
+                </Pressable>
+                <Pressable onPress={handleConfirm} style={styles.modalButton}>
+                  <Text
+                    style={{
+                      color: themeContext?.theme.colors.primary,
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    确认
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+          </Pressable>
+        </Modal>
+      )}
     </View>
   );
 };
@@ -57,5 +152,27 @@ const styles = StyleSheet.create({
   },
   rightIcon: {
     fontSize: 22,
+  },
+  // --- Modal 样式 ---
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // 半透明背景遮罩
+  },
+  modalContent: {
+    padding: 10,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    alignItems: 'center',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  modalButton: {
+    padding: 10,
   },
 });
