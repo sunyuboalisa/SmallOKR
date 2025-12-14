@@ -8,8 +8,6 @@ import React, {
 import { PanResponder, GestureResponderEvent, Dimensions } from 'react-native';
 import Svg, {
   Circle,
-  FeDropShadow,
-  Filter,
   G,
   Line,
   Text,
@@ -33,7 +31,7 @@ class PseudoRandom {
 }
 
 interface Node {
-  id: number;
+  id: string;
   x: number;
   y: number;
   vx: number;
@@ -42,12 +40,8 @@ interface Node {
 }
 
 interface Connection {
-  fromNodeId: number;
-  toNodeId: number;
-}
-
-interface GalaxyGraphProps {
-  data: string[];
+  fromNodeId: string;
+  toNodeId: string;
 }
 
 interface Particle {
@@ -58,11 +52,22 @@ interface Particle {
   vy: number;
   life: number;
 }
+export type nodeData = {
+  id: string;
+  name: string;
+};
+interface GalaxyGraphProps {
+  data: nodeData[];
+  onNodeDoublePress?: (nodeId: string, nodeTitle: string) => void;
+}
 
 // 辅助 Hook: 强制组件重新渲染 (轻量级)
 const useForceUpdate = () => useReducer(x => x + 1, 0)[1];
 
-const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
+const GalaxyGraph: React.FC<GalaxyGraphProps> = ({
+  data,
+  onNodeDoublePress,
+}) => {
   const { width, height } = Dimensions.get('window');
   const rng = useRef(new PseudoRandom(33)).current;
   const particleRng = useRef(new PseudoRandom(Date.now())).current;
@@ -71,8 +76,8 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
   const nodesRef = useRef<Node[]>([]);
   const particlesRef = useRef<Particle[]>([]);
 
-  const [selectedNodeId, setSelectedNodeId] = useState<number | null>(null);
-  const [draggedNodeId, setDraggedNodeId] = useState<number | null>(null);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [draggedNodeId, setDraggedNodeId] = useState<string | null>(null);
   const initialPressPoint = useRef<{ x: number; y: number } | null>(null);
 
   const nodeRadius = 20;
@@ -80,36 +85,33 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
 
   useEffect(() => {
     // 初始坐标生成函数
-    const generateCoordinates = (titles: string[]) => {
+    const generateCoordinates = (nodeDatas: nodeData[]) => {
       const center = { x: width / 2, y: height / 2 };
       const radius = Math.min(width, height) / 2.5;
 
-      return titles.map((title, index) => {
+      return nodeDatas.map(nodeData => {
         const angle = rng.next() * 2 * Math.PI;
         const r = Math.sqrt(rng.next()) * radius;
         const x = center.x + r * Math.cos(angle);
         const y = center.y + r * Math.sin(angle);
 
         return {
-          id: index,
+          id: nodeData.id,
           x,
           y,
-          title,
+          title: nodeData.name,
           vx: (rng.next() - 0.5) * 0.1,
           vy: (rng.next() - 0.5) * 0.1,
         };
       });
     };
-    const initialData =
-      data.length > 0
-        ? data
-        : ['Node 1', 'Node 2', 'Node 3', 'Node 4', 'Node 5'];
+    const initialData = data; // 默认数据
 
     nodesRef.current = generateCoordinates(initialData);
     forceUpdate();
   }, [data, width, height, forceUpdate, rng]);
 
-  const findNodeIdAtCoordinates = (x: number, y: number): number | null => {
+  const findNodeIdAtCoordinates = (x: number, y: number): string | null => {
     const hitRadius = 30;
     const foundNode = nodesRef.current.find(node => {
       const distance = Math.sqrt(
@@ -119,13 +121,35 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
     });
     return foundNode ? foundNode.id : null;
   };
+  const lastPressTime = useRef(0);
+  const DOUBLE_PRESS_DELAY = 300; // 双击间隔阈值 (毫秒)
+  // ------------------------------------
 
-  const handlePress = (event: GestureResponderEvent, id: number | null) => {
+  // B. 位于 findNodeIdAtCoordinates 函数之后，添加双击处理函数
+  // ------------------------------------
+  // 辅助函数：处理单击和双击逻辑
+  const handleNodePress = (id: string) => {
+    const now = Date.now();
+    const node = nodesRef.current.find(n => n.id === id); // 获取节点对象
+
+    if (now - lastPressTime.current < DOUBLE_PRESS_DELAY) {
+      // 触发双击事件
+      if (node && onNodeDoublePress) {
+        onNodeDoublePress(id, node.title);
+      }
+      // 重置时间，防止连续多次触发
+      lastPressTime.current = 0;
+    } else {
+      // 记录第一次点击时间
+      lastPressTime.current = now;
+    }
+  };
+  const handlePress = (event: GestureResponderEvent, id: string | null) => {
     initialPressPoint.current = {
       x: event.nativeEvent.pageX,
       y: event.nativeEvent.pageY,
     };
-    setDraggedNodeId(id);
+    if (id !== null) setDraggedNodeId(id);
   };
 
   const panResponder = PanResponder.create({
@@ -163,6 +187,8 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
           Math.abs(gesture.dx) <= clickTolerance &&
           Math.abs(gesture.dy) <= clickTolerance
         ) {
+          const nodeId = draggedNodeId;
+          handleNodePress(nodeId);
           setSelectedNodeId(prevId =>
             prevId === draggedNodeId ? null : draggedNodeId,
           );
@@ -369,16 +395,6 @@ const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data }) => {
   return (
     <Svg width={width} height={height}>
       <Defs>
-        <Filter id="glow">
-          <FeDropShadow
-            dx="0"
-            dy="0"
-            stdDeviation="4"
-            floodColor={themeContext?.theme.colors.primary}
-            floodOpacity="0.8"
-          />
-        </Filter>
-
         <RadialGradient
           id="planetGradient"
           cx="40%"

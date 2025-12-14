@@ -93,7 +93,7 @@ const Target = ({ navigation }: MyStackScreenProps<'Target'>) => {
       }
     };
 
-    loadTargets();
+    // loadTargets();
   }, [dispatch, targetService]);
 
   return (

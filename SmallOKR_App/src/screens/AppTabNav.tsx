@@ -8,8 +8,9 @@ import Dashboard from '../components/Dashboard';
 import { ThemeContext } from '../state/ThemeContext';
 import { TargetContextProvider } from '../state/TargetContext';
 import { TodoContextProvider } from '../state/TodoContext';
+import { MyStackParamList } from '../common/NativeScreenTypes';
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<MyStackParamList>();
 
 export const AppTabNav = () => {
   const themeContext = useContext(ThemeContext);

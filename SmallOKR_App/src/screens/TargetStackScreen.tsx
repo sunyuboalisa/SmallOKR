@@ -11,6 +11,7 @@ const TargetStackScreen = () => {
   const theme = useTheme();
   return (
     <TargetStack.Navigator
+      initialRouteName="Target"
       screenOptions={{
         headerShadowVisible: false,
         headerStyle: {
