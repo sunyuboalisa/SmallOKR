@@ -59,6 +59,7 @@ const EditTodo = ({ route, navigation }: MyStackScreenProps<'EditTodo'>) => {
   );
   const addTodo = async () => {
     try {
+      console.log('Saving todo beginDate:', beginDate.toString());
       const newTodo = {
         id: todo.id,
         name: todoName,
@@ -84,6 +85,11 @@ const EditTodo = ({ route, navigation }: MyStackScreenProps<'EditTodo'>) => {
     // 使用 dayjs 简化时间合并操作
     const originalDayjs = dayjs(originalDate);
     const newTimeDayjs = dayjs(newTimeDate);
+    console.log(
+      'confirm date: ',
+      originalDate.toString(),
+      newTimeDate.toString(),
+    );
 
     // 将新时间（小时、分钟）设置到原始日期上，秒数清零以保持统一
     const mergedDayjs = originalDayjs

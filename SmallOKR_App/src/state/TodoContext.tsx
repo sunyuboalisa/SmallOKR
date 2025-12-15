@@ -24,10 +24,37 @@ const TodoContextProvider = ({ children }: { children: React.ReactNode }) => {
   const TodoReducer = (state: TodoState, action: TodoAction) => {
     switch (action.type) {
       case 'Add':
+        const newTodo = action.newTodo;
+        const uiTodo = action.uiTodo;
+
+        // 1. 检查 Todo 是否已存在 (通过 ID)
+        const todoExists = state.todos.some(todo => todo.id === newTodo.id);
+
+        let updatedTodos;
+        let updatedUiTodos;
+
+        if (todoExists) {
+          // --- 存在：执行更新逻辑 (Map/遍历替换) ---
+          updatedTodos = state.todos.map(todo =>
+            todo.id === newTodo.id ? newTodo : todo,
+          );
+          updatedUiTodos = state.uiTodos.map(item =>
+            item.id === uiTodo.id ? uiTodo : item,
+          );
+
+          console.log('待办已更新:', newTodo.id);
+        } else {
+          // --- 不存在：执行添加逻辑 (Push) ---
+          updatedTodos = [...state.todos, newTodo];
+          updatedUiTodos = [...state.uiTodos, uiTodo];
+
+          console.log('待办已添加:', newTodo.id);
+        }
+
         return {
           ...state,
-          todos: [...state.todos, action.newTodo],
-          uiTodos: [...state.uiTodos, action.uiTodo],
+          todos: updatedTodos,
+          uiTodos: updatedUiTodos,
         };
       case 'Delete':
         let tempDelete = state.todos.filter(x => x.id !== action.id);

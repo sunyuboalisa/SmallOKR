@@ -27,6 +27,7 @@ const DateCom = ({ date, onConfirm }: DateComProps) => {
   const handleNativeChange = (event: any, selectedDate?: Date) => {
     if (selectedDate) {
       setTempDate(selectedDate);
+      console.log('Native date selected:', selectedDate.toString());
     }
 
     // 如果是 Android 的命令式 API，它自带确认按钮，我们可以直接处理并关闭
@@ -70,7 +71,7 @@ const DateCom = ({ date, onConfirm }: DateComProps) => {
   const handleCancel = () => {
     setModalVisible(false);
   };
-
+  console.log('DateCom render with date:', date.toString());
   return (
     <View style={styles.repeatContainer}>
       {/* 1. UI 显示部分 */}
@@ -87,7 +88,7 @@ const DateCom = ({ date, onConfirm }: DateComProps) => {
       <AndDesign
         style={{ ...styles.rightIcon, color: themeContext?.theme.colors.text }}
         name="calendar"
-        onPress={showPicker} // 点击图标触发自定义逻辑
+        onPress={showPicker}
       />
 
       {/* 2. 自定义 Modal (仅限 iOS 使用) */}
@@ -112,7 +113,6 @@ const DateCom = ({ date, onConfirm }: DateComProps) => {
                 is24Hour={true}
                 display="spinner"
                 onChange={handleNativeChange}
-                // 使用 style 强制给滚轮一个高度，避免尺寸问题
                 style={{ width: '100%', height: 180 }}
               />
 
