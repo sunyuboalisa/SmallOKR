@@ -20,6 +20,7 @@ export type TargetAction =
   | { type: 'Load'; targets: ITarget[] }
   | { type: 'LoadResult'; results: IResult[] }
   | { type: 'AddResult'; newResult: IResult }
+  | { type: 'DeleteResult'; resultId: string }
   | { type: 'ChangeResult'; newResult: IResult }
   | { type: 'Reload'; reload: boolean };
 export type UserAction =

@@ -21,14 +21,14 @@ const EditTarget = ({
   route,
 }: MyStackScreenProps<'EditTarget'>) => {
   const { target } = route.params;
-  console.log(target);
+  console.log('target in EditTarget:', target);
   const targetService = useTargetService();
   const [description, onChangeDescription] = useState(target.description);
   const [targetName, onChangeTargetName] = useState(target.name);
   const targetContext = useContext(TargetContext);
   const dispatch = useContext(TargetDispatchContext);
   const themeContext = useContext(ThemeContext);
-
+  const [showDeleteIcon, setShowDeleteIcon] = useState(false);
   const onAddBtnPress = () => {
     dispatch({
       type: 'AddResult',
@@ -77,6 +77,21 @@ const EditTarget = ({
     }
   };
 
+  const handleLongPress = () => {
+    setShowDeleteIcon(!showDeleteIcon);
+  };
+  const handleDeleteResult = async (item: any) => {
+    if (item.id === '') {
+      dispatch({ type: 'DeleteResult', resultId: item.id });
+      return;
+    }
+    const res = await targetService.deleteResult(item.id);
+    if (res.data.code === '200') {
+      dispatch({ type: 'DeleteResult', resultId: item.id });
+    } else {
+      throw new Error('删除阶段成果失败');
+    }
+  };
   useEffect(() => {
     const featchData = async () => {
       try {
@@ -207,7 +222,8 @@ const EditTarget = ({
               data={targetContext.results}
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => (
-                <View
+                <Pressable
+                  onLongPress={handleLongPress}
                   style={[
                     styles.resultCard,
                     {
@@ -217,14 +233,43 @@ const EditTarget = ({
                   ]}
                 >
                   <View style={styles.resultInputGroup}>
-                    <Text
-                      style={[
-                        styles.resultLabel,
-                        { color: themeContext?.theme.colors.text },
-                      ]}
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
                     >
-                      阶段名称
-                    </Text>
+                      <Text
+                        style={[
+                          styles.resultLabel,
+                          {
+                            color: themeContext?.theme.colors.text,
+                          },
+                        ]}
+                      >
+                        阶段名称
+                      </Text>
+                      <Ionicons
+                        name="close"
+                        size={24}
+                        color={themeContext?.theme.colors.primary}
+                        onPress={async () => {
+                          // 替换这里的 console.log 为实际的删除 dispatch 操作
+                          // 例如：dispatch({ type: 'DeleteResult', id: item.id });
+                          handleDeleteResult(item);
+                          console.log('执行删除操作', item);
+                        }}
+                        style={[
+                          { paddingBottom: 10 }, // 保持原有样式
+                          // 当 showDeleteIcon 为 false 时，应用隐藏样式
+                          !showDeleteIcon && {
+                            opacity: 0,
+                            pointerEvents: 'none', // 禁用点击，防止误触
+                          },
+                        ]}
+                      />
+                    </View>
                     <TextInput
                       style={[
                         styles.resultInput,
@@ -285,7 +330,7 @@ const EditTarget = ({
                       placeholderTextColor={themeContext?.theme.colors.text}
                     />
                   </View>
-                </View>
+                </Pressable>
               )}
             />
           </View>

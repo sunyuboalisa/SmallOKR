@@ -16,7 +16,7 @@ interface DateComProps {
   date: Date;
   onConfirm: (date: Date) => void;
 }
-
+// 显示的是24小时，但实际上传递的时间都是Mon Dec 15 2025 17:27:00 GMT+0800这种格式的，获取时间后要自己处理格式
 const DateCom = ({ date, onConfirm }: DateComProps) => {
   // modalVisible 控制自定义 Modal 的显示
   const [modalVisible, setModalVisible] = useState(false);

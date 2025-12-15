@@ -42,8 +42,10 @@ const useTargetService = () => {
     };
 
     // 删除结果
-    const deleteResult = (targetId: string) => {
-      return post('/target-service/api/v1/result/delete', { targetId });
+    const deleteResult = (resultId: string) => {
+      return deleteRequest('/target-service/api/v1/result/delete', {
+        resultId,
+      });
     };
 
     return {
