@@ -12,5 +12,6 @@
         FROM tb_dic_entry dicEntry
         JOIN tb_dic dic ON dicEntry.dic_id = dic.dic_id
         WHERE dic.dic_name = #{dicName}
+        ORDER BY dicEntry.dic_entry_order ASC
     </select>
 </mapper>

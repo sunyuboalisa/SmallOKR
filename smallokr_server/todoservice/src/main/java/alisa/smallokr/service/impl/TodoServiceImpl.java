@@ -45,18 +45,18 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public boolean addRepeat(TodoRepeat todoRepeat) {
-        return todoRepeatMapper.addRepeat(todoRepeat);
+    public int addOrUpdateRepeat(List<TodoRepeat> todoRepeat) {
+        return todoRepeatMapper.addOrUpdateRepeat(todoRepeat);
     }
 
     @Override
-    public boolean deleteRepeat(String todoRepeatId) {
-        return todoRepeatMapper.deleteRepeat(todoRepeatId);
+    public int deleteRepeat(List<String> todoRepeatIds) {
+        return todoRepeatMapper.deleteRepeat(todoRepeatIds);
     }
 
     @Override
     public List<TodoVo> getTodoByUserAndWeekDay(String userId, LocalDateTime date, String weekDay) {
-        return todoMapper.getTodoByUserAndWeekDay(userId, date,weekDay);
+        return todoMapper.getTodoByUserAndWeekDay(userId, date, weekDay);
     }
 
 }

@@ -45,7 +45,7 @@ class ITodo {
     this.description = '';
     this.beginDate = '';
     this.endDate = '';
-    this.repeat = 1;
+    this.repeat = [1, 2, 3, 4, 5, 6, 7];
     this.status = 0;
   }
   id: string;
@@ -53,9 +53,11 @@ class ITodo {
   description: string;
   beginDate: string;
   endDate: string;
-  repeat: number;
-  status: number;
+  repeat: RepeatType[];
+  status: StatusType;
 }
+export type RepeatType = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+export type StatusType = 0 | 1 | 2 | 3;
 export interface IUITodo {
   id: string;
   dateTime: string;

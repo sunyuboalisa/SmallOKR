@@ -19,7 +19,7 @@ public interface TodoService {
 
     List<TodoRepeat> getRepeats(String todoId);
 
-    boolean addRepeat(TodoRepeat todoRepeat);
+    int addOrUpdateRepeat(List<TodoRepeat> todoRepeat);
 
-    boolean deleteRepeat(String todoRepeatId);
+    int deleteRepeat(List<String> todoRepeatId);
 }

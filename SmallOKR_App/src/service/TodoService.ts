@@ -1,5 +1,10 @@
 import { useApiService } from '../hooks/useApiService';
 import React from 'react'; // 👈 必须导入 React 来使用 useMemo
+interface TodoRepeat {
+  todoRepeatId?: string; // ID通常可选，因为新增时前端可能不传
+  todoId: string;
+  repeatId: string;
+}
 
 const useTodoService = () => {
   const { get, post, deleteRequest } = useApiService();
@@ -31,13 +36,15 @@ const useTodoService = () => {
     };
 
     // 添加重复 Todo
-    const addRepeat = (todoRepeat: { todoId: string; repeatId: string }) => {
-      return post('/api/v1/todo/addRepeat', todoRepeat);
+    const addRepeat = (todoRepeatList: TodoRepeat[]) => {
+      return post('/api/v1/todo/addRepeat', todoRepeatList);
     };
 
     // 删除重复 Todo
-    const deleteRepeat = (todoRepeat: { todoId: string; repeatId: string }) => {
-      return deleteRequest('/api/v1/todo/deleteRepeat', todoRepeat);
+    const deleteRepeat = (todoRepeatIds: string[]) => {
+      return deleteRequest('/api/v1/todo/deleteRepeat', undefined, {
+        data: todoRepeatIds,
+      });
     };
 
     // 获取重复 Todo

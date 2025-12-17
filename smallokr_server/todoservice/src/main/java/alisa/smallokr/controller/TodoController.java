@@ -119,16 +119,26 @@ public class TodoController {
     }
 
     @PostMapping("addRepeat")
-    public Result<Boolean> addRepeat(@RequestBody TodoRepeat todoRepeat) {
-        todoRepeat.setTodoRepeatId(UUIDTool.getUUID());
-        var result = todoService.addRepeat(todoRepeat);
-        return new Result<>(result);
+    public Result<Integer> addRepeat(@RequestBody List<TodoRepeat> todoRepeatList) {
+        if (todoRepeatList == null || todoRepeatList.isEmpty()) {
+            return new Result<>(0);
+        }
+
+        // 如果是新增记录，则生成 ID
+        for (TodoRepeat repeat : todoRepeatList) {
+            if (repeat.getTodoRepeatId() == null || repeat.getTodoRepeatId().trim().isEmpty()) {
+                repeat.setTodoRepeatId(UUIDTool.getUUID());
+            }
+        }
+        int affectedRows = todoService.addOrUpdateRepeat(todoRepeatList);
+
+        return new Result<>(affectedRows);
     }
 
     @DeleteMapping("deleteRepeat")
-    public Result<Boolean> deleteRepeat(String todoRepeatId) {
-        var result = todoService.deleteRepeat(todoRepeatId);
-        return new Result<Boolean>(result);
+    public Result<Integer> deleteRepeat(@RequestBody List<String> todoRepeatIds) {
+        var result = todoService.deleteRepeat(todoRepeatIds);
+        return new Result<Integer>(result);
     }
 
     @GetMapping("analysis")

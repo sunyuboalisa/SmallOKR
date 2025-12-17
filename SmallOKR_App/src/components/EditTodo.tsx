@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import AndDesign from 'react-native-vector-icons/AntDesign';
 import { DateCom } from './DateCom';
 import useTodoService from '../service/TodoService';
@@ -7,6 +7,9 @@ import { TodoDispatchContext } from '../state/TodoContext';
 import dayjs from 'dayjs';
 import { ThemeContext } from '../state/ThemeContext';
 import { MyStackScreenProps } from '../common/NativeScreenTypes';
+import { ITodo } from '../model/OKRModel';
+import { RepeatModal, RepeatUIModel } from './RepeatModal';
+import { useUUID } from '../hooks/useUUID';
 
 type SelectProps = {
   handlePress: () => void;
@@ -29,7 +32,6 @@ const Select = ({ handlePress }: SelectProps) => {
     </Pressable>
   );
 };
-// YYYY-MM-DD HH:mm:ss => Date
 const parseBackendDate = (str: string | null) => {
   if (!str) return new Date();
   const hasDate = str.includes('-');
@@ -44,6 +46,7 @@ const parseBackendDate = (str: string | null) => {
 
 const EditTodo = ({ route, navigation }: MyStackScreenProps<'EditTodo'>) => {
   const todoService = useTodoService();
+  const { generateUUID } = useUUID();
   const { todo } = route.params;
   const dispatch = useContext(TodoDispatchContext);
   const themeContext = useContext(ThemeContext);
@@ -57,24 +60,50 @@ const EditTodo = ({ route, navigation }: MyStackScreenProps<'EditTodo'>) => {
   const [endDate, seEndDate] = useState<Date>(() =>
     parseBackendDate(todo.endDate),
   );
+  const [repeat, setRepeat] = useState<RepeatUIModel[]>();
+  const [isRepeatModalVisible, setIsRepeatModalVisible] = useState(false);
   const addTodo = async () => {
     try {
-      console.log('Saving todo beginDate:', beginDate.toString());
-      const newTodo = {
-        id: todo.id,
+      console.log('Todo :', todo.id);
+      const newTodo: ITodo = {
+        id: todo.id || generateUUID(),
         name: todoName,
         description: description,
         beginDate: dayjs(beginDate).format('YYYY-MM-DD HH:mm:ss'),
         endDate: dayjs(endDate).format('YYYY-MM-DD HH:mm:ss'),
         status: todo.status || 0,
-        repeat: todo.repeat || 0,
+        repeat: todo.repeat || [1, 2, 3, 4, 5, 6, 7],
       };
       const uiTodo = {
         id: todo.id,
         title: todoName,
         dateTime: dayjs(beginDate).format('HH:mm'),
       };
+      console.log('New todo to save:', newTodo);
       await todoService.addOrSaveTodo(newTodo);
+
+      // 保存重复周期
+      const selectedRepeats = repeat
+        ?.filter(r => r.selected)
+        .map(r => ({
+          todoRepeatId: r.todoRepeatId,
+          todoId: newTodo.id as string,
+          repeatId: r.repeatId,
+        }));
+      console.log('selectedRepeats :', selectedRepeats);
+      const unselectedRepeatIds = repeat
+        ?.filter(r => !r.selected && r.todoRepeatId)
+        .map(r => r.todoRepeatId);
+
+      console.log('unselectedRepeatIds :', unselectedRepeatIds);
+
+      // 批量删除
+      if (unselectedRepeatIds && unselectedRepeatIds.length > 0) {
+        await todoService.deleteRepeat(unselectedRepeatIds);
+      }
+      // 再添加选中的重复周期
+      if (selectedRepeats && selectedRepeats.length > 0)
+        await todoService.addRepeat(selectedRepeats);
       dispatch({ type: 'Add', newTodo: newTodo, uiTodo: uiTodo });
       navigation.goBack();
     } catch (error) {
@@ -99,6 +128,47 @@ const EditTodo = ({ route, navigation }: MyStackScreenProps<'EditTodo'>) => {
 
     return mergedDayjs.toDate();
   };
+
+  useEffect(() => {
+    console.log('EditTodo loaded with todo:', todo);
+
+    const fetchData = async () => {
+      try {
+        const repeatDicRes = await todoService.getRepeatDicEntrys();
+        const todoRepeatRes = await todoService.getRepeat(todo.id);
+
+        const todoRepeats = todoRepeatRes.data.data;
+        console.log('Fetched todo repeats:', todoRepeats);
+        const resData = repeatDicRes.data.data.map(
+          (item: { id: any; entryValue: any }) => {
+            let entry = {
+              todoRepeatId: '',
+              repeatId: item.id,
+              title: item.entryValue,
+              selected: false,
+            };
+
+            todoRepeats.forEach(
+              (element: { repeatId: any; todoRepeatId: string }) => {
+                if (element.repeatId === item.id) {
+                  entry.todoRepeatId = element.todoRepeatId;
+                  entry.selected = true;
+                }
+              },
+            );
+
+            return entry;
+          },
+        );
+        console.log('Fetched repeat data:', resData);
+        setRepeat(resData);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, [todo, todoService]);
   return (
     <View
       style={[
@@ -175,16 +245,15 @@ const EditTodo = ({ route, navigation }: MyStackScreenProps<'EditTodo'>) => {
             >
               结束时间
             </Text>
-            <DateCom date={endDate} onConfirm={d => seEndDate(d)} />
+            <DateCom
+              date={endDate}
+              onConfirm={d => seEndDate(mergeTimeWithOriginalDate(endDate, d))}
+            />
           </View>
         </View>
 
         <View style={styles.inputContainer}>
-          <Select
-            handlePress={() =>
-              navigation.navigate('RepeatPage', { todoId: todo.id as string })
-            }
-          />
+          <Select handlePress={() => setIsRepeatModalVisible(true)} />
         </View>
       </View>
 
@@ -206,6 +275,17 @@ const EditTodo = ({ route, navigation }: MyStackScreenProps<'EditTodo'>) => {
           </Text>
         </Pressable>
       </View>
+      <RepeatModal
+        isVisible={isRepeatModalVisible}
+        onClose={function (): void {
+          setIsRepeatModalVisible(false);
+        }}
+        onSave={function (selectedItems: RepeatUIModel[]): void {
+          setIsRepeatModalVisible(false);
+          setRepeat(selectedItems);
+        }}
+        repeats={repeat || []}
+      />
     </View>
   );
 };

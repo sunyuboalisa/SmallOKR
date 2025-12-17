@@ -1,7 +1,6 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AddTodo from '../components/EditTodo';
 import { Todo, PlanHeaderRight } from '../components/Todo';
-import { RepeatPage } from '../components/RepeatPage';
 import React from 'react';
 import { MyStackParamList } from '../common/NativeScreenTypes';
 import { useTheme } from '../state/ThemeContext';
@@ -34,7 +33,6 @@ const TodoStackScreen = () => {
         component={AddTodo}
         options={{ title: '编辑待办' }}
       />
-      <TodoStack.Screen name="RepeatPage" component={RepeatPage} />
     </TodoStack.Navigator>
   );
 };

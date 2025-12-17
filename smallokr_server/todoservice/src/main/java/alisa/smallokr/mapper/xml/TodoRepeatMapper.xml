@@ -1,19 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="alisa.smallokr.mapper.TodoRepeatMapper">
-    <sql id="common">
-        todo_repeat_id as todoRepeatId,
-        todo_id as todoId,
-        repeat_id as repeatId
-    </sql>
-    <select id="getRepeats" resultType="alisa.smallokr.entity.TodoRepeat">
-        select <include refid="common"/> from tb_todo_repeat where todo_id = #{todoId}
+    <sql id="common"> todo_repeat_id as todoRepeatId, todo_id as todoId, repeat_id as repeatId </sql>
+    <select id="getRepeats" resultType="alisa.smallokr.entity.TodoRepeat"> 
+    select
+        <include refid="common" />
+ from tb_todo_repeat where todo_id = #{todoId}
     </select>
-    <insert id="addRepeat" parameterType="alisa.smallokr.entity.TodoRepeat">
-        insert into tb_todo_repeat(todo_repeat_id,todo_id,repeat_id) values (#{todoRepeatId},#{todoId},#{repeatId})
+    <insert id="addOrUpdateRepeat" parameterType="java.util.List">
+        INSERT INTO
+            tb_todo_repeat ( todo_repeat_id, todo_id, repeat_id )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+        (
+            #{item.todoRepeatId},
+            #{item.todoId},
+            #{item.repeatId}
+        )
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+            todo_id = VALUES(todo_id),
+            repeat_id = VALUES(repeat_id)
     </insert>
-    <delete id="deleteRepeat">
-        delete FROM tb_todo_repeat where todo_repeat_id=#{todoRepeatId}
-    </delete>
+    <delete id="deleteRepeat" parameterType="java.util.List">
+    DELETE FROM tb_todo_repeat 
+    WHERE todo_repeat_id IN 
+    <foreach collection="list" item="id" open="(" separator="," close=")">
+        #{id}
+    </foreach>
+</delete>
 </mapper>
