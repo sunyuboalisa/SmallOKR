@@ -8,20 +8,21 @@ import React, {
 import { User } from '../model/User';
 import { UserAction } from './Actions';
 import { StorageService } from '../service/StorageService';
-import { useAxios } from '../hooks/useAxios';
 import { AppConfigContext } from '../state/AppConfigContext';
+import { API_HOST, API_PORT, API_SCHEME } from '@env';
 
 export type UserState = {
   userInfo: User;
   isLoading: boolean;
 };
+const getInitialBaseURL = () => `${API_SCHEME}://${API_HOST}:${API_PORT}`;
 
 const initialState: UserState = {
   userInfo: {
     username: '',
     password: '',
     token: '',
-    namespaceUrl: '',
+    namespaceUrl: getInitialBaseURL(),
     status: 'offline',
   },
   isLoading: true,
@@ -36,11 +37,12 @@ export const UserDispatchContext = createContext<Dispatch<UserAction>>(
 function userReducer(state: UserState, action: UserAction): UserState {
   switch (action.type) {
     case 'Loading':
+      console.log('loading');
       return { ...state, isLoading: true };
     case 'Loaded':
       return { ...state, isLoading: false };
     case 'Login':
-      console.log('login');
+      console.log('login', action.user);
       return {
         userInfo: { ...action.user, status: 'online' },
         isLoading: false,
@@ -50,6 +52,18 @@ function userReducer(state: UserState, action: UserAction): UserState {
       return {
         userInfo: { ...state.userInfo, status: 'offline' },
         isLoading: false,
+      };
+    case 'UpdateNamespaceUrl':
+      console.log('update namespaceUrl: ', action.namespaceUrl);
+      return {
+        userInfo: { ...state.userInfo, namespaceUrl: action.namespaceUrl },
+        isLoading: state.isLoading,
+      };
+    case 'UpdateToken':
+      console.log('update token: ', action.token);
+      return {
+        userInfo: { ...state.userInfo, token: action.token },
+        isLoading: state.isLoading,
       };
     default:
       return state;
@@ -61,27 +75,15 @@ export function UserContextProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const { updateToken } = useAxios();
   const appConfig = useContext(AppConfigContext);
   const [state, dispatch] = useReducer(userReducer, initialState);
-  // 初始化加载
-  useEffect(() => {
-    const loadUser = async () => {
-      dispatch({ type: 'Loading' });
-      const storedUser = await StorageService.getUser();
-      if (storedUser) dispatch({ type: 'Login', user: storedUser });
-    };
-    loadUser();
-  }, []);
 
   useEffect(() => {
     switch (state.userInfo?.status) {
       case 'online':
-        updateToken(state.userInfo?.token || '');
         StorageService.saveUser(state.userInfo);
         break;
       case 'offline':
-        updateToken('');
         if (appConfig.rememberMe) {
           const userToStore: User = {
             username: state.userInfo?.username || '',
@@ -98,12 +100,7 @@ export function UserContextProvider({
       default:
         break;
     }
-  }, [
-    appConfig.rememberMe,
-    state.userInfo,
-    state.userInfo?.status,
-    updateToken,
-  ]);
+  }, [appConfig.rememberMe, state.userInfo, state.userInfo?.status]);
 
   return (
     <UserContext.Provider value={state}>

@@ -1,5 +1,4 @@
-import { API_HOST, API_PORT, API_SCHEME } from '@env';
-import { useState, useRef, useCallback, useEffect, useContext } from 'react';
+import { useRef, useCallback, useEffect, useContext } from 'react';
 import axios, {
   AxiosInstance,
   AxiosRequestConfig,
@@ -10,38 +9,24 @@ import { publishUserSessionExpired } from '../common/EventBusPubSub';
 import { UserContext } from '../state/UserContext';
 import { useLoadingLayer } from './useLoadingLayer';
 
-// 初始化 baseURL
-const getInitialBaseURL = () =>
-  `${API_SCHEME || 'https'}://${API_HOST || 'test.alisacloud.com'}:${
-    API_PORT || '443'
-  }`;
-
-// 待实现的 Token 刷新函数
-const refreshToken = async (): Promise<string> => {
-  // 假设这个函数会调用刷新 API 并返回一个新的 Token
-  throw new Error('refreshToken function not implemented');
-};
-
 export const useAxios = () => {
   const loading = useLoadingLayer();
   const user = useContext(UserContext);
-  const [baseURL, setBaseURL] = useState<string>(getInitialBaseURL());
-  const [token, setToken] = useState<string>(user.userInfo?.token || '');
 
   const axiosRef = useRef<AxiosInstance | null>(null);
   const requestInterceptorId = useRef<number | null>(null);
   const responseInterceptorId = useRef<number | null>(null);
 
-  // 1. 优化：getAxios 只依赖 baseURL
   const getAxios = useCallback((): AxiosInstance => {
     if (!axiosRef.current) {
-      axiosRef.current = axios.create({ baseURL });
+      axiosRef.current = axios.create({ baseURL: user.userInfo?.namespaceUrl });
     } else {
       // 保持实例的 baseURL 是最新的
-      axiosRef.current.defaults.baseURL = baseURL;
+      axiosRef.current.defaults.baseURL = user.userInfo?.namespaceUrl;
     }
+    console.log('Axios baseURL:', axiosRef.current.defaults.baseURL);
     return axiosRef.current!;
-  }, [baseURL]);
+  }, [user.userInfo?.namespaceUrl]);
 
   useEffect(() => {
     const instance = getAxios();
@@ -62,8 +47,8 @@ export const useAxios = () => {
       }
 
       // 注入 Token（这里使用闭包中的最新 token 值）
-      if (token) {
-        config.headers.set('Authorization', `Bearer ${token}`);
+      if (user.userInfo?.token) {
+        config.headers.set('Authorization', `Bearer ${user.userInfo.token}`);
       } else {
         config.headers.delete('Authorization');
       }
@@ -92,11 +77,6 @@ export const useAxios = () => {
           originalRequest._retry = true;
           try {
             // Token 刷新逻辑（需要启用）
-            // const newToken = await refreshToken();
-            // setToken(newToken);
-            // instance.defaults.headers.common[
-            //   'Authorization'
-            // ] = `Bearer ${newToken}`;
             return instance(originalRequest);
           } catch {
             publishUserSessionExpired();
@@ -114,7 +94,7 @@ export const useAxios = () => {
         instance.interceptors.response.eject(responseInterceptorId.current);
       }
     };
-  }, [token, getAxios, loading]);
+  }, [getAxios, loading, user.userInfo.token]);
 
   const requestedRef = useRef<Set<string>>(new Set());
 
@@ -137,16 +117,7 @@ export const useAxios = () => {
     [getAxios],
   );
 
-  const updateToken = useCallback((newToken: string) => {
-    setToken(newToken);
-  }, []);
-
-  const updateBaseURL = (newBaseURL: string) => setBaseURL(newBaseURL);
   return {
     axiosRequest,
-    updateToken,
-    updateBaseURL,
-    token,
-    baseURL,
   };
 };

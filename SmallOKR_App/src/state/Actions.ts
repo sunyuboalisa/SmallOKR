@@ -27,4 +27,6 @@ export type UserAction =
   | { type: 'Login'; user: User }
   | { type: 'Logout' }
   | { type: 'Loading' }
-  | { type: 'Loaded' };
+  | { type: 'Loaded' }
+  | { type: 'UpdateNamespaceUrl'; namespaceUrl: string }
+  | { type: 'UpdateToken'; token: string };

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Text,
   TextInput,
@@ -7,36 +7,43 @@ import {
   ImageBackground,
   View,
 } from 'react-native';
-import { UserDispatchContext } from '../state/UserContext';
+import { UserContext, UserDispatchContext } from '../state/UserContext';
 import useUserService from '../service/UserService';
 import { MyStackScreenProps } from '../common/NativeScreenTypes';
-import { useAxios } from '../hooks/useAxios';
 export const LoginScreen = ({ navigation }: MyStackScreenProps<'Login'>) => {
   const userService = useUserService();
-  const axios = useAxios();
+  const userContext = useContext(UserContext);
   const dispatch = useContext(UserDispatchContext);
   const [username, setUsername] = useState('test');
   const [password, setPassword] = useState('test');
-  const [namespaceUrl, setNamespaceUrl] = useState(axios.baseURL);
+  const [namespaceUrl, setNamespaceUrl] = useState(
+    userContext.userInfo?.namespaceUrl || '',
+  );
   const [error, setError] = useState('');
+  const [errorNamespace, setErrorNamespace] = useState('');
 
   const handleLogin = async () => {
     try {
-      axios.updateBaseURL(namespaceUrl);
-      const resCheck = await userService.helthCheck();
+      // 1. 健康检查
+      const resCheck = await userService.healthCheck(namespaceUrl);
       console.log('Health check result:', resCheck);
-      if (resCheck.status !== 200) {
-        setError('无法连接到服务器，请检查空间地址是否正确');
+
+      if (!resCheck) {
+        setErrorNamespace('无法连接到服务器，请检查空间地址是否正确');
         return;
+      } else {
+        setErrorNamespace('');
       }
+
+      // 2. 登录
       const res = await userService.login({
         username: username,
         password: password,
       });
-      if (res.data.code === '200') {
+      if (res && res.data.code === '200') {
         const token = res.data.data;
         console.log('Login successful, token:', token);
-        // 更新 Context
+        // 3. 更新 Context
         dispatch({
           type: 'Login',
           user: {
@@ -64,6 +71,10 @@ export const LoginScreen = ({ navigation }: MyStackScreenProps<'Login'>) => {
     navigation.navigate('ForgotPassword');
   };
 
+  useEffect(() => {
+    setNamespaceUrl(userContext.userInfo?.namespaceUrl || '');
+  }, [userContext.userInfo?.namespaceUrl]);
+
   return (
     <ImageBackground
       source={require('../../assets/imgs/login-background.png')}
@@ -89,10 +100,18 @@ export const LoginScreen = ({ navigation }: MyStackScreenProps<'Login'>) => {
         autoCapitalize="none"
         style={styles.input}
         placeholder="空间地址"
-        onChangeText={text => setNamespaceUrl(text)}
+        onChangeText={text => {
+          setNamespaceUrl(text);
+          dispatch({
+            type: 'UpdateNamespaceUrl',
+            namespaceUrl: text,
+          });
+        }}
         value={namespaceUrl}
       />
-      {error ? <Text style={styles.error}>{error}</Text> : null}
+      {errorNamespace ? (
+        <Text style={styles.error}>{errorNamespace}</Text>
+      ) : null}
       <TouchableOpacity onPress={handleLogin} style={styles.login}>
         <Text children="登录" style={styles.loginText} />
       </TouchableOpacity>
