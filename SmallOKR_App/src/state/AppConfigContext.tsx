@@ -1,5 +1,5 @@
 import React, { createContext, useReducer, useEffect, Dispatch } from 'react';
-import { StorageService, storageKeys } from '../service/StorageService';
+import { StorageService } from '../service/StorageService';
 
 export type AppConfigState = {
   rememberMe: boolean;

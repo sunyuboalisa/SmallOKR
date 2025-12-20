@@ -26,7 +26,6 @@ export const LoginScreen = ({ navigation }: MyStackScreenProps<'Login'>) => {
     try {
       // 1. 健康检查
       const resCheck = await userService.healthCheck(namespaceUrl);
-      console.log('Health check result:', resCheck);
 
       if (!resCheck) {
         setErrorNamespace('无法连接到服务器，请检查空间地址是否正确');

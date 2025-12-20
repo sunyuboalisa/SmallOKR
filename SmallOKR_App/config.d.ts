@@ -21,5 +21,6 @@ declare module '@react-navigation/native' {
   export interface Theme {
     dark: boolean;
     colors: ThemeColors;
+    fonts: ThemeFonts;
   }
 }

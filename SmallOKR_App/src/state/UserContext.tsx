@@ -10,6 +10,7 @@ import { UserAction } from './Actions';
 import { StorageService } from '../service/StorageService';
 import { AppConfigContext } from '../state/AppConfigContext';
 import { API_HOST, API_PORT, API_SCHEME } from '@env';
+import useUserService from '../service/UserService';
 
 export type UserState = {
   userInfo: User;
@@ -40,7 +41,8 @@ function userReducer(state: UserState, action: UserAction): UserState {
       console.log('loading');
       return { ...state, isLoading: true };
     case 'Loaded':
-      return { ...state, isLoading: false };
+      console.log('loaded');
+      return { ...state, isLoading: false, userInfo: action.user };
     case 'Login':
       console.log('login', action.user);
       return {
@@ -76,9 +78,36 @@ export function UserContextProvider({
   children: React.ReactNode;
 }) {
   const appConfig = useContext(AppConfigContext);
+  const userService = useUserService();
   const [state, dispatch] = useReducer(userReducer, initialState);
-
+  const isInitialized = React.useRef(false);
+  // 初始化加载用户信息
   useEffect(() => {
+    // 初始化加载，尝试从存储中获取用户信息，配置信息
+    const loadUser = async () => {
+      dispatch({ type: 'Loading' });
+      const storedUser = await StorageService.getUser();
+      if (storedUser) {
+        console.log('Loaded stored user:', storedUser);
+        dispatch({
+          type: 'UpdateNamespaceUrl',
+          namespaceUrl: storedUser.namespaceUrl,
+        });
+        const resCheck = await userService.healthCheck(storedUser.namespaceUrl);
+        console.log('Health check result:', resCheck);
+        if (!resCheck) {
+          return;
+        }
+        dispatch({ type: 'Login', user: storedUser });
+      }
+      isInitialized.current = true;
+    };
+    loadUser();
+  }, [userService]);
+
+  // 同步用户状态到存储
+  useEffect(() => {
+    if (!isInitialized.current) return;
     switch (state.userInfo?.status) {
       case 'online':
         StorageService.saveUser(state.userInfo);

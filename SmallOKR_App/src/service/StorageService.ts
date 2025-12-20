@@ -11,6 +11,7 @@ export const StorageService = {
   async saveUser(user: User) {
     try {
       await AsyncStorage.setItem(storageKeys.userInfo, JSON.stringify(user));
+      console.log('用户已保存到存储', user);
     } catch (e) {
       console.error('保存用户失败:', e);
     }

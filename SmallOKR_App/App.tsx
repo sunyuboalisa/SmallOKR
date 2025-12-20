@@ -6,7 +6,7 @@
  */
 import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { AppStackNav } from './src/screens/AppStackNav';
+import { AppStackNav } from './src/navigators/AppStackNav';
 import { UserContextProvider } from './src/state/UserContext';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeContext, ThemeProvider } from './src/state/ThemeContext';

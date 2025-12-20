@@ -1,9 +1,6 @@
 import { useApiService } from '../hooks/useApiService';
 import {
-  publishUserLogin,
-  publishUserLogout,
   publishUserRegister,
-  publishUserLoginFailed,
   publishUserError,
 } from '../common/EventBusPubSub';
 import { useContext } from 'react';
@@ -29,7 +26,10 @@ const useUserService = () => {
         if (!token) {
           console.log('用户名或者密码错误');
           return;
+        } else {
+          console.log('Login successful, token:', token);
         }
+
         dispatch({
           type: 'Login',
           user: {
@@ -40,10 +40,8 @@ const useUserService = () => {
             status: 'online',
           },
         });
-        publishUserLogin({ username: param.username, token }); // 发布用户登录事件
         return response;
       } catch (error) {
-        publishUserLoginFailed('Invalid username or password'); // 登录失败，发布登录失败事件
         throw error;
       }
     };
@@ -51,11 +49,14 @@ const useUserService = () => {
     const logout = async () => {
       try {
         const response = await sendRequest('post', '/api/v1/user/logout');
-        dispatch({ type: 'Logout' });
-        publishUserLogout(); // 发布用户登出事件
+        if (response.status === 200) {
+          console.log('Logout successful');
+          dispatch({ type: 'Logout' });
+        } else {
+          console.log('Logout failed with status:', response.status);
+        }
         return response;
       } catch (error) {
-        publishUserError('Logout failed'); // 发布用户错误事件
         throw error;
       }
     };
@@ -103,11 +104,7 @@ const useUserService = () => {
       try {
         // 显式拼接完整的 URL
         const fullUrl = `${baseURL}/api/v1/user/health`;
-        const response = await get(
-          fullUrl,
-          {},
-          { baseURL: '' }, // 这一行会覆盖掉实例中的任何默认 baseURL
-        );
+        const response = await get(fullUrl, {}, { baseURL: '' });
         if (response.status === 200) {
           console.log('Health check successful');
           return true;
@@ -120,6 +117,7 @@ const useUserService = () => {
         return false;
       }
     };
+
     return {
       send,
       login,

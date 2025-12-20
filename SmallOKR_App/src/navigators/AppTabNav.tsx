@@ -1,8 +1,8 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import TargetStackScreen from './TargetStackScreen';
-import TodoStackScreen from './TodoStackScreen';
-import MeStackScreen from './MeStackScreen';
+import TargetStackScreen from '../screens/TargetStackScreen';
+import TodoStackScreen from '../screens/TodoStackScreen';
+import MeStackScreen from '../screens/MeStackScreen';
 import React, { useContext } from 'react';
 import Dashboard from '../components/Dashboard';
 import { ThemeContext } from '../state/ThemeContext';
