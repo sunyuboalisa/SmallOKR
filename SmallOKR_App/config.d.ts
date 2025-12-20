@@ -16,6 +16,7 @@ declare module '@react-navigation/native' {
     border: string;
     notification: string;
     placeholder: string;
+    error: string;
   }
 
   export interface Theme {

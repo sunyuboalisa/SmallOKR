@@ -10,9 +10,11 @@ import dayjs from 'dayjs';
 import { ThemeContext } from '../state/ThemeContext';
 import { IUITodo } from '../model/OKRModel';
 import { MyStackScreenProps } from '../common/NativeScreenTypes';
+import { useUUID } from '../hooks/useUUID';
 
 const PlanHeaderRight = () => {
   const themeContext = useContext(ThemeContext);
+  const uuid = useUUID();
   const navigation =
     useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
   const onAddBtnPress = () => {
@@ -24,7 +26,7 @@ const PlanHeaderRight = () => {
         description: '',
         beginDate: now,
         endDate: now,
-        id: '',
+        id: uuid.generateUUID(),
         status: 0,
       },
     });

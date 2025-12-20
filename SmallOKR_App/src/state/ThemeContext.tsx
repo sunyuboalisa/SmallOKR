@@ -13,6 +13,7 @@ const LightTheme: Theme = {
     border: 'transparent',
     notification: 'rgb(255, 59, 48)',
     placeholder: 'gray',
+    error: 'red',
   },
 };
 
@@ -27,6 +28,7 @@ const DarkTheme: Theme = {
     border: 'transparent',
     notification: 'rgb(255, 59, 48)',
     placeholder: 'gray',
+    error: 'red',
   },
 };
 

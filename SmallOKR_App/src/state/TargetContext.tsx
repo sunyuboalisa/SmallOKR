@@ -34,6 +34,7 @@ const TargetContextProvider = (props: { children: React.ReactNode }) => {
         console.log('加载目标：', action.targets);
         return { ...state, targets: action.targets };
       case 'AddResult':
+        console.log('添加阶段成果：', action.newResult);
         return { ...state, results: [...state.results, action.newResult] };
       case 'ChangeResult':
         const newResults = state.results.map(item => {

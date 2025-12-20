@@ -9,7 +9,6 @@ import { ThemeContext } from '../state/ThemeContext';
 import { MyStackScreenProps } from '../common/NativeScreenTypes';
 import { ITodo } from '../model/OKRModel';
 import { RepeatModal, RepeatUIModel } from './RepeatModal';
-import { useUUID } from '../hooks/useUUID';
 
 type SelectProps = {
   handlePress: () => void;
@@ -46,7 +45,6 @@ const parseBackendDate = (str: string | null) => {
 
 const EditTodo = ({ route, navigation }: MyStackScreenProps<'EditTodo'>) => {
   const todoService = useTodoService();
-  const { generateUUID } = useUUID();
   const { todo } = route.params;
   const dispatch = useContext(TodoDispatchContext);
   const themeContext = useContext(ThemeContext);
@@ -62,11 +60,17 @@ const EditTodo = ({ route, navigation }: MyStackScreenProps<'EditTodo'>) => {
   );
   const [repeat, setRepeat] = useState<RepeatUIModel[]>();
   const [isRepeatModalVisible, setIsRepeatModalVisible] = useState(false);
+  const [showError, setShowError] = useState(false);
+
   const addTodo = async () => {
     try {
+      if (todoName.trim() === '') {
+        setShowError(true);
+        return;
+      }
       console.log('Todo :', todo.id);
       const newTodo: ITodo = {
-        id: todo.id || generateUUID(),
+        id: todo.id,
         name: todoName,
         description: description,
         beginDate: dayjs(beginDate).format('YYYY-MM-DD HH:mm:ss'),
@@ -194,9 +198,18 @@ const EditTodo = ({ route, navigation }: MyStackScreenProps<'EditTodo'>) => {
               ...styles.input,
               backgroundColor: themeContext?.theme.colors.card,
               color: themeContext?.theme.colors.text,
-              borderColor: themeContext?.theme.colors.border,
+              borderColor: showError
+                ? themeContext?.theme.colors.error
+                : themeContext?.theme.colors.border,
             }}
-            onChangeText={onChangeTodoName}
+            onChangeText={text => {
+              onChangeTodoName(text);
+              if (showError && text.trim() !== '') {
+                setShowError(false);
+              } else {
+                setShowError(true);
+              }
+            }}
             value={todoName}
             placeholder="输入任务名称"
           />

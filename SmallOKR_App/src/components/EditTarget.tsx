@@ -29,6 +29,8 @@ const EditTarget = ({
   const dispatch = useContext(TargetDispatchContext);
   const themeContext = useContext(ThemeContext);
   const [showDeleteIcon, setShowDeleteIcon] = useState(false);
+  const [showError, setShowError] = useState(false);
+
   const onAddBtnPress = () => {
     dispatch({
       type: 'AddResult',
@@ -44,6 +46,10 @@ const EditTarget = ({
 
   const handleOKBtnPress = async () => {
     try {
+      if (targetName.trim() === '') {
+        setShowError(true);
+        return;
+      }
       const addTargetRes = await targetService.saveTarget({
         name: targetName,
         description: description,
@@ -153,12 +159,21 @@ const EditTarget = ({
                 style={[
                   styles.input,
                   {
-                    borderColor: themeContext?.theme.colors.border,
+                    borderColor: showError
+                      ? themeContext?.theme.colors.error
+                      : themeContext?.theme.colors.border,
                     color: themeContext?.theme.colors.text,
                     backgroundColor: themeContext?.theme.colors.background,
                   },
                 ]}
-                onChangeText={onChangeTargetName}
+                onChangeText={text => {
+                  onChangeTargetName(text);
+                  if (text.trim() === '') {
+                    setShowError(true);
+                  } else {
+                    setShowError(false);
+                  }
+                }}
                 value={targetName}
                 placeholder="请输入目标名称"
                 placeholderTextColor={themeContext?.theme.colors.text}

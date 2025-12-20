@@ -1,5 +1,5 @@
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { FlatList } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { TargetContext, TargetDispatchContext } from '../state/TargetContext';
@@ -12,13 +12,16 @@ import {
   MyStackScreenProps,
 } from '../common/NativeScreenTypes';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { useUUID } from '../hooks/useUUID';
 
 const TargetHeaderRight = () => {
   const themeContext = useContext(ThemeContext);
   const navigation = useNavigation<NavigationProp<MyStackParamList>>();
+  const uuid = useUUID();
+
   const onAddBtnPress = () => {
     navigation.navigate('EditTarget', {
-      target: { description: '', name: '', id: '', status: 0 },
+      target: { description: '', name: '', id: uuid.generateUUID(), status: 0 },
     });
   };
   return (
@@ -74,27 +77,25 @@ const Target = ({ navigation }: MyStackScreenProps<'Target'>) => {
     }
   };
 
-  useEffect(() => {
-    const loadTargets = async () => {
-      try {
-        const res = await targetService.getTargets();
-        let data = res.data.data;
-        const newState = data.map(
-          (value: { id: any; name: any; description: any }) => ({
-            id: value.id,
-            name: value.name,
-            description: value.description,
-          }),
-        );
-
-        dispatch({ type: 'Load', targets: newState });
-      } catch (e) {
-        console.log('targets error：', e);
-      }
-    };
-
-    // loadTargets();
-  }, [dispatch, targetService]);
+  // useEffect(() => {
+  // const loadTargets = async () => {
+  //   try {
+  //     const res = await targetService.getTargets();
+  //     let data = res.data.data;
+  //     const newState = data.map(
+  //       (value: { id: any; name: any; description: any }) => ({
+  //         id: value.id,
+  //         name: value.name,
+  //         description: value.description,
+  //       }),
+  //     );
+  //     dispatch({ type: 'Load', targets: newState });
+  //   } catch (e) {
+  //     console.log('targets error：', e);
+  //   }
+  // };
+  // loadTargets();
+  // }, [dispatch, targetService]);
 
   return (
     <View
