@@ -72,13 +72,8 @@ const EditTodo = ({ route, navigation }: MyStackScreenProps<'EditTodo'>) => {
         beginDate: dayjs(beginDate).format('YYYY-MM-DD HH:mm:ss'),
         endDate: dayjs(endDate).format('YYYY-MM-DD HH:mm:ss'),
         status: todo.status || 0,
-        repeat: todo.repeat || [1, 2, 3, 4, 5, 6, 7],
       };
-      const uiTodo = {
-        id: todo.id,
-        title: todoName,
-        dateTime: dayjs(beginDate).format('HH:mm'),
-      };
+
       console.log('New todo to save:', newTodo);
       await todoService.addOrSaveTodo(newTodo);
 
@@ -104,7 +99,18 @@ const EditTodo = ({ route, navigation }: MyStackScreenProps<'EditTodo'>) => {
       // 再添加选中的重复周期
       if (selectedRepeats && selectedRepeats.length > 0)
         await todoService.addRepeat(selectedRepeats);
-      dispatch({ type: 'Add', newTodo: newTodo, uiTodo: uiTodo });
+
+      try {
+        const now = dayjs().format('YYYY-MM-DD HH:mm:ss');
+        const localDateTime = now;
+
+        const res = await todoService.getTodosByDate(localDateTime);
+        const todos = res.data.data;
+
+        dispatch({ type: 'Load', newTodos: todos });
+      } catch (error) {
+        console.log('error in fetch user todos:', error);
+      }
       navigation.goBack();
     } catch (error) {
       console.log(error);

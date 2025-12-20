@@ -12,21 +12,25 @@ const useTodoService = () => {
   const todoService = React.useMemo(() => {
     // 获取所有 Todos
     const getTodos = () => {
+      console.log('Fetching all todos');
       return get('/api/v1/todo/get');
     };
 
     // 根据日期获取 Todos
     const getTodosByDate = (date: string) => {
+      console.log('Fetching todos for date:', date);
       return get('/api/v1/todo/getTodoByWeekDay', { date });
     };
 
     // 添加或保存 Todo
     const addOrSaveTodo = (todo: any) => {
+      console.log('Saving todo:', todo);
       return post('/api/v1/todo/add', todo);
     };
 
     // 删除 Todo
     const deleteTodo = (todoId: string) => {
+      console.log('Deleting todo with ID:', todoId);
       return deleteRequest('/api/v1/todo/delete', { todoId });
     };
 

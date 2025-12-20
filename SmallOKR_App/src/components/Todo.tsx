@@ -24,7 +24,6 @@ const PlanHeaderRight = () => {
         description: '',
         beginDate: now,
         endDate: now,
-        repeat: 1,
         id: '',
         status: 0,
       },
@@ -53,6 +52,7 @@ const Todo = ({ navigation }: MyStackScreenProps<'Todo'>) => {
   };
 
   const handleItemPress = (data: IUITodo) => {
+    console.log('待办项点击：', data);
     const todo = todoContext.todos.find(t => t.id === data.id);
     if (!todo) return;
     console.log('编辑待办：', todo);
@@ -70,7 +70,6 @@ const Todo = ({ navigation }: MyStackScreenProps<'Todo'>) => {
     try {
       if (selectedTodo) {
         const res = await todoService.deleteTodo(selectedTodo.id);
-        console.log('删除todo：', selectedTodo);
         console.log(res.data);
         closeModal();
         dispatch({ type: 'Delete', id: selectedTodo.id });
