@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -18,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alisa.util.JwtUtil;
+import com.alisa.model.UserContext;
 import com.alisa.util.Result;
 import com.alisa.util.UUIDTool;
 
@@ -26,7 +25,6 @@ import alisa.smallokr.entity.Todo;
 import alisa.smallokr.entity.TodoRepeat;
 import alisa.smallokr.service.TodoService;
 import alisa.smallokr.vo.TodoVo;
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RequestMapping("/api/v1/todo")
@@ -37,13 +35,8 @@ public class TodoController {
 
     @PostMapping("/add")
     public Result<Boolean> addTodo(@RequestBody Todo todo, HttpServletRequest request) {
-        var token = request.getHeader("Authorization").substring(7);
-        var userId = JwtUtil.extractClaim(token, new Function<Claims, String>() {
-            @Override
-            public String apply(Claims claims) {
-                return (String) claims.get("userId"); // 假设自定义声明为 userId
-            }
-        });
+        UserContext userContext = UserContext.get();
+        String userId = userContext.getUserId();
 
         if (todo.getId() != null && !todo.getId().equals("")) {
         } else {
@@ -68,14 +61,9 @@ public class TodoController {
 
     @GetMapping("get")
     public Result<List<TodoVo>> get(String userId, HttpServletRequest request) {
-        var token = request.getHeader("Authorization").substring(7);
         if (userId == null) {
-            userId = JwtUtil.extractClaim(token, new Function<Claims, String>() {
-                @Override
-                public String apply(Claims claims) {
-                    return (String) claims.get("userId"); // 假设自定义声明为 userId
-                }
-            });
+            UserContext userContext = UserContext.get();
+            userId = userContext.getUserId();
         }
         var todo = todoService.findTodoByUser(userId);
         return new Result<>(todo);
@@ -84,14 +72,9 @@ public class TodoController {
     @GetMapping("getTodoByWeekDay")
     public Result<List<TodoVo>> getTodoByWeekDay(String userId,
             @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime date, HttpServletRequest request) {
-        var token = request.getHeader("Authorization").substring(7);
         if (userId == null) {
-            userId = JwtUtil.extractClaim(token, new Function<Claims, String>() {
-                @Override
-                public String apply(Claims claims) {
-                    return (String) claims.get("userId"); // 假设自定义声明为 userId
-                }
-            });
+            UserContext userContext = UserContext.get();
+            userId = userContext.getUserId();
         }
 
         DayOfWeek dayOfWeek = date.getDayOfWeek();

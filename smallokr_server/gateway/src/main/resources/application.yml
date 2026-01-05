@@ -12,6 +12,9 @@ spring:
     gateway:
       # 网关全局跨域配置
       globalcors:
+        default-filters:
+          # 强制只保留第一个跨域头，防止重复
+          - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
         cors-configurations:
           "[/**]":
             allowedOriginPatterns: "*"
@@ -37,3 +40,7 @@ spring:
           uri: lb://user-service
           predicates:
             - Path=/api/v1/user/**
+        - id: community-service
+          uri: lb://community-service
+          predicates:
+            - Path=/community/**

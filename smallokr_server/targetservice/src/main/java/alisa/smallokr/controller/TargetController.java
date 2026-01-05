@@ -2,7 +2,6 @@ package alisa.smallokr.controller;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,13 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alisa.util.JwtUtil;
+import com.alisa.model.UserContext;
 import com.alisa.util.Result;
 import com.alisa.util.UUIDTool;
 
 import alisa.smallokr.entity.Target;
 import alisa.smallokr.service.TargetService;
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RequestMapping("api/v1/target/")
@@ -31,13 +29,8 @@ public class TargetController {
 
     @PostMapping("save")
     public Result<Boolean> addTarget(@RequestBody Target target, HttpServletRequest request) {
-        var token = request.getHeader("Authorization").substring(7);
-        var userId = JwtUtil.extractClaim(token, new Function<Claims, String>() {
-            @Override
-            public String apply(Claims claims) {
-                return (String) claims.get("userId"); // 假设自定义声明为 userId
-            }
-        });
+        UserContext userContext = UserContext.get();
+        String userId = userContext.getUserId();
 
         if (target.getId() != null && !target.getId().equals("")) {
         } else {
@@ -68,14 +61,9 @@ public class TargetController {
 
     @RequestMapping(value = "get", method = RequestMethod.GET)
     public Result<List<Target>> get(String userId, HttpServletRequest request) {
-        var token = request.getHeader("Authorization").substring(7);
         if (userId == null) {
-            userId = JwtUtil.extractClaim(token, new Function<Claims, String>() {
-                @Override
-                public String apply(Claims claims) {
-                    return (String) claims.get("userId"); // 假设自定义声明为 userId
-                }
-            });
+            UserContext userContext = UserContext.get();
+            userId = userContext.getUserId();
         }
 
         var target = targetService.findTargetByUserId(userId);
@@ -83,7 +71,7 @@ public class TargetController {
     }
 
     @GetMapping("analysis")
-    public void getAnalysis(){
-        
+    public void getAnalysis() {
+
     }
 }

@@ -1,9 +1,5 @@
 package com.alisa.filters;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.List;
-
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
