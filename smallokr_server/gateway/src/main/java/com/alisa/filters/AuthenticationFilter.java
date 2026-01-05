@@ -1,5 +1,7 @@
 package com.alisa.filters;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -8,11 +10,14 @@ import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.server.ServerWebExchange;
 
+import com.alisa.model.UserContext;
 import com.alisa.util.JwtUtil;
 
+import io.jsonwebtoken.Claims;
 import reactor.core.publisher.Mono;
 
 @CrossOrigin
@@ -27,26 +32,43 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange);
         }
 
-        // 验证
-        String token = null;
-        String username = null;
-        List<String> authHeaders = request.getHeaders().get("Authorization");
-        if (authHeaders != null && !authHeaders.isEmpty()) {
-            token = authHeaders.get(0).substring(7);
-            username = JwtUtil.extractUsername(token);
-        }
-        // 此处应先查询用户是否存在，以后再改
-        if (username != null && JwtUtil.validateToken(token, username)) {
-            // 验证成功
-            System.out.println();
-        } else {
-            // 验证失败
-            var response = exchange.getResponse();
-            response.setStatusCode(HttpStatus.UNAUTHORIZED);
-            return response.setComplete();
+        // 从请求头中解析 token
+        String authHeader = request.getHeaders().getFirst("Authorization");
+        if (!StringUtils.hasText(authHeader) || !authHeader.startsWith("Bearer ")) {
+            return setUnauthorized(exchange);
         }
 
-        return chain.filter(exchange);
+        String token = authHeader.substring(7);
+
+        try {
+            if (JwtUtil.isTokenExpired(token)) {
+                return setUnauthorized(exchange);
+            }
+
+            Claims claims = JwtUtil.extractAllClaims(token);
+            String username = claims.getSubject();
+            Object userId = claims.get("userId");
+
+            if (username != null && JwtUtil.validateToken(token, username)) {
+                // 创建 UserContext 对象并赋值
+                UserContext userContext = new UserContext();
+                userContext.setUserId(userId == null ? "" : String.valueOf(userId));
+                userContext.setUsername(username);
+
+                String base64User = userContext.toBase64Json();
+
+                // 将结果塞入请求头传递
+                var newRequest = exchange.getRequest().mutate()
+                        .header("X-User-Header", base64User)
+                        .build();
+
+                return chain.filter(exchange.mutate().request(newRequest).build());
+            }
+        } catch (Exception e) {
+            // 解析异常
+        }
+
+        return setUnauthorized(exchange);
     }
 
     @Override
@@ -66,5 +88,11 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         }
 
         return false;
+    }
+
+    private Mono<Void> setUnauthorized(ServerWebExchange exchange) {
+        var response = exchange.getResponse();
+        response.setStatusCode(HttpStatus.UNAUTHORIZED);
+        return response.setComplete();
     }
 }

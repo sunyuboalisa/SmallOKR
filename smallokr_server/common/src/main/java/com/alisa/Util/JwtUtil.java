@@ -33,7 +33,7 @@ public class JwtUtil {
         return claimsResolver.apply(claims);
     }
 
-    private static Claims extractAllClaims(String token) {
+    public static Claims extractAllClaims(String token) {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(getSignKey())
