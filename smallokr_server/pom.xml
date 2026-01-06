@@ -12,8 +12,6 @@
         <module>traceservice</module>
         <module>targetservice</module>
         <module>userservice</module>
-        <module>gateway</module>
-        <module>common</module>
     </modules>
     <name>smallokr</name>
     <description>Smallokr server</description>
@@ -45,8 +43,8 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.alisa</groupId>
-                <artifactId>common</artifactId>
+                <groupId>com.alisa.cloud</groupId>
+                <artifactId>alisa-common</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
@@ -101,7 +99,6 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>com.alisa.smallokr.SmallokrApplication</mainClass>
                     <!-- 指定打包输出目录 -->
                     <outputDirectory>${project.basedir}/../target/package</outputDirectory>
                 </configuration>

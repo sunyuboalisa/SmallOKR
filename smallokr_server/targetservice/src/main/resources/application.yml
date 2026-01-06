@@ -7,7 +7,7 @@ spring:
   application:
     name: target-service
   config:
-    import: optional:file:./smallokr_server/targetservice/.env[.properties]
+    import: optional:file:./targetservice/.env[.properties]
   profiles:
     active: dev
 

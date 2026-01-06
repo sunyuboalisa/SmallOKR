@@ -4,8 +4,10 @@ spring:
   application:
     name: user-service
   config:
-    import: optional:file:./smallokr_server/userservice/.env[.properties]
+    import: optional:file:./userservice/.env[.properties]
   profiles:
     active: dev
 mybatis:
   mapper-locations: classpath:alisa/smallokr/mapper/xml/*.xml
+jwt:
+  secret: ${JWT_SECRET}
