@@ -8,10 +8,12 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alisa.util.JwtUtil;
@@ -23,7 +25,9 @@ import alisa.smallokr.dto.user.UserDto;
 import alisa.smallokr.entity.User;
 import alisa.smallokr.service.MailService;
 import alisa.smallokr.service.UserService;
+import alisa.smallokr.vo.UserVo;
 
+@CrossOrigin
 @RestController
 @RequestMapping("api/v1/user")
 public class UserController {
@@ -63,7 +67,14 @@ public class UserController {
 
     @PostMapping("signin")
     public Result<String> signin(@RequestBody UserDto userDto) {
-        var user = userService.loadUserByName(userDto.getUsername());
+        String username = userDto.getUsername();
+        User user;
+        if (username == null || username.trim().isEmpty()) {
+            user = userService.loadUserByEmail(userDto.getEmail());
+        } else {
+            user = userService.loadUserByName(userDto.getUsername());
+        }
+
         String token = "";
         if (userDto.getPassword().equals(user.getPassword())) {
             Map<String, Object> claims = new HashMap();
@@ -110,6 +121,20 @@ public class UserController {
         }
 
         return new Result<>(res);
+    }
+
+    @GetMapping("/profile")
+    public Result<UserVo> profile(@RequestParam(required = false) String username) {
+        UserVo userVo = new UserVo();
+
+        User user = userService.loadUserByName(username);
+
+        if (user != null) {
+            userVo.setUsername(user.getUsername());
+            userVo.setDescription("description");
+            userVo.setEmail(user.getEmail());
+        }
+        return new Result<>(userVo);
     }
 
     @GetMapping("/health")

@@ -1,6 +1,7 @@
 package alisa.smallokr.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -10,10 +11,12 @@ public class MailService {
 
     @Autowired
     private JavaMailSender mailSender;
+    @Value("${spring.mail.username}")
+    private String fromEmail;
 
     public void sendResetCode(String toEmail, String code) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("1660743099@qq.com"); // 必须与配置的username一致
+        message.setFrom(fromEmail);
         message.setTo(toEmail);
         message.setSubject("【你的应用】密码重置验证码");
         message.setText(

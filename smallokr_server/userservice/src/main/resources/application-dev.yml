@@ -23,14 +23,14 @@ spring:
     username: ${MYSQL_USERNAME}
     password: ${MYSQL_PASSWORD}
   mail:
-    host: ${MAIL_HOST} # 邮件服务器地址，例如 smtp.qq.com
-    port: ${MAIL_PORT} # 邮件服务器端口，例如 465
-    username: ${MAIL_USERNAME} # 你的 Outlook 邮箱
-    password: ${MAIL_PASSWORD} # 邮箱密码或应用密码
-    protocol: ${MAIL_PROTOCOL} # 邮件协议
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    protocol: ${MAIL_PROTOCOL}
     properties:
       mail:
         smtp:
-          auth: true # 启用认证
-          starttls.enable: true # 启用 TLS
-          ssl.enable: true # 启用 SSL 加密
+          auth: true
+          starttls.enable: false
+          ssl.enable: false
