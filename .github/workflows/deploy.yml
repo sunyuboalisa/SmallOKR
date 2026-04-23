@@ -31,7 +31,7 @@ jobs:
           # 1. 先进行 Java 打包
           Write-Host "=== 正在编译 Java 项目 ==="
           cd smallokr_server
-          mvn clean package -DskipTests
+          mvn clean install -DskipTests
           
           # 2. 确认 target 目录下有 jar 包（防止 COPY 报错）
           Write-Host "--- 检查构建产物 ---"
