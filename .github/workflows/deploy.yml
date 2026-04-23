@@ -1,4 +1,4 @@
-name: SmallOKR Multi-Service Build
+name: SmallOKR Multi-Service Build (Windows)
 
 on:
   workflow_dispatch:
@@ -22,13 +22,15 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build Service Image
+        # 强制指定使用 PowerShell
+        shell: pwsh
         run: |
-          SERVICE="${{ github.event.inputs.service_name }}"
-          echo "=== 开始构建服务: $SERVICE ==="
+          $SERVICE = "${{ github.event.inputs.service_name }}"
+          Write-Host "=== 开始构建服务: $SERVICE ==="
           
-          podman build \
-            -t smallokr-${SERVICE}:latest \
-            -f smallokr_server/docker/${SERVICE}.Dockerfile \
-            smallokr_server/
-
-     
+          # 在 Windows 中，路径建议用双引号包裹，防止空格问题
+          # 反引号 ` 是 PowerShell 的换行符
+          podman build `
+            -t "smallokr-${SERVICE}:latest" `
+            -f "smallokr_server/docker/${SERVICE}.Dockerfile" `
+            "smallokr_server/"
