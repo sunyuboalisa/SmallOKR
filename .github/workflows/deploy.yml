@@ -21,12 +21,26 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Build Service Image
+      - name: Build Java and Image
         shell: powershell
         run: |
+          # 解决中文乱码
+          [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
           $SERVICE = "${{ github.event.inputs.service_name }}"
-          Write-Host "=== 开始构建服务: $SERVICE ==="
           
+          # 1. 先进行 Java 打包
+          Write-Host "=== 正在编译 Java 项目 ==="
+          cd smallokr_server
+          mvn clean package -DskipTests
+          
+          # 2. 确认 target 目录下有 jar 包（防止 COPY 报错）
+          Write-Host "--- 检查构建产物 ---"
+          ls "target/package/${SERVICE}-*.jar"
+          
+          # 3. 执行 Podman 构建
+          Write-Host "=== 开始构建镜像: $SERVICE ==="
+          # 注意：因为上面执行了 cd，这里回到根目录或者调整相对路径
+          cd ..
           podman build `
             -t "smallokr-${SERVICE}:latest" `
             -f "smallokr_server/docker/${SERVICE}.Dockerfile" `
