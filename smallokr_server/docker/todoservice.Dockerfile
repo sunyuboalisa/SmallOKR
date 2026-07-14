@@ -1,4 +1,4 @@
-FROM openjdk:17-ea-17-jdk-slim
+FROM eclipse-temurin:17-jre
 WORKDIR /app
 COPY ./target/package/todoservice-*.jar /app/todoservice.jar
 EXPOSE 8082
