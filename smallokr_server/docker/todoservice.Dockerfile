@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY ./target/package/todoservice-*.jar /app/todoservice.jar
 EXPOSE 8082

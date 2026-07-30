@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY ./target/package/targetservice-*.jar /app/targetservice.jar
 EXPOSE 8081

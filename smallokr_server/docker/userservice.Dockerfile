@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY ./target/package/userservice-*.jar /app/userservice.jar
 EXPOSE 8084
