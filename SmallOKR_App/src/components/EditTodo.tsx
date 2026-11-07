@@ -1,4 +1,13 @@
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import AndDesign from 'react-native-vector-icons/AntDesign';
 import { DateCom } from './DateCom';
@@ -38,7 +47,6 @@ const parseBackendDate = (str: string | null) => {
 
   const d = dayjs(fullStr, 'YYYY-MM-DD HH:mm:ss');
   const date = d.isValid() ? d.toDate() : new Date();
-  console.log('parsed date:', date.toString());
 
   return date;
 };
@@ -68,7 +76,7 @@ const EditTodo = ({ route, navigation }: MyStackScreenProps<'EditTodo'>) => {
         setShowError(true);
         return;
       }
-      console.log('Todo :', todo.id);
+
       const newTodo: ITodo = {
         id: todo.id,
         name: todoName,
@@ -78,7 +86,6 @@ const EditTodo = ({ route, navigation }: MyStackScreenProps<'EditTodo'>) => {
         status: todo.status || 0,
       };
 
-      console.log('New todo to save:', newTodo);
       await todoService.addOrSaveTodo(newTodo);
 
       // 保存重复周期
@@ -89,12 +96,10 @@ const EditTodo = ({ route, navigation }: MyStackScreenProps<'EditTodo'>) => {
           todoId: newTodo.id as string,
           repeatId: r.repeatId,
         }));
-      console.log('selectedRepeats :', selectedRepeats);
+
       const unselectedRepeatIds = repeat
         ?.filter(r => !r.selected && r.todoRepeatId)
         .map(r => r.todoRepeatId);
-
-      console.log('unselectedRepeatIds :', unselectedRepeatIds);
 
       // 批量删除
       if (unselectedRepeatIds && unselectedRepeatIds.length > 0) {
@@ -113,22 +118,17 @@ const EditTodo = ({ route, navigation }: MyStackScreenProps<'EditTodo'>) => {
 
         dispatch({ type: 'Load', newTodos: todos });
       } catch (error) {
-        console.log('error in fetch user todos:', error);
+        console.error('刷新待办失败', error);
       }
       navigation.goBack();
     } catch (error) {
-      console.log(error);
+      console.error('保存待办失败', error);
     }
   };
   const mergeTimeWithOriginalDate = (originalDate: Date, newTimeDate: Date) => {
     // 使用 dayjs 简化时间合并操作
     const originalDayjs = dayjs(originalDate);
     const newTimeDayjs = dayjs(newTimeDate);
-    console.log(
-      'confirm date: ',
-      originalDate.toString(),
-      newTimeDate.toString(),
-    );
 
     // 将新时间（小时、分钟）设置到原始日期上，秒数清零以保持统一
     const mergedDayjs = originalDayjs
@@ -140,15 +140,16 @@ const EditTodo = ({ route, navigation }: MyStackScreenProps<'EditTodo'>) => {
   };
 
   useEffect(() => {
-    console.log('EditTodo loaded with todo:', todo);
-
+    let active = true;
     const fetchData = async () => {
       try {
-        const repeatDicRes = await todoService.getRepeatDicEntrys();
-        const todoRepeatRes = await todoService.getRepeat(todo.id);
+        const [repeatDicRes, todoRepeatRes] = await Promise.all([
+          todoService.getRepeatDicEntrys(),
+          todoService.getRepeat(todo.id),
+        ]);
 
         const todoRepeats = todoRepeatRes.data.data;
-        console.log('Fetched todo repeats:', todoRepeats);
+
         const resData = repeatDicRes.data.data.map(
           (item: { id: any; entryValue: any }) => {
             let entry = {
@@ -170,130 +171,145 @@ const EditTodo = ({ route, navigation }: MyStackScreenProps<'EditTodo'>) => {
             return entry;
           },
         );
-        console.log('Fetched repeat data:', resData);
-        setRepeat(resData);
+
+        if (active) setRepeat(resData);
       } catch (error) {
         console.error(error);
       }
     };
 
     fetchData();
-  }, [todo, todoService]);
+    return () => {
+      active = false;
+    };
+  }, [todo.id, todoService]);
   return (
-    <View
+    <KeyboardAvoidingView
       style={[
         styles.container,
         { backgroundColor: themeContext?.theme.colors.background },
       ]}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={90}
     >
-      <View style={styles.card}>
-        <View style={styles.inputContainer}>
-          <Text
-            style={{ ...styles.label, color: themeContext?.theme.colors.text }}
-          >
-            任务名称
-          </Text>
-          <TextInput
-            style={{
-              ...styles.input,
-              backgroundColor: themeContext?.theme.colors.card,
-              color: themeContext?.theme.colors.text,
-              borderColor: showError
-                ? themeContext?.theme.colors.error
-                : themeContext?.theme.colors.border,
-            }}
-            onChangeText={text => {
-              onChangeTodoName(text);
-              if (showError && text.trim() !== '') {
-                setShowError(false);
-              } else {
-                setShowError(true);
-              }
-            }}
-            value={todoName}
-            placeholder="输入任务名称"
-          />
-        </View>
-
-        <View style={styles.inputContainer}>
-          <Text
-            style={{ ...styles.label, color: themeContext?.theme.colors.text }}
-          >
-            任务描述
-          </Text>
-          <TextInput
-            style={{
-              ...styles.input,
-              backgroundColor: themeContext?.theme.colors.card,
-              color: themeContext?.theme.colors.text,
-              borderColor: themeContext?.theme.colors.border,
-              height: 80,
-              textAlignVertical: 'top',
-            }}
-            onChangeText={onChangeDescription}
-            value={description}
-            placeholder="输入任务描述"
-            multiline
-          />
-        </View>
-
-        <View style={styles.timeContainer}>
-          <View style={styles.timeInputContainer}>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        contentContainerStyle={{ paddingBottom: 24 }}
+      >
+        <View style={styles.card}>
+          <View style={styles.inputContainer}>
             <Text
               style={{
                 ...styles.label,
                 color: themeContext?.theme.colors.text,
               }}
             >
-              开始时间
+              任务名称
             </Text>
-            <DateCom
-              date={beginDate}
-              onConfirm={d =>
-                seBeginDate(mergeTimeWithOriginalDate(beginDate, d))
-              }
+            <TextInput
+              style={{
+                ...styles.input,
+                backgroundColor: themeContext?.theme.colors.card,
+                color: themeContext?.theme.colors.text,
+                borderColor: showError
+                  ? themeContext?.theme.colors.error
+                  : themeContext?.theme.colors.border,
+              }}
+              onChangeText={text => {
+                onChangeTodoName(text);
+                if (showError) setShowError(text.trim() === '');
+              }}
+              value={todoName}
+              placeholder="输入任务名称"
             />
           </View>
 
-          <View style={styles.timeInputContainer}>
+          <View style={styles.inputContainer}>
             <Text
               style={{
                 ...styles.label,
                 color: themeContext?.theme.colors.text,
               }}
             >
-              结束时间
+              任务描述
             </Text>
-            <DateCom
-              date={endDate}
-              onConfirm={d => seEndDate(mergeTimeWithOriginalDate(endDate, d))}
+            <TextInput
+              style={{
+                ...styles.input,
+                backgroundColor: themeContext?.theme.colors.card,
+                color: themeContext?.theme.colors.text,
+                borderColor: themeContext?.theme.colors.border,
+                height: 80,
+                textAlignVertical: 'top',
+              }}
+              onChangeText={onChangeDescription}
+              value={description}
+              placeholder="输入任务描述"
+              multiline
             />
+          </View>
+
+          <View style={styles.timeContainer}>
+            <View style={styles.timeInputContainer}>
+              <Text
+                style={{
+                  ...styles.label,
+                  color: themeContext?.theme.colors.text,
+                }}
+              >
+                开始时间
+              </Text>
+              <DateCom
+                date={beginDate}
+                onConfirm={d =>
+                  seBeginDate(mergeTimeWithOriginalDate(beginDate, d))
+                }
+              />
+            </View>
+
+            <View style={styles.timeInputContainer}>
+              <Text
+                style={{
+                  ...styles.label,
+                  color: themeContext?.theme.colors.text,
+                }}
+              >
+                结束时间
+              </Text>
+              <DateCom
+                date={endDate}
+                onConfirm={d =>
+                  seEndDate(mergeTimeWithOriginalDate(endDate, d))
+                }
+              />
+            </View>
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Select handlePress={() => setIsRepeatModalVisible(true)} />
           </View>
         </View>
 
-        <View style={styles.inputContainer}>
-          <Select handlePress={() => setIsRepeatModalVisible(true)} />
-        </View>
-      </View>
-
-      <View style={styles.buttonContainer}>
-        <Pressable
-          style={{
-            ...styles.button,
-            backgroundColor: themeContext?.theme.colors.primary,
-          }}
-          onPress={addTodo}
-        >
-          <Text
+        <View style={styles.buttonContainer}>
+          <Pressable
             style={{
-              ...styles.buttonText,
-              color: themeContext?.theme.colors.text,
+              ...styles.button,
+              backgroundColor: themeContext?.theme.colors.primary,
             }}
+            onPress={addTodo}
           >
-            保存任务
-          </Text>
-        </Pressable>
-      </View>
+            <Text
+              style={{
+                ...styles.buttonText,
+                color: themeContext?.theme.dark ? '#1C1C1E' : '#fff',
+              }}
+            >
+              保存任务
+            </Text>
+          </Pressable>
+        </View>
+      </ScrollView>
       <RepeatModal
         isVisible={isRepeatModalVisible}
         onClose={function (): void {
@@ -305,7 +321,7 @@ const EditTodo = ({ route, navigation }: MyStackScreenProps<'EditTodo'>) => {
         }}
         repeats={repeat || []}
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -340,7 +356,7 @@ const styles = StyleSheet.create({
   repeatText: { fontSize: 16 },
   buttonContainer: { marginTop: 8 },
   button: {
-    marginHorizontal: 100,
+    marginHorizontal: 0,
     height: 50,
     borderRadius: 12,
     justifyContent: 'center',

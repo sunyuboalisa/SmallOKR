@@ -13,3 +13,20 @@ spring:
 
 mybatis:
   mapper-locations: classpath:alisa/smallokr/mapper/xml/*.xml
+
+jwt:
+  secret: ${JWT_SECRET}
+alisa:
+  security:
+    enabled: true
+    application-id: smallokr
+    tenant-table: tb_target
+    require-tenant: ${SMALLOKR_TENANCY_ENABLED:false}
+    resources:
+      smallokr:
+        issuer: ${OAUTH_ISSUER:}
+        introspection-uri: ${OAUTH_INTROSPECTION_URI:}
+        authorization-uri: ${OAUTH_AUTHORIZATION_URI:}
+        client-id: ${OAUTH_RESOURCE_CLIENT_ID:}
+        client-secret: ${OAUTH_RESOURCE_CLIENT_SECRET:}
+        allow-insecure-loopback: ${OAUTH_ALLOW_LOOPBACK:false}

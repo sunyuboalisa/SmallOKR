@@ -2,6 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="alisa.smallokr.mapper.TodoMapper">
+    <sql id="scope"><bind name="_tenant" value="@com.alisa.model.UserContext@get() == null ? '' : @com.alisa.model.UserContext@get().tenantId"/></sql>
+    <sql id="tenant"><if test="_tenant != null and _tenant != ''">and todo.tenant_id=#{_tenant}</if></sql>
     <sql id="common">
         todo.todo_id as id,
         todo.todo_name as name,
@@ -11,37 +13,45 @@
         todo.user_id as userId,
         todo.todo_status_id as status
     </sql>
-    <select id="findTodoByID" resultType="alisa.smallokr.entity.Todo">
-        select <include refid="common"/> from tb_todo as todo where todo_id = #{id}
+    <select id="findTodoById" resultType="alisa.smallokr.entity.Todo">
+        <include refid="scope"/>select <include refid="common"/> from tb_todo as todo where todo_id = #{id} <include refid="tenant"/>
     </select>
     <select id="findTodoByUser" resultType="alisa.smallokr.vo.TodoVo">
-        select <include refid="common"/> from tb_todo as todo where user_id = #{userId} order by todo_begin_date
+        <include refid="scope"/>select <include refid="common"/> from tb_todo as todo where 1=1 <if test="userId != null">and user_id = #{userId}</if> <include refid="tenant"/> order by todo_begin_date
     </select>
      <select id="getTodoByUserAndWeekDay" resultType="alisa.smallokr.vo.TodoVo">
-        (SELECT <include refid="common"/> 
+        <include refid="scope"/>(SELECT <include refid="common"/>
         FROM tb_todo AS todo
         JOIN tb_todo_repeat AS todoRepeat ON todoRepeat.todo_id = todo.todo_id
-        WHERE todo.user_id = #{userId}
+        WHERE 1=1 <if test="userId != null">and todo.user_id = #{userId}</if> <include refid="tenant"/>
         and todoRepeat.repeat_id in
             (SELECT dic_entry_id FROM tb_dic_entry WHERE dic_entry_value=#{weekDay})
         UNION
         SELECT <include refid="common"/> 
         FROM tb_todo AS todo
-        WHERE todo.user_id = #{userId}
-        AND DATE(todo.todo_begin_date)=DATE(#{date}))
+        WHERE 1=1 <if test="userId != null">and todo.user_id = #{userId}</if> <include refid="tenant"/>
+        AND todo.todo_begin_date &gt;= DATE(#{date})
+        AND todo.todo_begin_date &lt; DATE_ADD(DATE(#{date}), INTERVAL 1 DAY))
         order by TIME(beginDate)
     </select>
 
     <insert id="saveTodo" parameterType="alisa.smallokr.entity.Todo">
-        insert into tb_todo(todo_id,todo_name,todo_description,todo_begin_date,todo_end_date,user_id,todo_status_id) values (#{id},#{name},#{description},#{beginDate},#{endDate},#{userId},#{status})
+        <include refid="scope"/>
+        insert into tb_todo(todo_id,todo_name,todo_description,todo_begin_date,todo_end_date,user_id,todo_status_id<if test="_tenant != null and _tenant != ''">,tenant_id</if>) values (#{id},#{name},#{description},#{beginDate},#{endDate},#{userId},#{status}<if test="_tenant != null and _tenant != ''">,#{_tenant}</if>)
         ON DUPLICATE KEY UPDATE
-        todo_name=VALUES(todo_name),
+        <choose><when test="_tenant != null and _tenant != ''">
+        todo_name=CASE WHEN tenant_id=VALUES(tenant_id) THEN VALUES(todo_name) ELSE todo_name END,
+        todo_description=CASE WHEN tenant_id=VALUES(tenant_id) THEN VALUES(todo_description) ELSE todo_description END,
+        todo_begin_date=CASE WHEN tenant_id=VALUES(tenant_id) THEN VALUES(todo_begin_date) ELSE todo_begin_date END,
+        todo_end_date=CASE WHEN tenant_id=VALUES(tenant_id) THEN VALUES(todo_end_date) ELSE todo_end_date END,
+        todo_status_id=CASE WHEN tenant_id=VALUES(tenant_id) THEN VALUES(todo_status_id) ELSE todo_status_id END
+        </when><otherwise>todo_name=VALUES(todo_name),
         todo_description=VALUES(todo_description),
         todo_begin_date=VALUES(todo_begin_date),
         todo_end_date=VALUES(todo_end_date),
-        todo_status_id=VALUES(todo_status_id)
+        todo_status_id=VALUES(todo_status_id)</otherwise></choose>
     </insert>
     <delete id="deleteTodo">
-        delete FROM tb_todo where todo_id=#{id}
+        <include refid="scope"/>delete FROM tb_todo as todo where todo_id=#{id} <include refid="tenant"/>
     </delete>
 </mapper>

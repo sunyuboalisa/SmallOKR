@@ -5,6 +5,11 @@ import React, { useContext } from 'react';
 import { UserContext } from '../state/UserContext';
 import RegisterScreen from '../screens/RegisterScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
+import TenantGate from '../components/TenantGate';
+const TenantApp = () => {
+  const {userInfo} = useContext(UserContext);
+  return <TenantGate><AppTabNav key={userInfo.tenantId || 'legacy'}/></TenantGate>;
+};
 
 // 这里是程序主组件入口
 const Stack = createStackNavigator<MyReactNavigation.ParamList>();
@@ -22,7 +27,7 @@ export const AppStackNav = () => {
       {userContext.userInfo.status === 'offline' ? (
         <Stack.Screen name="Login" component={LoginScreen} />
       ) : (
-        <Stack.Screen name="MainApp" component={AppTabNav} />
+        <Stack.Screen name="MainApp" component={TenantApp} />
       )}
 
       <Stack.Screen name="Register" component={RegisterScreen} />

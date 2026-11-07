@@ -1,0 +1,28 @@
+# Business-owned gateway integration. Loaded by alisa-cloud's gateway deployment.
+# Lists replace rather than merge, so the shared account route is included.
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/v1/user/**,/api/v1/authorization/**,/oauth2/**,/oauth/**,/login,/logout,/.well-known/**
+        - id: target-service
+          uri: lb://target-service
+          metadata:
+            delegated-ready: true
+          predicates:
+            - Path=/target-service/api/v1/**
+        - id: todo-service
+          uri: lb://todo-service
+          metadata:
+            delegated-ready: true
+          predicates:
+            - Path=/api/v1/todo/**
+        - id: trace-service
+          uri: lb://trace-service
+          metadata:
+            delegated-ready: true
+          predicates:
+            - Path=/api/v1/trace/**

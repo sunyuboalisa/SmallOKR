@@ -26,9 +26,11 @@ import jakarta.servlet.http.HttpServletRequest;
 public class TargetController {
     @Autowired
     private TargetService targetService;
+    @Autowired private alisa.smallokr.service.TargetAccess access;
 
     @PostMapping("save")
     public Result<Boolean> addTarget(@RequestBody Target target, HttpServletRequest request) {
+        access.saveTarget(target);
         UserContext userContext = UserContext.get();
         String userId = userContext.getUserId();
 
@@ -49,29 +51,34 @@ public class TargetController {
 
     @DeleteMapping("delete")
     public Result<Boolean> deleteTarget(String targetId) {
+        access.target(targetId,"delete");
         boolean res = targetService.deleteTarget(targetId);
         return new Result<>(res);
     }
 
     @PutMapping("update")
     public Result<Boolean> updateTarget(Target target) {
-        boolean res = targetService.updateTarget(target);
+        access.target(target.getId(),"update");
+        target.setUserId(access.user());
+        boolean res = targetService.addTarget(target);
         return new Result<>(res);
     }
 
     @RequestMapping(value = "get", method = RequestMethod.GET)
     public Result<List<Target>> get(String userId, HttpServletRequest request) {
+        access.require("target","*","read");
+        userId=access.user();
         if (userId == null) {
             UserContext userContext = UserContext.get();
             userId = userContext.getUserId();
         }
 
-        var target = targetService.findTargetByUserId(userId);
+        var target = targetService.findTargetByUserId(UserContext.get().isApplication()?null:userId);
         return new Result<>(target);
     }
 
     @GetMapping("analysis")
     public void getAnalysis() {
-
+        access.require("target","*","read");
     }
 }

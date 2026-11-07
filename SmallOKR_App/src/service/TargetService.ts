@@ -1,6 +1,7 @@
 import { useApiService } from '../hooks/useApiService';
 import { ITarget } from '../model/OKRModel';
 import React from 'react';
+import { AxiosRequestConfig } from 'axios';
 
 interface ResultFilter {
   targetId: string;
@@ -14,8 +15,8 @@ const useTargetService = () => {
   // 1. 使用 useMemo 确保返回的服务对象是稳定的
   const targetService = React.useMemo(() => {
     // 获取所有目标
-    const getTargets = () => {
-      return get('/target-service/api/v1/target/get');
+    const getTargets = (config?: AxiosRequestConfig) => {
+      return get('/target-service/api/v1/target/get', undefined, config);
     };
 
     // 保存目标
@@ -32,7 +33,6 @@ const useTargetService = () => {
 
     // 获取结果列表
     const getResults = (param?: any) => {
-      console.log(param);
       return get('/target-service/api/v1/result/getAll', param);
     };
 

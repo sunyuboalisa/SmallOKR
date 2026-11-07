@@ -39,9 +39,8 @@ export const LoginScreen = ({ navigation }: MyStackScreenProps<'Login'>) => {
         username: username,
         password: password,
       });
-      if (res && res.data.code === '200') {
+      if (res && String(res.data.code) === '200') {
         const token = res.data.data;
-        console.log('Login successful, token:', token);
         // 3. 更新 Context
         dispatch({
           type: 'Login',

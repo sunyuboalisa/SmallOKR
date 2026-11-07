@@ -11,9 +11,11 @@ import alisa.smallokr.client.MyFeginClient;
 public class TraceController {
     @Autowired
     private MyFeginClient feginClient;
+    @Autowired private com.alisa.security.ResourceAccess access;
 
     @RequestMapping(value = "/get", method = RequestMethod.GET)
     public String echo() {
+        access.require("target","*","read");
         return feginClient.get();
     }
 }

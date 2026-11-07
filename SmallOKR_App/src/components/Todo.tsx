@@ -1,5 +1,5 @@
 import { View, Text, Modal, TouchableOpacity } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -19,7 +19,7 @@ const PlanHeaderRight = () => {
     useNavigation<NavigationProp<MyReactNavigation.ParamList>>();
   const onAddBtnPress = () => {
     const now = dayjs().format('YYYY-MM-DD HH:mm:ss');
-    console.log(now);
+
     navigation.navigate('EditTodo', {
       todo: {
         name: '',
@@ -53,31 +53,33 @@ const Todo = ({ navigation }: MyStackScreenProps<'Todo'>) => {
     setModalVisible(false);
   };
 
-  const handleItemPress = (data: IUITodo) => {
-    console.log('待办项点击：', data);
-    const todo = todoContext.todos.find(t => t.id === data.id);
-    if (!todo) return;
-    console.log('编辑待办：', todo);
-    navigation.navigate('EditTodo', {
-      todo: todo,
-    });
-  };
+  const handleItemPress = useCallback(
+    (data: IUITodo) => {
+      const todo = todoContext.todos.find(t => t.id === data.id);
+      if (!todo) return;
 
-  const handleItemLongPress = (data: any) => {
+      navigation.navigate('EditTodo', {
+        todo: todo,
+      });
+    },
+    [navigation, todoContext.todos],
+  );
+
+  const handleItemLongPress = useCallback((data: IUITodo) => {
     setSelectedTodo(data);
     setModalVisible(true);
-  };
+  }, []);
 
   const handleDelete = async () => {
     try {
       if (selectedTodo) {
         const res = await todoService.deleteTodo(selectedTodo.id);
-        console.log(res.data);
+
         closeModal();
         dispatch({ type: 'Delete', id: selectedTodo.id });
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -92,7 +94,7 @@ const Todo = ({ navigation }: MyStackScreenProps<'Todo'>) => {
 
         dispatch({ type: 'Load', newTodos: todos });
       } catch (error) {
-        console.log('error in fetch user todos:', error);
+        console.error(error);
       }
     };
     fetchData();

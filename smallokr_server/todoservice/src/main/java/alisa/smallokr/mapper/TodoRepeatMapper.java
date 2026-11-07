@@ -8,6 +8,7 @@ import alisa.smallokr.entity.TodoRepeat;
 
 @Mapper
 public interface TodoRepeatMapper {
+    TodoRepeat findById(String id);
     public List<TodoRepeat> getRepeats(String todoId);
 
     public int addOrUpdateRepeat(@Param("list") List<TodoRepeat> todoRepeatList);

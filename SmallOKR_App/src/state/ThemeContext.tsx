@@ -1,5 +1,11 @@
 import { DefaultTheme, Theme } from '@react-navigation/native';
-import React, { createContext, useContext, ReactNode, useMemo } from 'react';
+import React, {
+  createContext,
+  useContext,
+  ReactNode,
+  useMemo,
+  useCallback,
+} from 'react';
 import { AppConfigContext, AppConfigDispatchContext } from './AppConfigContext';
 
 // 定义主题常量 (使用外部定义，保持 Provider 简洁)
@@ -55,16 +61,18 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     return appConfig.theme === 'dark' ? DarkTheme : LightTheme;
   }, [appConfig.theme]);
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     const newTheme = appConfig.theme === 'light' ? 'dark' : 'light';
 
     dispatch({ type: 'SetTheme', value: newTheme });
-  };
+  }, [appConfig.theme, dispatch]);
+  const value = useMemo(
+    () => ({ theme: currentTheme, toggleTheme }),
+    [currentTheme, toggleTheme],
+  );
 
   return (
-    <ThemeContext.Provider value={{ theme: currentTheme, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
 };
 

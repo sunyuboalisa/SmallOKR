@@ -32,9 +32,12 @@ import jakarta.servlet.http.HttpServletRequest;
 public class TodoController {
     @Autowired
     private TodoService todoService;
+    @Autowired private alisa.smallokr.service.TodoAccess access;
 
     @PostMapping("/add")
     public Result<Boolean> addTodo(@RequestBody Todo todo, HttpServletRequest request) {
+        if(todo.getId()!=null && !todo.getId().isBlank()) access.todo(todo.getId(),"update");
+        else access.require("*","create");
         UserContext userContext = UserContext.get();
         String userId = userContext.getUserId();
 
@@ -49,29 +52,34 @@ public class TodoController {
 
     @DeleteMapping("delete")
     public Result<Boolean> deleteTodo(@RequestParam String todoId) {
+        access.todo(todoId,"delete");
         boolean res = todoService.deleteTodo(todoId);
         return new Result<>(res);
     }
 
     @PutMapping("update")
     public Result<Boolean> updateTodo(Todo todo) {
-        boolean res = todoService.updateTodo(todo);
+        access.todo(todo.getId(),"update");
+        todo.setUserId(access.user());
+        boolean res = todoService.saveTodo(todo);
         return new Result<>(res);
     }
 
     @GetMapping("get")
     public Result<List<TodoVo>> get(String userId, HttpServletRequest request) {
+        access.require("*","read"); userId=access.user();
         if (userId == null) {
             UserContext userContext = UserContext.get();
             userId = userContext.getUserId();
         }
-        var todo = todoService.findTodoByUser(userId);
+        var todo = todoService.findTodoByUser(UserContext.get().isApplication()?null:userId);
         return new Result<>(todo);
     }
 
     @GetMapping("getTodoByWeekDay")
     public Result<List<TodoVo>> getTodoByWeekDay(String userId,
             @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime date, HttpServletRequest request) {
+        access.require("*","read"); userId=access.user();
         if (userId == null) {
             UserContext userContext = UserContext.get();
             userId = userContext.getUserId();
@@ -90,12 +98,13 @@ public class TodoController {
         dayOfWeekMap.put(DayOfWeek.SUNDAY, "星期天");
         String chineseDay = dayOfWeekMap.get(dayOfWeek);
 
-        var todo = todoService.getTodoByUserAndWeekDay(userId, date, chineseDay);
+        var todo = todoService.getTodoByUserAndWeekDay(UserContext.get().isApplication()?null:userId, date, chineseDay);
         return new Result<>(todo);
     }
 
     @GetMapping("getRepeat")
     public Result<List<TodoRepeat>> getRepeat(String todoId) {
+        access.todo(todoId,"read");
         var todoRepeats = todoService.getRepeats(todoId);
         return new Result<>(todoRepeats);
 
@@ -106,6 +115,7 @@ public class TodoController {
         if (todoRepeatList == null || todoRepeatList.isEmpty()) {
             return new Result<>(0);
         }
+        todoRepeatList.forEach(access::saveRepeat);
 
         // 如果是新增记录，则生成 ID
         for (TodoRepeat repeat : todoRepeatList) {
@@ -120,12 +130,13 @@ public class TodoController {
 
     @DeleteMapping("deleteRepeat")
     public Result<Integer> deleteRepeat(@RequestBody List<String> todoRepeatIds) {
+        todoRepeatIds.forEach(access::repeat);
         var result = todoService.deleteRepeat(todoRepeatIds);
         return new Result<Integer>(result);
     }
 
     @GetMapping("analysis")
     public void getAnalysis() {
-
+        access.require("*","read");
     }
 }

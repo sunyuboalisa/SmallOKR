@@ -6,10 +6,9 @@ on:
       service_name:
         description: '选择要构建的服务'
         required: true
-        default: 'userservice'
+        default: 'targetservice'
         type: choice
         options:
-          - userservice
           - targetservice
           - todoservice
           - traceservice

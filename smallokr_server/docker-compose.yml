@@ -1,17 +1,6 @@
 version: "3.9"
 
 services:
-  gateway:
-    image: ghcr.io/sunyuboalisa/smallokr-gateway:latest
-    container_name: smallokr-gateway
-    ports:
-      - 8100:8080
-    env_file:
-      - ./gateway.env
-    restart: always
-    networks:
-      - my_network
-
   targetservice:
     image: ghcr.io/sunyuboalisa/smallokr-targetservice:latest
     container_name: smallokr-targetservice
@@ -30,15 +19,6 @@ services:
     networks:
       - my_network
 
-  userservice:
-    image: ghcr.io/sunyuboalisa/smallokr-userservice:latest
-    container_name: smallokr-userservice
-    env_file:
-      - ./userservice.env
-    restart: always
-    networks:
-      - my_network
-
   traceservice:
     image: ghcr.io/sunyuboalisa/smallokr-traceservice:latest
     container_name: smallokr-traceservice
@@ -50,3 +30,5 @@ services:
 
 networks:
   my_network:
+    external: true
+    name: my_network

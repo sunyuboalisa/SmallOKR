@@ -1,81 +1,82 @@
-import { StyleSheet, View } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
-import GalaxyGraph, { nodeData } from './GalaxyGraph';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import GalaxyGraph from './GalaxyGraph';
 import useTargetService from '../service/TargetService';
 import { TargetContext, TargetDispatchContext } from '../state/TargetContext';
 import { useTheme } from '../state/ThemeContext';
 import { MyTabScreenProps } from '../common/NativeScreenTypes';
+import { useIsFocused } from '@react-navigation/native';
 
 const Dashboard = ({ navigation }: MyTabScreenProps<'Dashboard'>) => {
-  const targetService = useTargetService();
-  const [data, setData] = useState<nodeData[]>([]);
-  const targetContext = useContext(TargetContext);
+  const isFocused = useIsFocused();
+  const service = useTargetService();
+  const { targets } = useContext(TargetContext);
   const dispatch = useContext(TargetDispatchContext);
-  const theme = useTheme();
-  const handleNodeDoublePress = (nodeId: string, nodeTitle: string) => {
-    console.log(`Node double pressed: ID=${nodeId}, Title=${nodeTitle}`);
-    if (nodeId) {
-      const target = targetContext.targets.find(t => t.id === nodeId);
-      if (target) {
+  const { theme } = useTheme();
+  const [error, setError] = useState(false);
+  const load = useCallback(async () => {
+    setError(false);
+    try {
+      const res = await service.getTargets({ showLoading: false });
+      if (String(res.data.code) !== '200' || !Array.isArray(res.data.data))
+        throw Error('load');
+      dispatch({ type: 'Load', targets: res.data.data });
+    } catch {
+      setError(true);
+    }
+  }, [service, dispatch]);
+  useEffect(() => {
+    load();
+  }, [load]);
+  const open = useCallback(
+    (id: string) => {
+      const target = targets.find(t => t.id === id);
+      if (target)
         navigation.navigate('TargetTab', {
           screen: 'EditTarget',
-          params: { target: target },
+          params: { target },
         });
-      }
-    }
-  };
-  useEffect(() => {
-    const fetchTargets = async () => {
-      try {
-        const res = await targetService.getTargets();
-        let tempData = res.data.data;
-        console.log('targets data：', tempData);
-        const newState = tempData.map(
-          (value: { id: any; name: any; description: any }) => ({
-            id: value.id,
-            name: value.name,
-            description: value.description,
-          }),
-        );
-        dispatch({ type: 'Load', targets: newState });
-      } catch (e) {
-        console.log('targets error：', e);
-      }
-    };
-
-    fetchTargets();
-  }, [dispatch, targetService]);
-
-  useEffect(() => {
-    const resData = targetContext.targets;
-    const newState = resData.map(
-      (value: { id: any; name: any; description: any }) => {
-        let entry = { id: value.id, name: value.name };
-        return entry;
-      },
-    );
-    setData(newState);
-  }, [targetContext]);
-
+    },
+    [targets, navigation],
+  );
+  const data = useMemo(
+    () => targets.map(({ id, name }) => ({ id, name })),
+    [targets],
+  );
   return (
     <View
-      style={{
-        ...styles.container,
-        backgroundColor: theme.theme.colors.background,
-      }}
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
-      <GalaxyGraph data={data} onNodeDoublePress={handleNodeDoublePress} />
+      <GalaxyGraph data={data} active={isFocused} onNodeDoublePress={open} />
+      {error && (
+        <Pressable
+          accessibilityRole="button"
+          onPress={load}
+          style={[styles.error, { backgroundColor: theme.colors.card }]}
+        >
+          <Text style={{ color: theme.colors.text, fontSize: 13 }}>
+            加载失败，点击重试
+          </Text>
+        </Pressable>
+      )}
     </View>
   );
 };
-
 export default Dashboard;
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'transparent',
+  container: { flex: 1 },
+  error: {
+    position: 'absolute',
+    bottom: 16,
+    alignSelf: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
   },
 });

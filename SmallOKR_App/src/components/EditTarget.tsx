@@ -9,7 +9,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import useTargetService from '../service/TargetService';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { TargetContext, TargetDispatchContext } from '../state/TargetContext';
@@ -21,7 +21,7 @@ const EditTarget = ({
   route,
 }: MyStackScreenProps<'EditTarget'>) => {
   const { target } = route.params;
-  console.log('target in EditTarget:', target);
+
   const targetService = useTargetService();
   const [description, onChangeDescription] = useState(target.description);
   const [targetName, onChangeTargetName] = useState(target.name);
@@ -30,6 +30,9 @@ const EditTarget = ({
   const themeContext = useContext(ThemeContext);
   const [showDeleteIcon, setShowDeleteIcon] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
+  const savingRef = useRef(false);
 
   const onAddBtnPress = () => {
     dispatch({
@@ -45,11 +48,16 @@ const EditTarget = ({
   };
 
   const handleOKBtnPress = async () => {
+    if (savingRef.current) return;
+    setSaveError('');
+    if (targetName.trim() === '') {
+      setShowError(true);
+      setSaveError('请填写目标名称');
+      return;
+    }
+    savingRef.current = true;
+    setSaving(true);
     try {
-      if (targetName.trim() === '') {
-        setShowError(true);
-        return;
-      }
       const addTargetRes = await targetService.saveTarget({
         name: targetName,
         description: description,
@@ -69,17 +77,21 @@ const EditTarget = ({
           description: value.description,
         }),
       );
-      console.log('tete', addTargetRes.data.code);
-      if (addTargetRes.data.code !== '200') {
+
+      if (String(addTargetRes.data.code) !== '200') {
         throw new Error('保存目标失败');
       }
-      if (addResultRes.data.code !== '200') {
+      if (String(addResultRes.data.code) !== '200') {
         throw new Error('保存阶段成果失败');
       }
       dispatch({ type: 'Load', targets: newState });
       navigation.goBack();
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      setSaveError('保存失败，请重试，输入内容已保留');
+    } finally {
+      savingRef.current = false;
+      setSaving(false);
     }
   };
 
@@ -92,13 +104,14 @@ const EditTarget = ({
       return;
     }
     const res = await targetService.deleteResult(item.id);
-    if (res.data.code === '200') {
+    if (String(res.data.code) === '200') {
       dispatch({ type: 'DeleteResult', resultId: item.id });
     } else {
       throw new Error('删除阶段成果失败');
     }
   };
   useEffect(() => {
+    let active = true;
     const featchData = async () => {
       try {
         // 新的目标，id 为空，不请求阶段成果
@@ -106,7 +119,8 @@ const EditTarget = ({
           return;
         }
         const res = await targetService.getResults({ targetId: target.id });
-        if (res.data.code === '200') {
+        if (!active) return;
+        if (String(res.data.code) === '200') {
           dispatch({ type: 'LoadResult', results: res.data.data });
         } else {
           throw new Error('获取阶段成果失败');
@@ -118,11 +132,12 @@ const EditTarget = ({
     featchData();
 
     return () => {
+      active = false;
       // 当组件（EditTarget）卸载时（即用户退出或导航到其他页面），执行此清理操作
-      console.log('清理阶段成果 Context 数据。');
+
       dispatch({ type: 'LoadResult', results: [] });
     };
-  }, [target, dispatch, targetService]);
+  }, [target.id, dispatch, targetService]);
 
   return (
     <KeyboardAvoidingView
@@ -273,7 +288,6 @@ const EditTarget = ({
                           // 替换这里的 console.log 为实际的删除 dispatch 操作
                           // 例如：dispatch({ type: 'DeleteResult', id: item.id });
                           handleDeleteResult(item);
-                          console.log('执行删除操作', item);
                         }}
                         style={[
                           { paddingBottom: 10 }, // 保持原有样式
@@ -352,6 +366,18 @@ const EditTarget = ({
 
           {/* Action Buttons */}
           <View style={styles.buttonGroup}>
+            {!!saveError && (
+              <Text
+                accessibilityLiveRegion="polite"
+                style={{
+                  color: themeContext?.theme.colors.error,
+                  fontSize: 13,
+                  marginBottom: 12,
+                }}
+              >
+                {saveError}
+              </Text>
+            )}
             <Pressable
               style={[
                 styles.primaryButton,
@@ -360,8 +386,18 @@ const EditTarget = ({
                 },
               ]}
               onPress={handleOKBtnPress}
+              disabled={saving}
+              accessibilityRole="button"
+              accessibilityState={{ disabled: saving }}
             >
-              <Text style={styles.buttonText}>保存目标</Text>
+              <Text
+                style={[
+                  styles.buttonText,
+                  { color: themeContext?.theme.dark ? '#1C1C1E' : '#fff' },
+                ]}
+              >
+                {saving ? '保存中…' : '保存目标'}
+              </Text>
             </Pressable>
           </View>
         </View>

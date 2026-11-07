@@ -12,6 +12,18 @@
         FROM tb_dic_entry dicEntry
         JOIN tb_dic dic ON dicEntry.dic_id = dic.dic_id
         WHERE dic.dic_name = #{dicName}
-        ORDER BY dicEntry.dic_entry_order ASC
+        ORDER BY
+            CASE dicEntry.dic_entry_name
+                WHEN 'repeat_monday' THEN 1
+                WHEN 'repeat_tuesday' THEN 2
+                WHEN 'repeat_wednesday' THEN 3
+                WHEN 'repeat_thursday' THEN 4
+                WHEN 'repeat_friday' THEN 5
+                WHEN 'repeat_saturday' THEN 6
+                WHEN 'repeat_sunday' THEN 7
+                ELSE 8
+            END ASC,
+            dicEntry.dic_entry_name ASC,
+            dicEntry.dic_entry_id ASC
     </select>
 </mapper>

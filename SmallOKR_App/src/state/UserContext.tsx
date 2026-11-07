@@ -11,6 +11,8 @@ import { StorageService } from '../service/StorageService';
 import { AppConfigContext } from '../state/AppConfigContext';
 import { API_HOST, API_PORT, API_SCHEME } from '@env';
 import useUserService from '../service/UserService';
+import { eventBus } from '../common/EventBus';
+import { USER_EVENTS } from '../common/EventType';
 
 export type UserState = {
   userInfo: User;
@@ -38,31 +40,39 @@ export const UserDispatchContext = createContext<Dispatch<UserAction>>(
 function userReducer(state: UserState, action: UserAction): UserState {
   switch (action.type) {
     case 'Loading':
-      console.log('loading');
       return { ...state, isLoading: true };
     case 'Loaded':
-      console.log('loaded');
       return { ...state, isLoading: false, userInfo: action.user };
     case 'Login':
-      console.log('login', action.user);
       return {
-        userInfo: { ...action.user, status: 'online' },
+        userInfo: {
+          ...action.user,
+          namespaceUrl:
+            action.user.namespaceUrl ||
+            state.userInfo.namespaceUrl ||
+            getInitialBaseURL(),
+          status: action.user.token ? 'online' : 'offline',
+        },
         isLoading: false,
       };
     case 'Logout':
-      console.log('logout');
       return {
-        userInfo: { ...state.userInfo, status: 'offline' },
+        userInfo: {
+          ...state.userInfo,
+          token: '',
+          password: '',
+          status: 'offline',
+          tenantId: undefined,
+          tenantName: undefined,
+        },
         isLoading: false,
       };
     case 'UpdateNamespaceUrl':
-      console.log('update namespaceUrl: ', action.namespaceUrl);
       return {
         userInfo: { ...state.userInfo, namespaceUrl: action.namespaceUrl },
         isLoading: state.isLoading,
       };
     case 'UpdateToken':
-      console.log('update token: ', action.token);
       return {
         userInfo: { ...state.userInfo, token: action.token },
         isLoading: state.isLoading,
@@ -81,6 +91,11 @@ export function UserContextProvider({
   const userService = useUserService();
   const [state, dispatch] = useReducer(userReducer, initialState);
   const isInitialized = React.useRef(false);
+  useEffect(() => {
+    const expireSession = () => dispatch({ type: 'Logout' });
+    eventBus.on(USER_EVENTS.USER_SESSION_EXPIRED, expireSession);
+    return () => eventBus.off(USER_EVENTS.USER_SESSION_EXPIRED, expireSession);
+  }, []);
   // 初始化加载用户信息
   useEffect(() => {
     // 初始化加载，尝试从存储中获取用户信息，配置信息
@@ -88,17 +103,39 @@ export function UserContextProvider({
       dispatch({ type: 'Loading' });
       const storedUser = await StorageService.getUser();
       if (storedUser) {
-        console.log('Loaded stored user:', storedUser);
-        dispatch({
-          type: 'UpdateNamespaceUrl',
-          namespaceUrl: storedUser.namespaceUrl,
-        });
-        const resCheck = await userService.healthCheck(storedUser.namespaceUrl);
-        console.log('Health check result:', resCheck);
-        if (!resCheck) {
+        const restoredUser = {
+          ...storedUser,
+          namespaceUrl: storedUser.namespaceUrl || getInitialBaseURL(),
+        };
+        // Remembered account details are not an authenticated session.
+        if (!restoredUser.token) {
+          isInitialized.current = true;
+          dispatch({
+            type: 'Loaded',
+            user: { ...restoredUser, password: '', status: 'offline' },
+          });
           return;
         }
-        dispatch({ type: 'Login', user: storedUser });
+
+        dispatch({
+          type: 'UpdateNamespaceUrl',
+          namespaceUrl: restoredUser.namespaceUrl,
+        });
+        const resCheck = await userService.healthCheck(
+          restoredUser.namespaceUrl,
+        );
+
+        if (!resCheck) {
+          dispatch({
+            type: 'Loaded',
+            user: { ...restoredUser, status: 'offline' },
+          });
+          return;
+        }
+        isInitialized.current = true;
+        dispatch({ type: 'Login', user: restoredUser });
+      } else {
+        dispatch({ type: 'Loaded', user: initialState.userInfo });
       }
       isInitialized.current = true;
     };
@@ -119,7 +156,7 @@ export function UserContextProvider({
             password: '',
             token: '',
             namespaceUrl: state.userInfo?.namespaceUrl || '',
-            status: 'online',
+            status: 'offline',
           };
           StorageService.saveUser(userToStore);
         } else {

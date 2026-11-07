@@ -1,4 +1,10 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import React, { useContext } from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
 import { ThemeContext } from '../state/ThemeContext';
@@ -17,6 +23,7 @@ const Card = ({
   handleLongPress,
 }: CardProps) => {
   const themeContext = useContext(ThemeContext);
+  const { fontScale } = useWindowDimensions();
   return (
     <TouchableOpacity
       onPress={() => {
@@ -26,23 +33,43 @@ const Card = ({
         handleLongPress();
       }}
       delayLongPress={500}
-      style={{ ...styles.container, backgroundColor: color }}
+      style={[
+        styles.container,
+        {
+          backgroundColor: color,
+          height: Math.max(104, Math.ceil(64 * fontScale + 28)),
+        },
+      ]}
     >
       <View style={styles.circle}>
         <Icon name="flag" color={themeContext?.theme.colors.text} size={28} />
       </View>
-      <View style={{ justifyContent: 'center', margin: 1, paddingLeft: 10 }}>
+      <View
+        style={{
+          flex: 1,
+          minWidth: 0,
+          justifyContent: 'center',
+          margin: 1,
+          paddingLeft: 12,
+        }}
+      >
         <Text
+          numberOfLines={1}
+          ellipsizeMode="tail"
           style={{
             ...styles.titleFont,
+            height: 24 * fontScale,
             color: themeContext?.theme.colors.text,
           }}
         >
           {title}
         </Text>
         <Text
+          numberOfLines={2}
+          ellipsizeMode="tail"
           style={{
             ...styles.descriptionFont,
+            height: 40 * fontScale,
             color: themeContext?.theme.colors.text,
           }}
         >
@@ -59,6 +86,7 @@ const styles = StyleSheet.create({
   container: {
     marginBottom: 1,
     flexDirection: 'row',
+    alignItems: 'center',
     borderRadius: 8,
     padding: 10,
     margin: 10,
@@ -69,21 +97,24 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
   },
   circle: {
-    width: 80,
-    height: 80,
+    width: 56,
+    height: 56,
+    flexShrink: 0,
     borderRadius: 1000,
     borderWidth: 1,
-    borderColor: 'rgba(ee, ee, ee,0.3)',
+    borderColor: '#DDDDDD',
     justifyContent: 'center',
     alignItems: 'center',
   },
   titleFont: {
-    fontSize: 22,
+    fontSize: 18,
+    lineHeight: 24,
     marginBottom: 5,
     color: '#ffffff',
   },
   descriptionFont: {
-    fontSize: 16,
+    fontSize: 14,
+    lineHeight: 20,
     color: '#ffffff',
   },
 });

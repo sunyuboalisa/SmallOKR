@@ -5,6 +5,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @FeignClient("target-service")
 public interface MyFeginClient {
-    @RequestMapping("/api/v1/target/get")
+    @RequestMapping("/target-service/api/v1/target/get")
     String get();
 }

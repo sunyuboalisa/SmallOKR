@@ -8,6 +8,7 @@ import alisa.smallokr.entity.Target;
 
 @Mapper
 public interface TargetMapper {
+        Target findTargetByID(String id);
 
         boolean saveTarget(Target target);
 

@@ -29,21 +29,31 @@ function App() {
   );
 }
 
-function AppContent() {
-  const themeContext = useContext(ThemeContext);
+function GlobalLoadingLayer() {
   const loadingLayer = useLoadingLayer();
+  return <LoadingLayer visible={loadingLayer.loading} />;
+}
+
+function AppNavigation() {
+  const themeContext = useContext(ThemeContext);
+  return (
+    <NavigationContainer theme={themeContext?.theme}>
+      <AppStackNav />
+    </NavigationContainer>
+  );
+}
+
+function AppContent() {
   return (
     <View style={styles.container}>
       <AppConfigProvider>
         <ThemeProvider>
           <UserContextProvider>
-            <NavigationContainer theme={themeContext?.theme}>
-              <LoadingLayer visible={loadingLayer.loading} />
-              <AppStackNav />
-            </NavigationContainer>
+            <AppNavigation />
           </UserContextProvider>
         </ThemeProvider>
       </AppConfigProvider>
+      <GlobalLoadingLayer />
     </View>
   );
 }

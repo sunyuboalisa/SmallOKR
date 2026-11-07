@@ -22,9 +22,11 @@ import alisa.smallokr.service.ResultService;
 public class ResultController {
     @Autowired
     private ResultService resultService;
+    @Autowired private alisa.smallokr.service.TargetAccess access;
 
     @PostMapping("save")
     public com.alisa.util.Result<Boolean> addResult(@RequestBody List<Result> results) {
+        results.forEach(access::saveResult);
         boolean res = true;
 
         if (results.size() > 0) {
@@ -45,18 +47,22 @@ public class ResultController {
 
     @DeleteMapping("delete")
     public com.alisa.util.Result<Boolean> deleteResult(@RequestParam String resultId) {
+        access.result(resultId,"delete");
         boolean res = resultService.deleteResult(resultId);
         return new com.alisa.util.Result<Boolean>(res);
     }
 
     @GetMapping("get")
     public com.alisa.util.Result<Result> get(String resultId) {
+        access.result(resultId,"read");
         var result = resultService.findResultById(resultId);
         return new com.alisa.util.Result<Result>(result);
     }
 
     @GetMapping("getAll")
     public com.alisa.util.Result<List<Result>> getAll(@RequestParam String targetId) {
+        access.owner(targetId);
+        access.require("result",targetId,"read");
         List<Result> targets = resultService.findAll(targetId);
         return new com.alisa.util.Result<>(targets);
     }

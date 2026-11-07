@@ -37,7 +37,7 @@ public class ResultServiceImpl implements ResultService {
     @Override
     public Result findResultById(String resultId) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findResultById'");
+        return resultMapper.findResultById(resultId);
     }
 
     @Override

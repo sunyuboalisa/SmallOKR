@@ -4,4 +4,6 @@ export interface User {
   token: string;
   namespaceUrl: string;
   status: 'online' | 'offline';
+  tenantId?: string;
+  tenantName?: string;
 }

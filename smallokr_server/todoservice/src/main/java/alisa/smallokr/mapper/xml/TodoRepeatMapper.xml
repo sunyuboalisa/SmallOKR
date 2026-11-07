@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="alisa.smallokr.mapper.TodoRepeatMapper">
+    <sql id="scope"><bind name="_tenant" value="@com.alisa.model.UserContext@get() == null ? '' : @com.alisa.model.UserContext@get().tenantId"/></sql>
+    <sql id="tenant"><if test="_tenant != null and _tenant != ''">and exists(select 1 from tb_todo parent where parent.todo_id=tb_todo_repeat.todo_id and parent.tenant_id=#{_tenant})</if></sql>
+    <select id="findById" resultType="alisa.smallokr.entity.TodoRepeat"><include refid="scope"/>select todo_repeat_id as todoRepeatId,todo_id as todoId,repeat_id as repeatId from tb_todo_repeat where todo_repeat_id=#{id} <include refid="tenant"/></select>
     <sql id="common"> todo_repeat_id as todoRepeatId, todo_id as todoId, repeat_id as repeatId </sql>
     <select id="getRepeats" resultType="alisa.smallokr.entity.TodoRepeat"> 
-    select
+    <include refid="scope"/>select
         <include refid="common" />
- from tb_todo_repeat where todo_id = #{todoId}
+ from tb_todo_repeat where todo_id = #{todoId} <include refid="tenant"/>
     </select>
     <insert id="addOrUpdateRepeat" parameterType="java.util.List">
         INSERT INTO
@@ -19,14 +22,14 @@
         )
         </foreach>
         ON DUPLICATE KEY UPDATE
-            todo_id = VALUES(todo_id),
-            repeat_id = VALUES(repeat_id)
+            repeat_id = CASE WHEN todo_id=VALUES(todo_id) THEN VALUES(repeat_id) ELSE repeat_id END
     </insert>
     <delete id="deleteRepeat" parameterType="java.util.List">
-    DELETE FROM tb_todo_repeat 
+    <include refid="scope"/>DELETE FROM tb_todo_repeat
     WHERE todo_repeat_id IN 
     <foreach collection="list" item="id" open="(" separator="," close=")">
         #{id}
     </foreach>
+    <include refid="tenant"/>
 </delete>
 </mapper>

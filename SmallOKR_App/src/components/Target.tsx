@@ -1,5 +1,5 @@
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useCallback, memo } from 'react';
 import { FlatList } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { TargetContext, TargetDispatchContext } from '../state/TargetContext';
@@ -33,6 +33,28 @@ const TargetHeaderRight = () => {
   );
 };
 
+const TargetRow = memo(
+  ({
+    item,
+    color,
+    onPress,
+    onLongPress,
+  }: {
+    item: ITarget;
+    color: string | undefined;
+    onPress: (item: ITarget) => void;
+    onLongPress: (item: ITarget) => void;
+  }) => (
+    <Card
+      color={color}
+      description={item.description}
+      title={item.name}
+      handlePress={() => onPress(item)}
+      handleLongPress={() => onLongPress(item)}
+    />
+  ),
+);
+
 const Target = ({ navigation }: MyStackScreenProps<'Target'>) => {
   const targetService = useTargetService();
   const themeContext = useContext(ThemeContext);
@@ -43,13 +65,28 @@ const Target = ({ navigation }: MyStackScreenProps<'Target'>) => {
   const closeModal = () => {
     setModalVisible(false);
   };
-  const handlePress = (target: ITarget) => {
-    navigation.navigate('EditTarget', { target: target });
-  };
-  const handleLongPress = (target: ITarget) => {
+  const handlePress = useCallback(
+    (target: ITarget) => {
+      navigation.navigate('EditTarget', { target: target });
+    },
+    [navigation],
+  );
+  const handleLongPress = useCallback((target: ITarget) => {
     setSelectedTarget(target);
     setModalVisible(true);
-  };
+  }, []);
+  const color = themeContext?.theme.colors.card;
+  const renderItem = useCallback(
+    ({ item }: { item: ITarget }) => (
+      <TargetRow
+        item={item}
+        color={color}
+        onPress={handlePress}
+        onLongPress={handleLongPress}
+      />
+    ),
+    [color, handlePress, handleLongPress],
+  );
   const handleDelete = async () => {
     if (selectedTarget) {
       try {
@@ -105,20 +142,24 @@ const Target = ({ navigation }: MyStackScreenProps<'Target'>) => {
       }}
     >
       <FlatList
-        keyExtractor={(item, index) => item.name + index}
-        renderItem={({ item, index }) => {
-          return (
-            <Card
-              key={index}
-              color={themeContext?.theme.colors.card}
-              description={item.description}
-              title={item.name}
-              handlePress={() => handlePress(item)}
-              handleLongPress={() => handleLongPress(item)}
-            />
-          );
-        }}
+        keyExtractor={item => item.id}
+        initialNumToRender={8}
+        maxToRenderPerBatch={8}
+        windowSize={7}
+        renderItem={renderItem}
         data={targetContext.targets}
+        ListEmptyComponent={
+          <Text
+            style={{
+              color: themeContext?.theme.colors.placeholder,
+              textAlign: 'center',
+              paddingTop: 40,
+              fontSize: 14,
+            }}
+          >
+            暂无目标，点击右上角添加
+          </Text>
+        }
       />
       <Modal
         animationType="fade" // 改为淡入淡出动画

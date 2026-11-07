@@ -2,6 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="alisa.smallokr.mapper.TargetMapper">
+    <sql id="scope"><bind name="_tenant" value="@com.alisa.model.UserContext@get() == null ? '' : @com.alisa.model.UserContext@get().tenantId"/></sql>
+    <sql id="tenant"><if test="_tenant != null and _tenant != ''">and tenant_id=#{_tenant}</if></sql>
     <sql id="common">
         target_id as id,
         user_id as userId,
@@ -11,27 +13,30 @@
         target_status as status
     </sql>
      <select id="findAll" resultType="alisa.smallokr.entity.Target">
-        select <include refid="common"/> from tb_target order by cre_time
+        <include refid="scope"/>select <include refid="common"/> from tb_target where 1=1 <include refid="tenant"/> order by cre_time
     </select>
     <select id="findTargetByID" resultType="alisa.smallokr.entity.Target">
-        select <include refid="common"/> from tb_target where target_id = #{id}
+        <include refid="scope"/>select <include refid="common"/> from tb_target where target_id = #{id} <include refid="tenant"/>
     </select>
     <select id="findTargetByUser" resultType="alisa.smallokr.entity.Target">
-        select <include refid="common"/> from tb_target where user_id = #{userId}
+        <include refid="scope"/>select <include refid="common"/> from tb_target where 1=1 <if test="userId != null">and user_id = #{userId}</if> <include refid="tenant"/>
     </select>
 
     <insert id="saveTarget" parameterType="alisa.smallokr.entity.Target">
-        insert into tb_target(target_id,target_name,target_description,user_id,cre_time,target_status) 
-        values (#{id},#{name},#{description},#{userId},#{creTime},#{status})
+        <include refid="scope"/>
+        insert into tb_target(target_id,target_name,target_description,user_id,cre_time,target_status<if test="_tenant != null and _tenant != ''">,tenant_id</if>)
+        values (#{id},#{name},#{description},#{userId},#{creTime},#{status}<if test="_tenant != null and _tenant != ''">,#{_tenant}</if>)
         ON DUPLICATE KEY UPDATE
-        target_name = VALUES(target_name),
-        target_description = VALUES(target_description),
-        target_status = VALUES(target_status)
+        <choose><when test="_tenant != null and _tenant != ''">
+        target_name = CASE WHEN tenant_id=VALUES(tenant_id) THEN VALUES(target_name) ELSE target_name END,
+        target_description = CASE WHEN tenant_id=VALUES(tenant_id) THEN VALUES(target_description) ELSE target_description END,
+        target_status = CASE WHEN tenant_id=VALUES(tenant_id) THEN VALUES(target_status) ELSE target_status END
+        </when><otherwise>target_name=VALUES(target_name),target_description=VALUES(target_description),target_status=VALUES(target_status)</otherwise></choose>
     </insert>
 
     <!-- deleteTarget --> 
 
     <delete id="deleteTarget">
-        delete from tb_target where target_id=#{targetId}
+        <include refid="scope"/>delete from tb_target where target_id=#{targetId} <include refid="tenant"/>
     </delete>
 </mapper>

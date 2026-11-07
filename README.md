@@ -1,6 +1,10 @@
 # SmallOKR
 一个非常简单的个人目标管理软件
 
+账号认证和公共网关由同级 alisa-cloud 项目提供：alisa-user 注册名为 user-service，接口仍为 /api/v1/user/**。
+SmallOKR 服务端仅构建 targetservice、todoservice、traceservice；公共库先在 alisa-cloud 执行 mvn clean install。
+业务网关路由见 smallokr_server/gateway-routes.yml，切换指南见 alisa-cloud/docs/user-service-migration.md。
+
 ## Development
 需要提前配置一下服务器环境，建议服务器选择 **Ubuntu 24.04** ，以下各个基础设施的**安装部分**仅列出作者的一种方式，完全可以用自己的方式
 - Docker
@@ -79,9 +83,9 @@ docker-compose -f example/standalone-derby.yaml up
 ```sh
 git clone https://github.com/sunyuboalisa/SmallOKR.git
 cd SmallOKR/smallokr_server
-# 将 ./smallokr_server/gateway/example.env 复制进去并修改相关变量
-cp gateway/example.env gateway.env
-nano gateway.env 
+# 先按 alisa-cloud 的说明部署公共账号服务和网关，使用相同的 Nacos 和 JWT_SECRET。
+# 为公共网关设置 ALISA_GATEWAY_ROUTES_FILE，指向本项目 smallokr_server/gateway-routes.yml。
+# 两个项目共享已创建的 my_network 网络。
 
 # 将 ./smallokr_server/targetservice/example.env 复制进去并修改相关变量
 cp targetservice/example.env targetservice.env 
@@ -90,10 +94,6 @@ nano targetservice.env
 # 将 ./smallokr_server/todoservice/example.env 复制进去并修改相关变量
 cp todoservice/example.env todoservice.env
 nano todoservice.env 
-
-# 将 ./smallokr_server/userservice/example.env 复制进去并修改相关变量
-cp userservice/example.env userservice.env
-nano userservice.env
 
 # 将 ./smallokr_server/traceservice/example.env 复制进去并修改相关变量
 cp traceservice/example.env traceservice.env
@@ -104,7 +104,7 @@ docker compose up -d
 
 ```
 
-现在后端服务应该已经运行了，主要通过宿主机的8100端口提供通信
+业务服务通过 alisa-cloud 网关提供通信，网关默认端口为 8100。本项目不再独立部署 gateway 和 userservice。
 
 
 

@@ -6,6 +6,7 @@ import alisa.smallokr.entity.Result;
 
 @Mapper
 public interface ResultMapper {
+        Result findResultById(String resultId);
         boolean saveResult(Result result);
 
         long saveOrUpdateResult(List<Result> result);

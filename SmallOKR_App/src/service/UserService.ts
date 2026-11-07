@@ -24,10 +24,7 @@ const useUserService = () => {
         );
         const token = response.data.data;
         if (!token) {
-          console.log('用户名或者密码错误');
           return;
-        } else {
-          console.log('Login successful, token:', token);
         }
 
         dispatch({
@@ -50,10 +47,7 @@ const useUserService = () => {
       try {
         const response = await sendRequest('post', '/api/v1/user/logout');
         if (response.status === 200) {
-          console.log('Logout successful');
           dispatch({ type: 'Logout' });
-        } else {
-          console.log('Logout failed with status:', response.status);
         }
         return response;
       } catch (error) {
@@ -106,14 +100,11 @@ const useUserService = () => {
         const fullUrl = `${baseURL}/api/v1/user/health`;
         const response = await get(fullUrl, {}, { baseURL: '' });
         if (response.status === 200) {
-          console.log('Health check successful');
           return true;
         } else {
-          console.log('Health check failed with status:', response.status);
           return false;
         }
       } catch (error) {
-        console.log('Health check failed with error:', error);
         return false;
       }
     };

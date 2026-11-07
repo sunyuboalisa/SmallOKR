@@ -23,7 +23,7 @@ else
 endif
 IMAGE_TAG = latest
 
-.PHONY: package-single build clean-image build-target build-todo build-trace build-user build-all
+.PHONY: package-single build clean-image build-target build-todo build-trace build-all push-image push-all
 
 # 1. 精准打包
 package-single:
@@ -53,22 +53,23 @@ build-todo:
 build-trace:
 	@$(MAKE) build SERVICE=traceservice
 
-build-user:
-	@$(MAKE) build SERVICE=userservice
-
 # ================= 🌪️ 安全并发一键打包 =================
 # 在 Windows 下，将多目标拆分到独立的 MAKE 命令中执行，彻底避免 CreateProcess 报错
 build-all:
 	@$(MAKE) -j 1 build-target
 	@$(MAKE) -j 1 build-todo
 	@$(MAKE) -j 1 build-trace
-	@$(MAKE) -j 1 build-user
 
 # ================= 🚢 生产部署一键推送 =================
 
 # 一键推送所有镜像到云端仓库
 push-all:
-	podman push $(REGISTRY)/$(COMPANY)/gateway:$(IMAGE_TAG)
+	@$(MAKE) push-image SERVICE=targetservice
+	@$(MAKE) push-image SERVICE=todoservice
+	@$(MAKE) push-image SERVICE=traceservice
+
+push-image:
+	podman push $(IMAGE_NAME):$(IMAGE_TAG)
 
 # 终极省心指令：一键完成「全量打包、全量构建、全量推送」
 release-all: build-all push-all

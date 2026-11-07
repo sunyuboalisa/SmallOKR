@@ -27,7 +27,6 @@ const DateCom = ({ date, onConfirm }: DateComProps) => {
   const handleNativeChange = (event: any, selectedDate?: Date) => {
     if (selectedDate) {
       setTempDate(selectedDate);
-      console.log('Native date selected:', selectedDate.toString());
     }
 
     // 如果是 Android 的命令式 API，它自带确认按钮，我们可以直接处理并关闭
@@ -71,7 +70,7 @@ const DateCom = ({ date, onConfirm }: DateComProps) => {
   const handleCancel = () => {
     setModalVisible(false);
   };
-  console.log('DateCom render with date:', date.toString());
+
   return (
     <View style={styles.repeatContainer}>
       {/* 1. UI 显示部分 */}

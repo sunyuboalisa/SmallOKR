@@ -17,9 +17,11 @@ import alisa.smallokr.service.DicService;
 public class DicController {
     @Autowired
     private DicService dicService;
+    @Autowired private alisa.smallokr.service.TodoAccess access;
 
     @GetMapping("/get")
     public Result<List<DicEntry>> getDicEntry(String dicName) {
+        access.require("*","read");
         List<DicEntry> entries = dicService.getDicEntrys(dicName);
         return new Result<List<DicEntry>>(entries);
     }

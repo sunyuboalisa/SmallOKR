@@ -72,8 +72,7 @@ export const RepeatModal = ({
   const colors = themeContext?.theme.colors;
   const [tempRepeats, setTempRepeats] =
     React.useState<RepeatUIModel[]>(repeats);
-  console.log('tempRepeats :', tempRepeats);
-  console.log('repeats :', repeats);
+
   const toggleRepeat = (repeatItem: RepeatUIModel) => {
     if (!tempRepeats) return;
     const updatedRepeats = tempRepeats.map(r => {

@@ -13,9 +13,7 @@ const initialTargetState: TargetState = {
   results: [],
   reload: false,
 };
-const initialDispatch: Dispatch<TargetAction> = (action: TargetAction) => {
-  console.log(action);
-};
+const initialDispatch: Dispatch<TargetAction> = (action: TargetAction) => {};
 
 const TargetContext = createContext(initialTargetState);
 const TargetDispatchContext = createContext(initialDispatch);
@@ -31,10 +29,8 @@ const TargetContextProvider = (props: { children: React.ReactNode }) => {
         );
         return { ...state, targets: filteredTargets };
       case 'Load':
-        console.log('加载目标：', action.targets);
         return { ...state, targets: action.targets };
       case 'AddResult':
-        console.log('添加阶段成果：', action.newResult);
         return { ...state, results: [...state.results, action.newResult] };
       case 'ChangeResult':
         const newResults = state.results.map(item => {
@@ -45,7 +41,6 @@ const TargetContextProvider = (props: { children: React.ReactNode }) => {
         });
         return { ...state, results: newResults };
       case 'LoadResult':
-        console.log('加载阶段成果：', action.results);
         return { ...state, results: action.results };
       case 'DeleteResult':
         const filteredResults = state.results.filter(

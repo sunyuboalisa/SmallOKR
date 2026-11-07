@@ -13,9 +13,7 @@ const initialPlanStates: TodoState = {
   uiTodos: [],
   reload: false,
 };
-const initialDispatch = (action: TodoAction) => {
-  console.log(action);
-};
+const initialDispatch = (action: TodoAction) => {};
 
 const TodoContext = createContext(initialPlanStates);
 const TodoDispatchContext = createContext(initialDispatch);
@@ -41,14 +39,10 @@ const TodoContextProvider = ({ children }: { children: React.ReactNode }) => {
           updatedUiTodos = state.uiTodos.map(item =>
             item.id === uiTodo.id ? uiTodo : item,
           );
-
-          console.log('待办已更新:', newTodo.id);
         } else {
           // --- 不存在：执行添加逻辑 (Push) ---
           updatedTodos = [...state.todos, newTodo];
           updatedUiTodos = [...state.uiTodos, uiTodo];
-
-          console.log('待办已添加:', newTodo.id);
         }
 
         return {
@@ -67,8 +61,6 @@ const TodoContextProvider = ({ children }: { children: React.ReactNode }) => {
           endTime: x.endDate,
           title: x.name,
         }));
-        console.log('加载待办列表', temp);
-
         return { ...state, todos: action.newTodos, uiTodos: temp };
       default:
         break;
