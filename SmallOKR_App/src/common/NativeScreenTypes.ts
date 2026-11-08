@@ -1,5 +1,5 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { ITarget, ITodo } from '../model/OKRModel';
+import { IResult, ITarget, ITodo } from '../model/OKRModel';
 import { NavigatorScreenParams } from '@react-navigation/native';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 type TargetStackParamList = {
@@ -8,6 +8,7 @@ type TargetStackParamList = {
 };
 type EditTargetRouteParams = {
   target: ITarget;
+  initialResults?: IResult[];
 };
 
 export type MyStackParamList = {

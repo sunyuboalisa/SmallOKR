@@ -18,7 +18,10 @@ const TargetStackScreen = () => {
           backgroundColor: theme.theme.colors.background,
         },
         headerTintColor: theme.theme.colors.text,
-        animation: 'fade',
+        contentStyle: {
+          backgroundColor: theme.theme.colors.background,
+        },
+        animation: 'none',
       }}
     >
       <TargetStack.Screen

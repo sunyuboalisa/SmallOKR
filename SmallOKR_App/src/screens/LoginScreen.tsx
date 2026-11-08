@@ -10,7 +10,14 @@ import {
 import { UserContext, UserDispatchContext } from '../state/UserContext';
 import useUserService from '../service/UserService';
 import { MyStackScreenProps } from '../common/NativeScreenTypes';
+import { useTheme } from '../state/ThemeContext';
 export const LoginScreen = ({ navigation }: MyStackScreenProps<'Login'>) => {
+  const { theme } = useTheme();
+  const inputStyle = [
+    styles.input,
+    { color: theme.colors.text, borderColor: theme.colors.placeholder },
+  ];
+  const keyboardAppearance = theme.dark ? 'dark' : 'light';
   const userService = useUserService();
   const userContext = useContext(UserContext);
   const dispatch = useContext(UserDispatchContext);
@@ -76,28 +83,39 @@ export const LoginScreen = ({ navigation }: MyStackScreenProps<'Login'>) => {
   return (
     <ImageBackground
       source={require('../../assets/imgs/login-background.png')}
-      style={styles.container}
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      imageStyle={theme.dark ? styles.darkBackground : undefined}
     >
       <TextInput
         autoCapitalize="none"
-        style={styles.input}
+        style={inputStyle}
         placeholder="用户名"
+        placeholderTextColor={theme.colors.placeholder}
+        keyboardAppearance={keyboardAppearance}
         onChangeText={text => setUsername(text)}
         value={username}
       />
       <TextInput
         autoCapitalize="none"
-        style={styles.input}
+        style={inputStyle}
         placeholder="密码"
+        placeholderTextColor={theme.colors.placeholder}
+        keyboardAppearance={keyboardAppearance}
         onChangeText={text => setPassword(text)}
         value={password}
         secureTextEntry={true}
       />
-      {error ? <Text style={styles.error}>{error}</Text> : null}
+      {error ? (
+        <Text style={[styles.error, { color: theme.colors.error }]}>
+          {error}
+        </Text>
+      ) : null}
       <TextInput
         autoCapitalize="none"
-        style={styles.input}
+        style={inputStyle}
         placeholder="空间地址"
+        placeholderTextColor={theme.colors.placeholder}
+        keyboardAppearance={keyboardAppearance}
         onChangeText={text => {
           setNamespaceUrl(text);
           dispatch({
@@ -108,7 +126,9 @@ export const LoginScreen = ({ navigation }: MyStackScreenProps<'Login'>) => {
         value={namespaceUrl}
       />
       {errorNamespace ? (
-        <Text style={styles.error}>{errorNamespace}</Text>
+        <Text style={[styles.error, { color: theme.colors.error }]}>
+          {errorNamespace}
+        </Text>
       ) : null}
       <TouchableOpacity onPress={handleLogin} style={styles.login}>
         <Text children="登录" style={styles.loginText} />
@@ -127,6 +147,9 @@ export const LoginScreen = ({ navigation }: MyStackScreenProps<'Login'>) => {
 };
 
 const styles = StyleSheet.create({
+  darkBackground: {
+    opacity: 0,
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -143,11 +166,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 5,
     borderBottomWidth: 1,
-    borderColor: 'gray',
     justifyContent: 'center',
   },
   error: {
-    color: 'red',
     marginBottom: 10,
   },
   login: {

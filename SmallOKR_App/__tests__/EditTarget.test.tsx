@@ -64,11 +64,13 @@ test.each([200, '200'])(
         <TargetContextProvider>
           <EditTarget
             navigation={{} as any}
-            route={{
-              params: {
-                target: { id: 'target-1', name: 'Target', description: '' },
-              },
-            } as any}
+            route={
+              {
+                params: {
+                  target: { id: 'target-1', name: 'Target', description: '' },
+                },
+              } as any
+            }
           />
         </TargetContextProvider>,
       );
@@ -81,3 +83,48 @@ test.each([200, '200'])(
     await ReactTestRenderer.act(async () => renderer!.unmount());
   },
 );
+
+test('renders prepared results immediately without refetching and keeps edits local', async () => {
+  mockGetResults.mockReset();
+  let renderer!: ReactTestRenderer.ReactTestRenderer;
+  await ReactTestRenderer.act(async () => {
+    renderer = ReactTestRenderer.create(
+      <TargetContextProvider>
+        <EditTarget
+          navigation={{} as any}
+          route={
+            {
+              params: {
+                target: {
+                  id: 'prepared-target',
+                  name: 'Target',
+                  description: '',
+                },
+                initialResults: [
+                  {
+                    id: 'prepared-stage',
+                    targetId: 'prepared-target',
+                    name: 'Prepared stage',
+                    value: 'Prepared value',
+                  },
+                ],
+              },
+            } as any
+          }
+        />
+      </TargetContextProvider>,
+    );
+  });
+  expect(mockGetResults).not.toHaveBeenCalled();
+  const stageInput = renderer.root
+    .findAllByType(TextInput)
+    .find(input => input.props.value === 'Prepared stage');
+  expect(stageInput).toBeDefined();
+  await ReactTestRenderer.act(async () =>
+    stageInput!.props.onChangeText('Edited stage'),
+  );
+  expect(
+    renderer.root.findAllByType(TextInput).map(input => input.props.value),
+  ).toContain('Edited stage');
+  await ReactTestRenderer.act(async () => renderer.unmount());
+});

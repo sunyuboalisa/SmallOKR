@@ -12,20 +12,21 @@ import {
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import useTargetService from '../service/TargetService';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { TargetContext, TargetDispatchContext } from '../state/TargetContext';
+import { TargetDispatchContext } from '../state/TargetContext';
 import { ThemeContext } from '../state/ThemeContext';
 import { MyStackScreenProps } from '../common/NativeScreenTypes';
+import { IResult } from '../model/OKRModel';
 
 const EditTarget = ({
   navigation,
   route,
 }: MyStackScreenProps<'EditTarget'>) => {
-  const { target } = route.params;
+  const { target, initialResults } = route.params;
 
   const targetService = useTargetService();
   const [description, onChangeDescription] = useState(target.description);
   const [targetName, onChangeTargetName] = useState(target.name);
-  const targetContext = useContext(TargetContext);
+  const [results, setResults] = useState<IResult[]>(initialResults ?? []);
   const dispatch = useContext(TargetDispatchContext);
   const themeContext = useContext(ThemeContext);
   const [showDeleteIcon, setShowDeleteIcon] = useState(false);
@@ -35,16 +36,16 @@ const EditTarget = ({
   const savingRef = useRef(false);
 
   const onAddBtnPress = () => {
-    dispatch({
-      type: 'AddResult',
-      newResult: {
+    setResults(current => [
+      ...current,
+      {
         id: '',
         targetId: target.id,
         name: '',
         value: '',
         creTime: new Date(),
       },
-    });
+    ]);
   };
 
   const handleOKBtnPress = async () => {
@@ -64,9 +65,7 @@ const EditTarget = ({
         id: target.id,
         status: 0,
       });
-      const addResultRes = await targetService.saveResult(
-        targetContext.results,
-      );
+      const addResultRes = await targetService.saveResult(results);
       const getTargetsRes = await targetService.getTargets();
       let data = getTargetsRes.data.data;
 
@@ -98,30 +97,36 @@ const EditTarget = ({
   const handleLongPress = () => {
     setShowDeleteIcon(!showDeleteIcon);
   };
-  const handleDeleteResult = async (item: any) => {
+  const handleDeleteResult = async (item: IResult, index: number) => {
     if (item.id === '') {
-      dispatch({ type: 'DeleteResult', resultId: item.id });
+      setResults(current =>
+        current.filter((_, resultIndex) => resultIndex !== index),
+      );
       return;
     }
     const res = await targetService.deleteResult(item.id);
     if (String(res.data.code) === '200') {
-      dispatch({ type: 'DeleteResult', resultId: item.id });
+      setResults(current => current.filter(result => result.id !== item.id));
     } else {
       throw new Error('删除阶段成果失败');
     }
   };
   useEffect(() => {
     let active = true;
+    onChangeDescription(target.description);
+    onChangeTargetName(target.name);
+    setResults(initialResults ?? []);
+    setSaveError('');
     const featchData = async () => {
       try {
         // 新的目标，id 为空，不请求阶段成果
-        if (target.id === '') {
+        if (initialResults !== undefined || target.id === '') {
           return;
         }
         const res = await targetService.getResults({ targetId: target.id });
         if (!active) return;
         if (String(res.data.code) === '200') {
-          dispatch({ type: 'LoadResult', results: res.data.data });
+          setResults(res.data.data);
         } else {
           throw new Error('获取阶段成果失败');
         }
@@ -133,11 +138,14 @@ const EditTarget = ({
 
     return () => {
       active = false;
-      // 当组件（EditTarget）卸载时（即用户退出或导航到其他页面），执行此清理操作
-
-      dispatch({ type: 'LoadResult', results: [] });
     };
-  }, [target.id, dispatch, targetService]);
+  }, [
+    target.id,
+    target.name,
+    target.description,
+    initialResults,
+    targetService,
+  ]);
 
   return (
     <KeyboardAvoidingView
@@ -249,9 +257,9 @@ const EditTarget = ({
 
             <FlatList
               scrollEnabled={false}
-              data={targetContext.results}
+              data={results}
               keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => (
+              renderItem={({ item, index }) => (
                 <Pressable
                   onLongPress={handleLongPress}
                   style={[
@@ -285,9 +293,7 @@ const EditTarget = ({
                         size={24}
                         color={themeContext?.theme.colors.primary}
                         onPress={async () => {
-                          // 替换这里的 console.log 为实际的删除 dispatch 操作
-                          // 例如：dispatch({ type: 'DeleteResult', id: item.id });
-                          handleDeleteResult(item);
+                          handleDeleteResult(item, index);
                         }}
                         style={[
                           { paddingBottom: 10 }, // 保持原有样式
@@ -311,13 +317,13 @@ const EditTarget = ({
                         },
                       ]}
                       onChangeText={text =>
-                        dispatch({
-                          type: 'ChangeResult',
-                          newResult: {
-                            ...item,
-                            name: text,
-                          },
-                        })
+                        setResults(current =>
+                          current.map((result, resultIndex) =>
+                            resultIndex === index
+                              ? { ...result, name: text }
+                              : result,
+                          ),
+                        )
                       }
                       value={item.name}
                       placeholder="阶段名称"
@@ -347,13 +353,13 @@ const EditTarget = ({
                         },
                       ]}
                       onChangeText={text =>
-                        dispatch({
-                          type: 'ChangeResult',
-                          newResult: {
-                            ...item,
-                            value: text,
-                          },
-                        })
+                        setResults(current =>
+                          current.map((result, resultIndex) =>
+                            resultIndex === index
+                              ? { ...result, value: text }
+                              : result,
+                          ),
+                        )
                       }
                       placeholder="具体成果"
                       placeholderTextColor={themeContext?.theme.colors.text}

@@ -13,16 +13,20 @@ import {
 } from '../common/NativeScreenTypes';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { useUUID } from '../hooks/useUUID';
+import { usePrepareTargetEditor } from '../hooks/usePrepareTargetEditor';
 
 const TargetHeaderRight = () => {
   const themeContext = useContext(ThemeContext);
   const navigation = useNavigation<NavigationProp<MyStackParamList>>();
   const uuid = useUUID();
+  const prepareEditor = usePrepareTargetEditor();
 
-  const onAddBtnPress = () => {
-    navigation.navigate('EditTarget', {
-      target: { description: '', name: '', id: uuid.generateUUID(), status: 0 },
-    });
+  const onAddBtnPress = async () => {
+    const params = await prepareEditor(
+      { description: '', name: '', id: uuid.generateUUID(), status: 0 },
+      true,
+    );
+    if (params) navigation.navigate('EditTarget', params);
   };
   return (
     <Ionicons
@@ -57,6 +61,7 @@ const TargetRow = memo(
 
 const Target = ({ navigation }: MyStackScreenProps<'Target'>) => {
   const targetService = useTargetService();
+  const prepareEditor = usePrepareTargetEditor();
   const themeContext = useContext(ThemeContext);
   const [modalVisible, setModalVisible] = useState(false);
   const targetContext = useContext(TargetContext);
@@ -66,10 +71,11 @@ const Target = ({ navigation }: MyStackScreenProps<'Target'>) => {
     setModalVisible(false);
   };
   const handlePress = useCallback(
-    (target: ITarget) => {
-      navigation.navigate('EditTarget', { target: target });
+    async (target: ITarget) => {
+      const params = await prepareEditor(target);
+      if (params) navigation.navigate('EditTarget', params);
     },
-    [navigation],
+    [navigation, prepareEditor],
   );
   const handleLongPress = useCallback((target: ITarget) => {
     setSelectedTarget(target);
@@ -100,9 +106,8 @@ const Target = ({ navigation }: MyStackScreenProps<'Target'>) => {
     setModalVisible(false);
   };
   const handleEditTarget = () => {
-    if (selectedTarget)
-      navigation.navigate('EditTarget', { target: selectedTarget });
     closeModal();
+    if (selectedTarget) handlePress(selectedTarget);
   };
   const handleFinishTarget = async () => {
     if (selectedTarget) {

@@ -1,4 +1,4 @@
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AppTabNav } from './AppTabNav';
 import LoginScreen from '../screens/LoginScreen';
 import React, { useContext } from 'react';
@@ -12,7 +12,7 @@ const TenantApp = () => {
 };
 
 // 这里是程序主组件入口
-const Stack = createStackNavigator<MyReactNavigation.ParamList>();
+const Stack = createNativeStackNavigator<MyReactNavigation.ParamList>();
 export const AppStackNav = () => {
   const userContext = useContext(UserContext);
 

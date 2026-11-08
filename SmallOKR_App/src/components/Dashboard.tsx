@@ -12,10 +12,12 @@ import { TargetContext, TargetDispatchContext } from '../state/TargetContext';
 import { useTheme } from '../state/ThemeContext';
 import { MyTabScreenProps } from '../common/NativeScreenTypes';
 import { useIsFocused } from '@react-navigation/native';
+import { usePrepareTargetEditor } from '../hooks/usePrepareTargetEditor';
 
 const Dashboard = ({ navigation }: MyTabScreenProps<'Dashboard'>) => {
   const isFocused = useIsFocused();
   const service = useTargetService();
+  const prepareEditor = usePrepareTargetEditor();
   const { targets } = useContext(TargetContext);
   const dispatch = useContext(TargetDispatchContext);
   const { theme } = useTheme();
@@ -35,15 +37,14 @@ const Dashboard = ({ navigation }: MyTabScreenProps<'Dashboard'>) => {
     load();
   }, [load]);
   const open = useCallback(
-    (id: string) => {
+    async (id: string) => {
       const target = targets.find(t => t.id === id);
-      if (target)
-        navigation.navigate('TargetTab', {
-          screen: 'EditTarget',
-          params: { target },
-        });
+      if (!target) return;
+      const params = await prepareEditor(target);
+      if (params)
+        navigation.navigate('TargetTab', { screen: 'EditTarget', params });
     },
-    [targets, navigation],
+    [targets, navigation, prepareEditor],
   );
   const data = useMemo(
     () => targets.map(({ id, name }) => ({ id, name })),
