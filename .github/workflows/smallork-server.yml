@@ -1,62 +1,95 @@
-name: SmallOKR Server CI/CD
-run-name: ${{ github.actor }} build and push docker images
+name: SmallOKR Server Release
 
 on:
   push:
     branches: [main]
+    paths:
+      - 'smallokr_server/**'
+      - 'deploy/build-inputs.json'
+      - 'deploy/scripts/**'
+      - '.github/workflows/smallork-server.yml'
+  pull_request:
+    paths:
+      - 'smallokr_server/**'
+      - 'deploy/build-inputs.json'
+      - 'deploy/scripts/**'
+      - '.github/workflows/smallork-server.yml'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: smallokr-server-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
-  build:
+  verify:
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      packages: write
-      id-token: write # ✅ 支持 OIDC（未来更安全的认证方式）
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Java
-        uses: actions/setup-java@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          distribution: "zulu"
-          java-version: "17"
-
-      - name: Build Spring Cloud project
-        working-directory: ./smallokr_server
-        run: ./mvnw clean package -DskipTests
-
-      - name: Log in to GitHub Container Registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-      - name: Build and push service images
-        working-directory: ./smallokr_server
-        env:
-          IMAGE_BASE: ghcr.io/${{ github.repository_owner }}/smallokr
+          python-version: '3.11'
+      - name: Read pinned common dependency
+        id: common
         run: |
-          services=(targetservice todoservice traceservice)
-          for service in "${services[@]}"; do
-            echo "🚀 Building $service ..."
-            docker build -t $IMAGE_BASE-$service:latest -f ./docker/$service.Dockerfile .
-            docker push $IMAGE_BASE-$service:latest
-          done
+          python -m pip install PyYAML==6.0.2
+          echo "revision=$(python deploy/scripts/prepare-release.py --common-revision)" >> "$GITHUB_OUTPUT"
+      - name: Checkout common dependency
+        uses: actions/checkout@v4
+        with:
+          repository: future-alisa/alisa-cloud
+          ref: ${{ steps.common.outputs.revision }}
+          path: .build/alisa-cloud
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - name: Test and package server
+        run: |
+          mvn -B -ntp -f .build/alisa-cloud/pom.xml -pl alisa-common -am install
+          mvn -B -ntp -f smallokr_server/pom.xml package
 
-      # - name: Deploy on Cloud Server
-      #   env:
-      #     SSH_HOST: ${{ secrets.SSH_HOST }}
-      #     SSH_PORT: ${{ secrets.SSH_PORT }}
-      #     SSH_USER: ${{ secrets.SSH_USER }}
-      #     SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
-      #   run: |
-      #     sshpass -p "$SSH_PASSWORD" ssh -p "$SSH_PORT" -o StrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" << 'EOF'
-      #       set -e
-      #       cd ~/smallokr/
-      #       echo "🧰 Pulling latest images..."
-      #       docker compose pull
-      #       echo "🧹 Restarting containers..."
-      #       docker compose down
-      #       docker compose up -d
-      #     EOF
+  prepare-deployment:
+    needs: verify
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install PyYAML==6.0.2
+      - name: Publish tested revision to deployment manifests
+        env:
+          SOURCE_REVISION: ${{ github.sha }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3; do
+            git fetch origin main
+            if ! git diff --quiet "$SOURCE_REVISION" origin/main -- smallokr_server deploy/build-inputs.json deploy/scripts .github/workflows/smallork-server.yml; then
+              echo 'A newer server change will be released by its own workflow.'
+              exit 0
+            fi
+            git reset --hard origin/main
+            python deploy/scripts/prepare-release.py --revision "$SOURCE_REVISION"
+            if git diff --quiet -- deploy/kubernetes; then
+              echo 'Deployment already references this tested revision.'
+              exit 0
+            fi
+            git add deploy/kubernetes/smallokr-build.yaml deploy/kubernetes/smallokr.yaml
+            git commit -m "Release server $SOURCE_REVISION [skip ci]"
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+          done
+          echo 'Could not publish the release after three concurrent-update retries.' >&2
+          exit 1
