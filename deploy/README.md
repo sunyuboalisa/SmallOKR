@@ -3,7 +3,8 @@
 Argo CD application: `smallokr`; namespace: `alisa-infra`.
 
 The build hook fetches fixed SmallOKR and alisa-cloud commits, runs Maven tests,
-and publishes a versioned runtime image to the existing private registry.
+and publishes a versioned runtime image to the internal registry at `registry.kind.internal:5000`. The publisher uses the
+registry CA already trusted by containerd on the build node.
 The three Deployments register their Pod IP with the existing Nacos instance.
 The public endpoint remains `https://alisa.vip.cpolar.cn/alisa-gateway`.
 The account service remains the existing externally hosted alisa-user.

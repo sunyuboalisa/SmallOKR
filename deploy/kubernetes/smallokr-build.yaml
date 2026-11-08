@@ -30,11 +30,6 @@ spec:
     spec:
       restartPolicy: Never
       automountServiceAccountToken: false
-      dnsPolicy: None
-      dnsConfig:
-        nameservers:
-        - 223.5.5.5
-        - 1.1.1.1
       initContainers:
       - name: source
         image: alpine/git:2.47.2
@@ -56,7 +51,7 @@ spec:
 
           cat > /workspace/smallokr/smallokr_server/Dockerfile.k8s <<''DOCKERFILE''
 
-          FROM alisa-registry.cpolar.top/alisa-user:20261106-1
+          FROM registry.kind.internal:5000/alisa-user:20261106-1
 
           WORKDIR /app
 
@@ -72,11 +67,22 @@ spec:
 
           DOCKERFILE
 
+
+          umask 077
+
+          sed ''s/alisa-registry\.cpolar\.top/registry.kind.internal:5000/g'' /registry-credentials/config.json
+          > /registry-auth/config.json
+
           '
         volumeMounts:
         - &id001
           name: workspace
           mountPath: /workspace
+        - name: registry
+          mountPath: /registry-credentials
+          readOnly: true
+        - name: registry-auth
+          mountPath: /registry-auth
       - name: package
         image: maven:3.9.9-eclipse-temurin-17
         command:
@@ -99,12 +105,16 @@ spec:
         args:
         - --context=dir:///workspace/smallokr/smallokr_server
         - --dockerfile=Dockerfile.k8s
-        - --destination=alisa-registry.cpolar.top/smallokr:git-bf29dd6-common03f0644
+        - --destination=registry.kind.internal:5000/smallokr:git-bf29dd6-common03f0644
         - --push-retry=3
+        - --registry-certificate=registry.kind.internal:5000=/registry-ca/ca.crt
         volumeMounts:
         - *id001
-        - name: registry
+        - name: registry-auth
           mountPath: /kaniko/.docker
+          readOnly: true
+        - name: registry-ca
+          mountPath: /registry-ca/ca.crt
           readOnly: true
       volumes:
       - name: workspace
@@ -116,3 +126,10 @@ spec:
           items:
           - key: .dockerconfigjson
             path: config.json
+      - name: registry-auth
+        emptyDir:
+          medium: Memory
+      - name: registry-ca
+        hostPath:
+          path: /etc/containerd/certs.d/registry.kind.internal:5000/ca.crt
+          type: File

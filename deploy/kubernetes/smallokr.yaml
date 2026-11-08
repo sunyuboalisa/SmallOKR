@@ -29,7 +29,7 @@ spec:
       - name: alisa-registry
       containers:
       - name: targetservice
-        image: alisa-registry.cpolar.top/smallokr:git-bf29dd6-common03f0644
+        image: registry.kind.internal:5000/smallokr:git-bf29dd6-common03f0644
         command:
         - java
         args:
@@ -117,7 +117,7 @@ spec:
       - name: alisa-registry
       containers:
       - name: todoservice
-        image: alisa-registry.cpolar.top/smallokr:git-bf29dd6-common03f0644
+        image: registry.kind.internal:5000/smallokr:git-bf29dd6-common03f0644
         command:
         - java
         args:
@@ -205,7 +205,7 @@ spec:
       - name: alisa-registry
       containers:
       - name: traceservice
-        image: alisa-registry.cpolar.top/smallokr:git-bf29dd6-common03f0644
+        image: registry.kind.internal:5000/smallokr:git-bf29dd6-common03f0644
         command:
         - java
         args:
