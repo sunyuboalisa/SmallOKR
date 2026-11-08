@@ -30,6 +30,8 @@ spec:
     spec:
       restartPolicy: Never
       automountServiceAccountToken: false
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
       initContainers:
       - name: source
         image: alpine/git:2.47.2
