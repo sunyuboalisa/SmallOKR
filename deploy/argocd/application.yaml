@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: smallokr
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sunyuboalisa/SmallOKR.git
+    targetRevision: codex/k8s-deploy
+    path: deploy/kubernetes
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: alisa-infra
+  ignoreDifferences:
+  - group: ''
+    kind: Secret
+    name: smallokr-targetservice-env
+    namespace: alisa-infra
+    jsonPointers:
+    - /data
+  - group: ''
+    kind: Secret
+    name: smallokr-todoservice-env
+    namespace: alisa-infra
+    jsonPointers:
+    - /data
+  - group: ''
+    kind: Secret
+    name: smallokr-traceservice-env
+    namespace: alisa-infra
+    jsonPointers:
+    - /data
+  syncPolicy:
+    syncOptions:
+    - RespectIgnoreDifferences=true

@@ -1,0 +1,118 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: smallokr-build-cache
+  namespace: alisa-infra
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: '-20'
+    argocd.argoproj.io/hook-delete-policy: HookFailed
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 4Gi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: smallokr-build
+  namespace: alisa-infra
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: '-10'
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 3600
+  template:
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+        - 223.5.5.5
+        - 1.1.1.1
+      initContainers:
+      - name: source
+        image: alpine/git:2.47.2
+        command:
+        - sh
+        - -ec
+        args:
+        - 'wget -T 60 -t 3 -O /tmp/smallokr.tar.gz https://codeload.github.com/sunyuboalisa/SmallOKR/tar.gz/bf29dd6ddc868c8d94b2bba5d32c179065efce44
+
+          wget -T 60 -t 3 -O /tmp/cloud.tar.gz https://codeload.github.com/future-alisa/alisa-cloud/tar.gz/03f0644ea91b6df262425b62000398e40a7d4fbc
+
+          rm -rf /workspace/smallokr /workspace/cloud
+
+          mkdir -p /workspace/smallokr /workspace/cloud
+
+          tar -xzf /tmp/smallokr.tar.gz -C /workspace/smallokr --strip-components=1
+
+          tar -xzf /tmp/cloud.tar.gz -C /workspace/cloud --strip-components=1
+
+          cat > /workspace/smallokr/smallokr_server/Dockerfile.k8s <<''DOCKERFILE''
+
+          FROM alisa-registry.cpolar.top/alisa-user:20261106-1
+
+          WORKDIR /app
+
+          COPY target/package/targetservice-0.0.1-SNAPSHOT.jar /app/smallokr/
+
+          COPY target/package/todoservice-0.0.1-SNAPSHOT.jar /app/smallokr/
+
+          COPY target/package/traceservice-0.0.1-SNAPSHOT.jar /app/smallokr/
+
+          ENV TZ=Asia/Shanghai
+
+          ENTRYPOINT ["java"]
+
+          DOCKERFILE
+
+          '
+        volumeMounts:
+        - &id001
+          name: workspace
+          mountPath: /workspace
+      - name: package
+        image: maven:3.9.9-eclipse-temurin-17
+        command:
+        - sh
+        - -ec
+        args:
+        - 'mvn -B -ntp -f /workspace/cloud/pom.xml -pl alisa-common -am install
+
+          mvn -B -ntp -f /workspace/smallokr/smallokr_server/pom.xml package
+
+          '
+        volumeMounts:
+        - *id001
+        - name: workspace
+          mountPath: /root/.m2
+          subPath: maven
+      containers:
+      - name: publish-image
+        image: gcr.io/kaniko-project/executor:v1.23.2
+        args:
+        - --context=dir:///workspace/smallokr/smallokr_server
+        - --dockerfile=Dockerfile.k8s
+        - --destination=alisa-registry.cpolar.top/smallokr:git-bf29dd6-common03f0644
+        - --push-retry=3
+        volumeMounts:
+        - *id001
+        - name: registry
+          mountPath: /kaniko/.docker
+          readOnly: true
+      volumes:
+      - name: workspace
+        persistentVolumeClaim:
+          claimName: smallokr-build-cache
+      - name: registry
+        secret:
+          secretName: alisa-registry
+          items:
+          - key: .dockerconfigjson
+            path: config.json

@@ -1,0 +1,263 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: smallokr-targetservice-env
+  namespace: alisa-infra
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false,Delete=false
+    argocd.argoproj.io/sync-wave: '-5'
+type: Opaque
+data: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smallokr-targetservice
+  namespace: alisa-infra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: smallokr-targetservice
+  template:
+    metadata:
+      labels:
+        app: smallokr-targetservice
+    spec:
+      automountServiceAccountToken: false
+      imagePullSecrets:
+      - name: alisa-registry
+      containers:
+      - name: targetservice
+        image: alisa-registry.cpolar.top/smallokr:git-bf29dd6-common03f0644
+        command:
+        - java
+        args:
+        - -XX:MaxRAMPercentage=70
+        - -jar
+        - /app/smallokr/targetservice-0.0.1-SNAPSHOT.jar
+        ports:
+        - name: http
+          containerPort: 9081
+        envFrom:
+        - configMapRef:
+            name: alisa-nacos
+        - secretRef:
+            name: alisa-jwt
+        - secretRef:
+            name: smallokr-targetservice-env
+        env:
+        - name: SPRING_CLOUD_NACOS_DISCOVERY_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: '2'
+            memory: 768Mi
+        startupProbe:
+          tcpSocket:
+            port: http
+          periodSeconds: 5
+          failureThreshold: 90
+        readinessProbe:
+          tcpSocket:
+            port: http
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: http
+          periodSeconds: 20
+          initialDelaySeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: target-service
+  namespace: alisa-infra
+spec:
+  selector:
+    app: smallokr-targetservice
+  ports:
+  - name: http
+    port: 9081
+    targetPort: http
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: smallokr-todoservice-env
+  namespace: alisa-infra
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false,Delete=false
+    argocd.argoproj.io/sync-wave: '-5'
+type: Opaque
+data: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smallokr-todoservice
+  namespace: alisa-infra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: smallokr-todoservice
+  template:
+    metadata:
+      labels:
+        app: smallokr-todoservice
+    spec:
+      automountServiceAccountToken: false
+      imagePullSecrets:
+      - name: alisa-registry
+      containers:
+      - name: todoservice
+        image: alisa-registry.cpolar.top/smallokr:git-bf29dd6-common03f0644
+        command:
+        - java
+        args:
+        - -XX:MaxRAMPercentage=70
+        - -jar
+        - /app/smallokr/todoservice-0.0.1-SNAPSHOT.jar
+        ports:
+        - name: http
+          containerPort: 9082
+        envFrom:
+        - configMapRef:
+            name: alisa-nacos
+        - secretRef:
+            name: alisa-jwt
+        - secretRef:
+            name: smallokr-todoservice-env
+        env:
+        - name: SPRING_CLOUD_NACOS_DISCOVERY_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: '2'
+            memory: 768Mi
+        startupProbe:
+          tcpSocket:
+            port: http
+          periodSeconds: 5
+          failureThreshold: 90
+        readinessProbe:
+          tcpSocket:
+            port: http
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: http
+          periodSeconds: 20
+          initialDelaySeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-service
+  namespace: alisa-infra
+spec:
+  selector:
+    app: smallokr-todoservice
+  ports:
+  - name: http
+    port: 9082
+    targetPort: http
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: smallokr-traceservice-env
+  namespace: alisa-infra
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false,Delete=false
+    argocd.argoproj.io/sync-wave: '-5'
+type: Opaque
+data: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smallokr-traceservice
+  namespace: alisa-infra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: smallokr-traceservice
+  template:
+    metadata:
+      labels:
+        app: smallokr-traceservice
+    spec:
+      automountServiceAccountToken: false
+      imagePullSecrets:
+      - name: alisa-registry
+      containers:
+      - name: traceservice
+        image: alisa-registry.cpolar.top/smallokr:git-bf29dd6-common03f0644
+        command:
+        - java
+        args:
+        - -XX:MaxRAMPercentage=70
+        - -jar
+        - /app/smallokr/traceservice-0.0.1-SNAPSHOT.jar
+        ports:
+        - name: http
+          containerPort: 8083
+        envFrom:
+        - configMapRef:
+            name: alisa-nacos
+        - secretRef:
+            name: alisa-jwt
+        - secretRef:
+            name: smallokr-traceservice-env
+        env:
+        - name: SPRING_CLOUD_NACOS_DISCOVERY_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: '2'
+            memory: 768Mi
+        startupProbe:
+          tcpSocket:
+            port: http
+          periodSeconds: 5
+          failureThreshold: 90
+        readinessProbe:
+          tcpSocket:
+            port: http
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: http
+          periodSeconds: 20
+          initialDelaySeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: trace-service
+  namespace: alisa-infra
+spec:
+  selector:
+    app: smallokr-traceservice
+  ports:
+  - name: http
+    port: 8083
+    targetPort: http
