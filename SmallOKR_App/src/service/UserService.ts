@@ -6,6 +6,7 @@ import {
 import { useContext } from 'react';
 import { UserDispatchContext } from '../state/UserContext';
 import React from 'react';
+import {userServiceUrl} from '../common/ApiConfig';
 
 const useUserService = () => {
   const { get, sendRequest } = useApiService();
@@ -97,7 +98,7 @@ const useUserService = () => {
     const healthCheck = async (baseURL: string) => {
       try {
         // 显式拼接完整的 URL
-        const fullUrl = `${baseURL}/api/v1/user/health`;
+        const fullUrl = `${userServiceUrl || baseURL}/api/v1/user/health`;
         const response = await get(fullUrl, {}, { baseURL: '' });
         if (response.status === 200) {
           return true;

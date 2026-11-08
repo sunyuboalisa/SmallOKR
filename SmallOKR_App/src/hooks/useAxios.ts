@@ -8,6 +8,7 @@ import axios, {
 import { publishUserSessionExpired } from '../common/EventBusPubSub';
 import { UserContext } from '../state/UserContext';
 import { useLoadingActions } from './useLoadingLayer';
+import { requestBaseUrl } from '../common/ApiConfig';
 
 export const useAxios = () => {
   const { beginRequest, endRequest } = useLoadingActions();
@@ -22,6 +23,7 @@ export const useAxios = () => {
     ): Promise<AxiosResponse<T>> => {
       if (!axiosRef.current)
         axiosRef.current = axios.create({ timeout: 15000 });
+      const baseURL = config.baseURL ?? requestBaseUrl(config.url, namespaceUrl);
       const headers = new AxiosHeaders(
         config.headers as ConstructorParameters<typeof AxiosHeaders>[0],
       );
@@ -39,7 +41,7 @@ export const useAxios = () => {
       const key = shareRead
         ? JSON.stringify({
             ...config,
-            baseURL: config.baseURL ?? namespaceUrl,
+            baseURL,
             headers,
           })
         : undefined;
@@ -50,7 +52,7 @@ export const useAxios = () => {
 
       if (config.showLoading !== false) beginRequest();
       const request = axiosRef.current
-        .request<T>({ baseURL: namespaceUrl, ...config, headers })
+        .request<T>({ ...config, baseURL, headers })
         .catch(error => {
           // There is no refresh-token endpoint: replaying an unauthorized request
           // with the same token only doubles traffic and delays the login prompt.

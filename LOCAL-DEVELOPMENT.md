@@ -1,5 +1,19 @@
 # Windows 本机开发环境
 
+## 内网与外网客户端配置
+
+`SmallOKR_App/.env.internal` 保留原内网业务地址；`.env.external` 使用
+`https://alisa.vip.cpolar.cn/alisa-gateway`。两套配置的 `USER_API_BASE_URL`
+均固定为该外网地址，登录、注册、密码和租户接口不随业务环境切换。
+配置文件忽略 Git 跟踪，业务服务原 `.env` 另存为各服务的 `.env.internal`。
+
+在 `SmallOKR_App` 目录运行 `npm run external` 或 `npm run internal` 启动 Metro。
+切换前停止旧 Metro，并重新打开 App。PowerShell 使用
+`$env:APP_ENV='external'; npm.cmd start -- --reset-cache`（内网改为 `internal`）。
+显式设置 `API_BASE_URL` 时会替换 App 之前保存的业务地址，支持网关路径前缀。
+这两个命令只启动客户端开发服务；外网模式连接服务器上的业务服务，不启动本机 Java 服务。
+原内网地址 `http://192.168.1.116:8100` 当前不可达，使用内网模式前需启动或更新对应网关。
+
 ## 当前启动配置（2026-11-03）
 
 用户服务源码现已迁往同级 `alisa-cloud/alisa-user`，由 alisa-cloud 构建和部署；SmallOKR 只构建目标、待办、跟踪三个服务。现有运行的 userservice 未切换或重启。未来公共网关接入本项目时加载 `smallokr_server/gateway-routes.yml`，配置方法见 `alisa-cloud/docs/user-service-migration.md`。

@@ -9,7 +9,7 @@ import { User } from '../model/User';
 import { UserAction } from './Actions';
 import { StorageService } from '../service/StorageService';
 import { AppConfigContext } from '../state/AppConfigContext';
-import { API_HOST, API_PORT, API_SCHEME } from '@env';
+import { defaultBusinessUrl, restoredBusinessUrl } from '../common/ApiConfig';
 import useUserService from '../service/UserService';
 import { eventBus } from '../common/EventBus';
 import { USER_EVENTS } from '../common/EventType';
@@ -18,7 +18,7 @@ export type UserState = {
   userInfo: User;
   isLoading: boolean;
 };
-const getInitialBaseURL = () => `${API_SCHEME}://${API_HOST}:${API_PORT}`;
+const getInitialBaseURL = () => defaultBusinessUrl;
 
 const initialState: UserState = {
   userInfo: {
@@ -105,7 +105,7 @@ export function UserContextProvider({
       if (storedUser) {
         const restoredUser = {
           ...storedUser,
-          namespaceUrl: storedUser.namespaceUrl || getInitialBaseURL(),
+          namespaceUrl: restoredBusinessUrl(storedUser.namespaceUrl),
         };
         // Remembered account details are not an authenticated session.
         if (!restoredUser.token) {

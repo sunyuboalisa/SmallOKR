@@ -44,6 +44,10 @@ const Todo = ({ navigation }: MyStackScreenProps<'Todo'>) => {
   const todoService = useTodoService();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedTodo, setSelectedTodo] = useState<IUITodo>();
+  const [date, setDate] = useState(() => dayjs().format('YYYY-MM-DD'));
+  const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [reload, setReload] = useState(0);
 
   const themeContext = useContext(ThemeContext);
   const todoContext = useContext(TodoContext);
@@ -84,21 +88,30 @@ const Todo = ({ navigation }: MyStackScreenProps<'Todo'>) => {
   };
 
   useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setLoadFailed(false);
     const fetchData = async () => {
       try {
-        const now = dayjs().format('YYYY-MM-DD HH:mm:ss');
-        const localDateTime = now;
-
-        const res = await todoService.getTodosByDate(localDateTime);
+        const res = await todoService.getTodosByDate(`${date} 00:00:00`);
         const todos = res.data.data;
-
-        dispatch({ type: 'Load', newTodos: todos });
-      } catch (error) {
-        console.error(error);
+        if (!Array.isArray(todos)) throw new Error('Invalid todo response');
+        if (active) dispatch({ type: 'Load', newTodos: todos });
+      } catch {
+        if (active) setLoadFailed(true);
+      } finally {
+        if (active) setLoading(false);
       }
     };
     fetchData();
-  }, [dispatch, todoService]);
+    return () => { active = false; };
+  }, [date, dispatch, reload, todoService]);
+
+  const changeDate = (offset: number) => {
+    setLoading(true);
+    setDate(current => dayjs(current).add(offset, 'day').format('YYYY-MM-DD'));
+  };
+  const labelColor = themeContext?.theme.colors.text;
 
   return (
     <View
@@ -107,8 +120,26 @@ const Todo = ({ navigation }: MyStackScreenProps<'Todo'>) => {
         backgroundColor: themeContext?.theme.colors.background,
       }}
     >
+      <View style={styles.dateBar}>
+        <TouchableOpacity accessibilityRole="button" onPress={() => changeDate(-1)}>
+          <Text style={{color: labelColor}}>前一天</Text>
+        </TouchableOpacity>
+        <Text style={{color: labelColor}}>{date}</Text>
+        <TouchableOpacity accessibilityRole="button" onPress={() => changeDate(1)}>
+          <Text style={{color: labelColor}}>后一天</Text>
+        </TouchableOpacity>
+      </View>
       <TimeLine
-        data={todoContext.uiTodos}
+        data={loading || loadFailed ? [] : todoContext.uiTodos}
+        refreshing={loading}
+        onRefresh={() => setReload(value => value + 1)}
+        empty={
+          <TouchableOpacity disabled={!loadFailed} onPress={() => setReload(value => value + 1)}>
+            <Text style={[styles.emptyMessage, {color: labelColor}]}>
+              {loading ? '正在加载待办…' : loadFailed ? '待办加载失败，点此重试' : '这一天没有待办'}
+            </Text>
+          </TouchableOpacity>
+        }
         handleItemPress={handleItemPress}
         handleItemLongPress={handleItemLongPress}
       />
@@ -175,6 +206,8 @@ const Todo = ({ navigation }: MyStackScreenProps<'Todo'>) => {
 };
 
 const styles = StyleSheet.create({
+  dateBar: {flexDirection: 'row', justifyContent: 'space-between', padding: 12},
+  emptyMessage: {textAlign: 'center', paddingTop: 40},
   container: {
     flex: 1,
     padding: 20,

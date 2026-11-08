@@ -34,5 +34,6 @@ build/
 
 ### Environment Files ###
 .env
+.env.*
 *.pem
 *.log

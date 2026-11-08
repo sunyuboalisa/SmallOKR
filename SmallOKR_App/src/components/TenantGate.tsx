@@ -3,6 +3,7 @@ import {ActivityIndicator, ScrollView, Text, TextInput, TouchableOpacity, View, 
 import axios from 'axios';
 import {UserContext, UserDispatchContext} from '../state/UserContext';
 import {ThemeContext} from '../state/ThemeContext';
+import {userServiceUrl} from '../common/ApiConfig';
 
 type Tenant = {id: string; name: string; enabled: boolean; role: string};
 export default function TenantGate({children}: {children: React.ReactNode}) {
@@ -18,7 +19,7 @@ export default function TenantGate({children}: {children: React.ReactNode}) {
   useEffect(() => {
     let alive = true;
     setLoading(true);setReady(false);setError('');
-    const client = axios.create({baseURL: userInfo.namespaceUrl, timeout: 15000, headers: {Authorization: `Bearer ${userInfo.token}`}});
+    const client = axios.create({baseURL: userServiceUrl, timeout: 15000, headers: {Authorization: `Bearer ${userInfo.token}`}});
     (async () => {
       try {
         const capability = await client.get('/api/v1/user/tenancy');
@@ -40,7 +41,7 @@ export default function TenantGate({children}: {children: React.ReactNode}) {
   const choose = async (tenant: Tenant) => {
     setLoading(true);setError('');
     try {
-      const response = await axios.post(`${userInfo.namespaceUrl}/api/v1/user/tenants/${encodeURIComponent(tenant.id)}/token`, {}, {timeout: 15000, headers: {Authorization: `Bearer ${userInfo.token}`}});
+      const response = await axios.post(`${userServiceUrl}/api/v1/user/tenants/${encodeURIComponent(tenant.id)}/token`, {}, {timeout: 15000, headers: {Authorization: `Bearer ${userInfo.token}`}});
       dispatch({type: 'Login', user: {...userInfo, token: response.data.access_token, tenantId: tenant.id, tenantName: tenant.name}});
     } catch {setError('无法进入该租户，请检查成员资格');setLoading(false);}
   };
@@ -48,7 +49,7 @@ export default function TenantGate({children}: {children: React.ReactNode}) {
     if (!name.trim()) return;
     setLoading(true);setError('');
     try {
-      const response = await axios.post(`${userInfo.namespaceUrl}/api/v1/user/tenants`, {name: name.trim()}, {timeout: 15000, headers: {Authorization: `Bearer ${userInfo.token}`}});
+      const response = await axios.post(`${userServiceUrl}/api/v1/user/tenants`, {name: name.trim()}, {timeout: 15000, headers: {Authorization: `Bearer ${userInfo.token}`}});
       await choose({id: response.data.tenantId, name: name.trim(), enabled: true, role: 'OWNER'});
     } catch {setError('创建租户失败，请稍后重试');setLoading(false);}
   };
