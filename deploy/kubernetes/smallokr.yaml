@@ -29,7 +29,7 @@ spec:
       - name: alisa-registry
       containers:
       - name: targetservice
-        image: registry.kind.internal:5000/smallokr:git-66611a515ad535cb0c83ce291c065e1f7c859c8f-common03f0644ea91b
+        image: registry.kind.internal:5000/smallokr:git-6d0935194638390c000c0f0e2cb339c438b6b771-common03f0644ea91b
         command:
         - java
         args:
@@ -117,7 +117,7 @@ spec:
       - name: alisa-registry
       containers:
       - name: todoservice
-        image: registry.kind.internal:5000/smallokr:git-66611a515ad535cb0c83ce291c065e1f7c859c8f-common03f0644ea91b
+        image: registry.kind.internal:5000/smallokr:git-6d0935194638390c000c0f0e2cb339c438b6b771-common03f0644ea91b
         command:
         - java
         args:
@@ -205,7 +205,7 @@ spec:
       - name: alisa-registry
       containers:
       - name: traceservice
-        image: registry.kind.internal:5000/smallokr:git-66611a515ad535cb0c83ce291c065e1f7c859c8f-common03f0644ea91b
+        image: registry.kind.internal:5000/smallokr:git-6d0935194638390c000c0f0e2cb339c438b6b771-common03f0644ea91b
         command:
         - java
         args:

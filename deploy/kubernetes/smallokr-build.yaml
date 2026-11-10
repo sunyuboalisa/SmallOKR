@@ -87,7 +87,7 @@ spec:
           mountPath: /registry-auth
         env:
         - name: SOURCE_REVISION
-          value: 66611a515ad535cb0c83ce291c065e1f7c859c8f
+          value: 6d0935194638390c000c0f0e2cb339c438b6b771
         - name: CLOUD_REVISION
           value: 03f0644ea91b6df262425b62000398e40a7d4fbc
       - name: package
@@ -112,7 +112,7 @@ spec:
         args:
         - --context=dir:///workspace/smallokr/smallokr_server
         - --dockerfile=Dockerfile.k8s
-        - --destination=registry.kind.internal:5000/smallokr:git-66611a515ad535cb0c83ce291c065e1f7c859c8f-common03f0644ea91b
+        - --destination=registry.kind.internal:5000/smallokr:git-6d0935194638390c000c0f0e2cb339c438b6b771-common03f0644ea91b
         - --push-retry=3
         - --registry-certificate=registry.kind.internal:5000=/registry-ca/ca.crt
         volumeMounts:
